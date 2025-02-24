@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/text_view_spinner_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="6dp"
+    android:textColor="#1F2024"
+    android:textColorHint="#8B8B8B"
+    android:textSize="16sp"
+    android:background="#F5F7FF"
+    android:hint="Операция"
+    style="@style/TheInterRegularText"
+    android:gravity="center_vertical"/>

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-permission android:name="android.permission.USB_PERMISSION" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.BROADCAST_STICKY" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.nfc.peer_to_peer"
+        android:required="true" />
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-feature
+        android:name="android.hardware.nfc"
+        android:required="true" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@drawable/png_512"
+        android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:roundIcon="@drawable/png_512"
+        android:supportsRtl="true"
+        android:enableOnBackInvokedCallback="true"
+        android:theme="@style/Theme.Semimanufactures"
+        tools:targetApi="31">
+        <activity
+            android:name=".TgAuthorizationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_tg_authorization"
+            android:theme="@style/Theme.Semimanufactures" />
+        <activity
+            android:name=".GettingTelegramUsersActivity"
+            android:exported="false"
+            android:label="@string/title_activity_getting_telegram_users"
+            android:theme="@style/Theme.Semimanufactures" />
+        <activity
+            android:name=".GifActivity"
+            android:exported="false"
+            android:label="@string/title_activity_gif"
+            android:theme="@style/Theme.Semimanufactures" />
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_settings"
+            android:theme="@style/Theme.Semimanufactures" />
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+        <activity
+            android:name=".NewLogisticDocActivity"
+            android:exported="false"
+            android:label="@string/title_activity_new_logistic_doc"
+            android:theme="@style/Theme.Semimanufactures" />
+        <activity
+            android:name=".CreatingLogisticDocActivity"
+            android:exported="false"
+            android:label="@string/title_activity_creating_logistic_doc"
+            android:theme="@style/Theme.Semimanufactures" />
+        <activity
+            android:name=".InventarisationFirsovActivity"
+            android:exported="false"
+            android:label="@string/title_activity_inventarisation_firsov"
+            android:theme="@style/Theme.Semimanufactures" />
+        <activity
+            android:name=".NewLogisticActivity"
+            android:exported="true"
+            android:label="@string/title_activity_new_logistic"
+            android:theme="@style/Theme.Semimanufactures"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".CreatingLogisticActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Semimanufactures"
+            android:windowSoftInputMode="adjustPan">
+            <intent-filter>
+                <action android:name="android.nfc.action.TAG_DISCOVERED"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".CheckingPrPSkladSunmiActivity"
+            android:exported="false"
+            android:label="@string/title_activity_checking_pr_psklad_sunmi"
+            android:theme="@style/Theme.Semimanufactures" />
+        <activity
+            android:name=".DetailLogisticsActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="false"
+            android:label="@string/title_activity_detail_logistics"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.Semimanufactures">
+            <intent-filter>
+                <action android:name="android.nfc.action.TAG_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".CheckingPrPSkladActivity"
+            android:exported="false"
+            android:label="@string/title_activity_checking_pr_psklad"
+            android:theme="@style/Theme.Semimanufactures" />
+        <activity
+            android:name=".LogisticActivity"
+            android:exported="true"
+            android:label="@string/title_activity_logistic"
+            android:theme="@style/Theme.Semimanufactures"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
+            android:name=".CreateNotificationSunmiActivity"
+            android:exported="false"
+            android:label="@string/title_activity_create_notification_sunmi"
+            android:theme="@style/Theme.Semimanufactures" />
+        <activity
+            android:name=".CreateNotificationActivity"
+            android:exported="false"
+            android:label="@string/create_activity_notification"
+            android:theme="@style/Theme.Semimanufactures">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".AddActivity"
+            android:exported="false"
+            android:label="@string/title_activity_add_activity"
+            android:theme="@style/Theme.Semimanufactures">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".FeaturesOfTheFunctionalityActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Semimanufactures"
+            android:windowSoftInputMode="adjustPan">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Semimanufactures">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+<!--            <meta-data-->
+<!--                android:name="android.app.lib_name"-->
+<!--                android:value="" />-->
+        </activity>
+    </application>
+</manifest>

@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">АИС Внутренняя логистика</string>
+    <string name="title_activity_features_of_the_functionality">Поиск и выдача</string>
+    <string name="title_activity_main">Авторизация</string>
+    <string name="title_activity_add_activity">Поиск и добавление</string>
+    <string name="title_activity_fire">FireActivity</string>
+    <string name="title_activity_check">CheckActivity</string>
+    <string name="create_activity_notification">Создание Уведомления</string>
+    <string name="title_activity_features_of_the_functionalite_sunmi">Поиск и выдача</string>
+    <string name="title_activity_add_sunmi">Поиск и добавление</string>
+    <string name="title_activity_create_notification">CreateNotificationActivity</string>
+    <string name="title_activity_create_notification_sunmi">CreateNotificationSunmiActivity</string>
+    <string name="title_activity_logistic">LogisticActivity</string>
+    <string name="title_activity_checking_pr_psklad">CheckingPrPSkladActivity</string>
+    <string name="title_activity_detail_logistics">Содержимое заявки</string>
+    <string name="title_activity_logistic_sunmi">LogisticSunmiActivity</string>
+    <string name="title_activity_detail_logistics_sunmi">DetailLogisticsSunmiActivity</string>
+    <string name="title_activity_checking_pr_psklad_sunmi">CheckingPrPSkladSunmiActivity</string>
+    <string name="title_activity_creating_logistic">CreatingLogisticActivity</string>
+    <string name="title_activity_new_logistic">NewLogisticActivity</string>
+    <string name="title_activity_creating_logistic_sunmi">CreatingLogisticSunmiActivity</string>
+    <string name="title_activity_new_logistic_sunmi">NewLogisticSunmiActivity</string>
+    <string name="title_activity_inventarisation_firsov">InventarisationFirsovActivity</string>
+    <string name="title_activity_creating_logistic_doc">CreatingLogisticDocActivity</string>
+    <string name="title_activity_new_logistic_doc">NewLogisticDocActivity</string>
+    <string name="title_activity_detail_logistics_doc">DetailLogisticsDocActivity</string>
+    <string name="title_activity_detail_logistics_doc_adapter">DetailLogisticsDocAdapter</string>
+    <string name="add_photo_text">Добавить фото</string>
+    <string name="select_photo_text">Сохранить изменения</string>
+    <string name="info_about_app">"АИС Внутренняя логистика" - мобильное приложение, предназначенное для работы с полуфабрикатами (поиск, выдача, добавление на ПРОСК ПрП), а также для создания заявок на перещемение ПрП и документов.</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="title_activity_gif">GifActivity</string>
+    <string name="string_dash">-</string>
+    <string name="title_activity_getting_telegram_users">GettingTelegramUsersActivity</string>
+    <string name="title_activity_tg_authorization">TgAuthorizationActivity</string>
+</resources>

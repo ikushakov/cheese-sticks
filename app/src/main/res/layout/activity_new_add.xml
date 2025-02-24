@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:id="@+id/main_layout">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="#001D64"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints">
+
+        <TextView
+            style="@style/TheInterMediumText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Добавление на ПРОСК"
+            android:textColor="@color/white"
+            android:layout_gravity="center_vertical"
+            android:textSize="22sp" />
+
+        <LinearLayout
+            android:layout_width="75dp"
+            android:layout_height="68dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/go_to_logistic"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/machinka_svg_white" />
+
+            <TextView
+                android:layout_width="75dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:text="Логистика"
+                style="@style/TheInterMediumText"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/small_white_layout"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <TextView
+            android:id="@+id/text_result_add_barcode_scan_text"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:background="@color/white"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/text_result_add_qrcode_scan_text"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:background="@color/white"
+            android:textColor="@color/white" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/text_result_add_barcode_scan"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rounded_edittext_background"
+                android:hint="ПрП"
+                android:layout_gravity="center_vertical"
+                android:paddingVertical="16dp"
+                android:textSize="16sp"
+                style="@style/TheInterRegularText"
+                android:textColorHint="#8B8B8B"
+                android:textColor="#1F2024" />
+
+
+            <ImageButton
+                android:id="@+id/button_for_add_barcode_scan"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:src="@drawable/icon_qrcode_middle_blue_svg" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:layout_marginBottom="80dp">
+
+            <EditText
+                android:id="@+id/text_result_add_qrcode_scan"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rounded_edittext_background"
+                android:hint="Склад"
+                android:paddingVertical="16dp"
+                android:layout_gravity="center_vertical"
+                style="@style/TheInterRegularText"
+                android:textColor="#1F2024"
+                android:textColorHint="#8B8B8B"
+                android:textSize="16sp" />
+
+            <ImageButton
+                android:id="@+id/button_for_add_qrcode_scan"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:elevation="15dp"
+                android:src="@drawable/icon_qrcode_middle_blue_svg" />
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/button_for_add_on_sklad"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            style="@style/NewCustomButtonStyleAuthorization"
+            android:textColorHint="@color/white"
+            android:padding="8dp"
+            android:hint="Добавить на склад"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/button_to_inv"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            style="@style/NewCustomButtonStyleAuthorization"
+            android:textColorHint="@color/white"
+            android:padding="8dp"
+            android:hint="Инвентаризация"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/button_check"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            style="@style/NewCustomButtonStyleAuthorization"
+            android:textColorHint="@color/white"
+            android:padding="8dp"
+            android:hint="Проверка инвентаризации"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/view_line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#D9D9D9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/small_white_layout"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout2" />
+
+    <LinearLayout
+        android:id="@+id/small_white_layout"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:background="#FFFFFF"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/view_line"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="75dp"-->
+<!--            android:layout_height="68dp"-->
+<!--            android:background="#FFFFFF"-->
+<!--            android:orientation="vertical">-->
+
+<!--            <ImageView-->
+<!--                android:id="@+id/go_to_authorization"-->
+<!--                android:layout_width="30dp"-->
+<!--                android:layout_height="30dp"-->
+<!--                android:layout_gravity="center_horizontal"-->
+<!--                android:layout_marginTop="10dp"-->
+<!--                android:adjustViewBounds="true"-->
+<!--                android:src="@drawable/icon_authorization_white_svg"-->
+<!--                app:tint="#8B8B8B" />-->
+
+<!--            <TextView-->
+<!--                android:layout_width="75dp"-->
+<!--                android:layout_height="20dp"-->
+<!--                android:layout_gravity="center_horizontal"-->
+<!--                android:gravity="center_horizontal"-->
+<!--                android:text="Авторизация"-->
+<!--                android:textColor="#8B8B8B"-->
+<!--                style="@style/TheInterMediumText"-->
+<!--                android:textSize="10sp" />-->
+
+<!--        </LinearLayout>-->
+
+        <LinearLayout
+            android:layout_width="75dp"
+            android:layout_height="68dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/go_to_add"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/icon_add_blue_svg" />
+
+            <TextView
+                android:layout_width="75dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:text="Добавление"
+                style="@style/TheInterMediumText"
+                android:textColor="#001D64"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="45dp"
+            android:layout_height="68dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/go_to_issue"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/icon_issue_svg_white" />
+
+            <TextView
+                android:layout_width="45dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:text="Выдача"
+                android:textColor="#8B8B8B"
+                style="@style/TheInterMediumText"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="65dp"
+            android:layout_height="68dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/data_user_info"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/icon_settings_svg_white" />
+
+            <TextView
+                android:layout_width="65dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:text="Настройки"
+                android:textColor="#8B8B8B"
+                style="@style/TheInterMediumText"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="75dp"
+            android:layout_height="68dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/go_to_send_notification"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/icon_notification_svg_white" />
+
+            <TextView
+                android:layout_width="75dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:text="Уведомления"
+                style="@style/TheInterMediumText"
+                android:textColor="#8B8B8B"
+                android:textSize="10sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

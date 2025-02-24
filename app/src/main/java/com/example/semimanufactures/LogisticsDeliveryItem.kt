@@ -1,0 +1,33 @@
+package com.example.semimanufactures
+
+data class LogisticsDeliveryItem(
+    val id: String,
+    val created_by: String,
+    val send_from: String,
+    val send_from_title: String,
+    val send_to: String,
+    val send_to_title: String,
+    val type: String,
+    val comment: String,
+    val send_comment: String,
+    val receive_comment: String,
+    val created_at: String,
+    val planned_date: String,
+    val sender_phone: String,
+    val receiver_phone: String,
+    val loader: String,
+    val sender_mdm: String,
+    val receiver_mdm: String,
+    var status: String,
+    var is_doing_by: String,
+    var is_doing_at: String,
+    var is_check_by: String,
+    val is_check_at: String,
+    val is_ready_by: String,
+    val is_ready_at: String,
+    val is_decline_by: String?,
+    val is_decline_at: String?,
+    val is_accepted_by: String?,
+    val is_accepted_at: String?,
+    val not_full_part: String?
+)
