@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
@@ -20,7 +21,16 @@ import java.util.Locale
 class CardAdapter(
     private val cardItemList: List<CardItem>,
     private val activity: FeaturesOfTheFunctionalityActivity,
-    private var daysMinus: Long
+    private var daysMinus: Long,
+    private var currentUsername: String,
+    private var currentUserId: Int,
+    private var currentRoleCheck: String,
+    private var currentMdmCode: String,
+    private var currentFio: String,
+    private var currentDeviceInfo: String,
+    private var currentRolesString: String,
+    private var currentDeviceToken: String,
+    private var currentIsAuthorized:  Boolean
 ) : RecyclerView.Adapter<CardAdapter.CardViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
         return try {
@@ -68,29 +78,20 @@ class CardAdapter(
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             try {
                 val distributionDate = dateFormat.parse(dateOfDistribution)
-                // Форматируем дату для отображения в TextView
                 holder.dateOfDistribution.text = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(distributionDate)
-                // Создаем экземпляр Calendar
                 val calendar = Calendar.getInstance()
-                // Установите значение daysMinus
                 val daysMinus = 7
-                // Добавляем значение daysMinus к текущей дате
                 calendar.add(Calendar.DAY_OF_MONTH, daysMinus)
-                // Получаем дату, которая на 7 дней больше текущей даты
                 val thirtyDaysFromNow = calendar.time
-                // Сравниваем дату распределения с датой, на 7 дней вперед
                 if (distributionDate.before(thirtyDaysFromNow)) {
-                    // Если дата распределения до даты на 7 дней вперед
                     holder.layoutForCard.setBackgroundResource(R.drawable.custom_background_style)
                 } else {
-                    // Если дата распределения позже или равна дате на 7 дней вперед
                     holder.layoutForCard.setBackgroundResource(R.drawable.new_card_background_features)
                 }
             } catch (e: Exception) {
                 Log.e("CardAdapter", "Error parsing date: ${e.message}")
                 holder.dateOfDistribution.text = "Ошибка даты"
             }
-
         }
         holder.toIssueButton.setOnClickListener {
             showConfirmationDialog(cardItem)
@@ -98,22 +99,27 @@ class CardAdapter(
     }
     @RequiresApi(Build.VERSION_CODES.O)
     private fun showConfirmationDialog(cardItem: CardItem) {
-        val dialogView = activity.layoutInflater.inflate(R.layout.new_dialog_confirmation, null)
-        val builder = AlertDialog.Builder(activity)
-        builder.setView(dialogView)
-        val yesButton = dialogView.findViewById<Button>(R.id.buttonYes)
-        val noButton = dialogView.findViewById<Button>(R.id.buttonNo)
-        val dialog = builder.create()
-        yesButton.setOnClickListener {
-            activity.lifecycleScope.launch {
-                activity.handleCardClick(cardItem)
+        if (currentUsername == "T.Test") {
+            Toast.makeText(activity, "У вас недостаточно прав для совершения данной операции", Toast.LENGTH_LONG).show()
+        }
+        else {
+            val dialogView = activity.layoutInflater.inflate(R.layout.new_dialog_confirmation, null)
+            val builder = AlertDialog.Builder(activity)
+            builder.setView(dialogView)
+            val yesButton = dialogView.findViewById<Button>(R.id.buttonYes)
+            val noButton = dialogView.findViewById<Button>(R.id.buttonNo)
+            val dialog = builder.create()
+            yesButton.setOnClickListener {
+                activity.lifecycleScope.launch {
+                    activity.handleCardClick(cardItem)
+                }
+                dialog.dismiss()
             }
-            dialog.dismiss()
+            noButton.setOnClickListener {
+                dialog.dismiss()
+            }
+            dialog.show()
         }
-        noButton.setOnClickListener {
-            dialog.dismiss()
-        }
-        dialog.show()
     }
     override fun getItemCount(): Int {
         return cardItemList.size

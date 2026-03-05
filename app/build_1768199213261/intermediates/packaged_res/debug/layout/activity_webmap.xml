@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white">
+
+    <!-- Панель управления -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:background="#F5F5F5">
+
+        <Button
+            android:id="@+id/btn_buildings"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="🏢 Здания"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btn_delivery"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="📦 Склады"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btn_route"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:text="📍 Маршрут"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- Контейнер для карты и кнопок поверх -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- MapView -->
+        <org.osmdroid.views.MapView
+            android:id="@+id/mapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- Кнопки зума -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp">
+
+            <Button
+                android:id="@+id/btn_zoom_in"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="+"
+                android:textSize="20sp"
+                android:backgroundTint="#FFFFFF"
+                android:textColor="#000000"
+                android:layout_marginBottom="8dp"
+                style="?android:attr/borderlessButtonStyle"
+                android:elevation="4dp"/>
+
+            <Button
+                android:id="@+id/btn_zoom_out"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="-"
+                android:textSize="24sp"
+                android:backgroundTint="#FFFFFF"
+                android:textColor="#000000"
+                style="?android:attr/borderlessButtonStyle"
+                android:elevation="4dp"/>
+        </LinearLayout>
+        
+        <!-- Кнопка "Моя локация" (перемещена на карту) -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_my_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="16dp"
+            android:layout_marginBottom="160dp"
+            android:src="@android:drawable/ic_menu_mylocation"
+            app:backgroundTint="#2196F3"
+            app:tint="@android:color/white" />
+
+        <!-- Инфо-панель (скрыта по умолчанию) -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/info_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="8dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="8dp"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/info_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Название объекта"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#000000" />
+
+                <TextView
+                    android:id="@+id/info_subtitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Описание / Адрес"
+                    android:textSize="14sp"
+                    android:textColor="#666666" />
+                
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="end"
+                    android:layout_marginTop="8dp">
+
+                    <Button
+                        android:id="@+id/btn_route_to"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Маршрут сюда"
+                        style="?android:attr/borderlessButtonStyle"
+                        android:textColor="#2196F3"/>
+
+                    <Button
+                        android:id="@+id/btn_close_info"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Закрыть"
+                        style="?android:attr/borderlessButtonStyle"
+                        android:textColor="#666666"/>
+                </LinearLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+    </RelativeLayout>
+
+    <!-- Прогресс-бар -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:max="100"
+        android:progress="0" />
+</LinearLayout>

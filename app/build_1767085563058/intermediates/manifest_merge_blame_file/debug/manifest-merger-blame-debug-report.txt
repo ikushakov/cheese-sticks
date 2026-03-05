@@ -1,0 +1,1252 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.example.semimanufactures"
+4    android:versionCode="66"
+5    android:versionName="8.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+9        android:targetSdkVersion="35" />
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:5:5-67
+11-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:5:22-64
+12    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+12-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:6:5-79
+12-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:6:22-76
+13    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+13-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:7:5-79
+13-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:7:22-76
+14    <uses-permission android:name="android.permission.CAMERA" />
+14-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:8:5-65
+14-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:8:22-62
+15    <uses-permission android:name="android.permission.NFC" />
+15-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:9:5-62
+15-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:9:22-59
+16    <uses-permission android:name="android.permission.USB_PERMISSION" />
+16-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:10:5-73
+16-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:10:22-70
+17    <uses-permission android:name="android.permission.VIBRATE" />
+17-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:11:5-66
+17-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:11:22-63
+18    <uses-permission android:name="android.permission.WAKE_LOCK" />
+18-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:12:5-68
+18-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:12:22-65
+19    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+19-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:13:5-79
+19-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:13:22-76
+20    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+20-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:14:5-81
+20-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:14:22-78
+21    <uses-permission android:name="android.permission.CALL_PHONE" />
+21-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:15:5-69
+21-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:15:22-66
+22    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+22-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:16:5-95
+22-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:16:22-92
+23    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+23-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:17:5-76
+23-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:17:22-73
+24    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+24-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:18:5-20:46
+24-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:19:9-60
+25    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+25-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:21:5-75
+25-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:21:22-72
+26    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+26-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:22:5-24:46
+26-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:23:9-65
+27    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+27-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:25:5-27:40
+27-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:26:9-65
+28    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" /> <!-- <uses-permission android:name="android.permission.BROADCAST_STICKY" /> -->
+28-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:28:5-77
+28-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:28:22-74
+29    <uses-feature
+29-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:29:5-31:36
+30        android:name="android.hardware.camera"
+30-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:30:9-47
+31        android:required="false" />
+31-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:31:9-33
+32    <uses-feature
+32-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:32:5-34:36
+33        android:name="android.hardware.camera.autofocus"
+33-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:33:9-57
+34        android:required="false" />
+34-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:34:9-33
+35    <uses-feature
+35-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:35:5-37:36
+36        android:name="android.hardware.camera.flash"
+36-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:36:9-53
+37        android:required="false" />
+37-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:37:9-33
+38    <uses-feature
+38-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:38:5-40:35
+39        android:name="android.hardware.nfc.peer_to_peer"
+39-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:39:9-57
+40        android:required="true" />
+40-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:40:9-32
+41    <uses-feature
+41-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:42:5-44:35
+42        android:name="android.hardware.nfc"
+42-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:43:9-44
+43        android:required="true" />
+43-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:44:9-32
+44    <uses-feature
+44-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:45:5-47:36
+45        android:name="android.hardware.telephony"
+45-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:46:9-50
+46        android:required="false" />
+46-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:47:9-33
+47
+48    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+48-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:49:5-51:40
+48-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:50:9-64
+49    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+49-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:52:5-77
+49-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:52:22-74
+50
+51    <queries>
+51-->[ru.rustore.sdk:pushclient:6.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\732cc341be2a0af08a6283f21b2b74b6\transformed\jetified-pushclient-6.5.0\AndroidManifest.xml:11:5-17:15
+52        <package android:name="ru.vk.store" />
+52-->[ru.rustore.sdk:pushclient:6.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\732cc341be2a0af08a6283f21b2b74b6\transformed\jetified-pushclient-6.5.0\AndroidManifest.xml:12:9-47
+52-->[ru.rustore.sdk:pushclient:6.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\732cc341be2a0af08a6283f21b2b74b6\transformed\jetified-pushclient-6.5.0\AndroidManifest.xml:12:18-44
+53
+54        <intent>
+54-->[ru.rustore.sdk:pushclient:6.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\732cc341be2a0af08a6283f21b2b74b6\transformed\jetified-pushclient-6.5.0\AndroidManifest.xml:14:9-16:18
+55            <action android:name="com.vk.push.HOST_SERVICE" />
+55-->[ru.rustore.sdk:pushclient:6.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\732cc341be2a0af08a6283f21b2b74b6\transformed\jetified-pushclient-6.5.0\AndroidManifest.xml:15:13-63
+55-->[ru.rustore.sdk:pushclient:6.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\732cc341be2a0af08a6283f21b2b74b6\transformed\jetified-pushclient-6.5.0\AndroidManifest.xml:15:21-60
+56        </intent>
+57        <intent>
+57-->[ru.rustore.sdk:appupdate:7.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\8b142f448f89ed5afcea6c403af4e489\transformed\jetified-appupdate-7.0.0\AndroidManifest.xml:8:9-10:18
+58            <action android:name="ru.vk.store.provider.appupdate.RemoteAppUpdateFlowProvider" />
+58-->[ru.rustore.sdk:appupdate:7.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\8b142f448f89ed5afcea6c403af4e489\transformed\jetified-appupdate-7.0.0\AndroidManifest.xml:9:13-97
+58-->[ru.rustore.sdk:appupdate:7.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\8b142f448f89ed5afcea6c403af4e489\transformed\jetified-appupdate-7.0.0\AndroidManifest.xml:9:21-94
+59        </intent>
+60        <intent>
+60-->[ru.rustore.sdk:analytics:7.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\e6cddc9dfbfbfe11ad6084c7c27c074b\transformed\jetified-analytics-7.0.0\AndroidManifest.xml:8:9-10:18
+61            <action android:name="ru.vk.store.provider.analytics.AnalyticsProvider" />
+61-->[ru.rustore.sdk:analytics:7.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\e6cddc9dfbfbfe11ad6084c7c27c074b\transformed\jetified-analytics-7.0.0\AndroidManifest.xml:9:13-87
+61-->[ru.rustore.sdk:analytics:7.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\e6cddc9dfbfbfe11ad6084c7c27c074b\transformed\jetified-analytics-7.0.0\AndroidManifest.xml:9:21-84
+62        </intent>
+63
+64        <package android:name="ru.vk.store.qa" /> <!-- Internet browser activities. -->
+64-->[ru.rustore.sdk:core:8.0.0-alpha01] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\62345a18cdd5f5653618f01dd2781304\transformed\jetified-core-8.0.0-alpha01\AndroidManifest.xml:9:9-50
+64-->[ru.rustore.sdk:core:8.0.0-alpha01] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\62345a18cdd5f5653618f01dd2781304\transformed\jetified-core-8.0.0-alpha01\AndroidManifest.xml:9:18-47
+65        <intent>
+65-->[ru.rustore.sdk:core:8.0.0-alpha01] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\62345a18cdd5f5653618f01dd2781304\transformed\jetified-core-8.0.0-alpha01\AndroidManifest.xml:12:9-18:18
+66            <action android:name="android.intent.action.VIEW" />
+66-->[ru.rustore.sdk:core:8.0.0-alpha01] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\62345a18cdd5f5653618f01dd2781304\transformed\jetified-core-8.0.0-alpha01\AndroidManifest.xml:13:13-65
+66-->[ru.rustore.sdk:core:8.0.0-alpha01] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\62345a18cdd5f5653618f01dd2781304\transformed\jetified-core-8.0.0-alpha01\AndroidManifest.xml:13:21-62
+67
+68            <category android:name="android.intent.category.BROWSABLE" />
+68-->[ru.rustore.sdk:core:8.0.0-alpha01] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\62345a18cdd5f5653618f01dd2781304\transformed\jetified-core-8.0.0-alpha01\AndroidManifest.xml:15:13-74
+68-->[ru.rustore.sdk:core:8.0.0-alpha01] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\62345a18cdd5f5653618f01dd2781304\transformed\jetified-core-8.0.0-alpha01\AndroidManifest.xml:15:23-71
+69
+70            <data android:scheme="https" />
+70-->[ru.rustore.sdk:core:8.0.0-alpha01] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\62345a18cdd5f5653618f01dd2781304\transformed\jetified-core-8.0.0-alpha01\AndroidManifest.xml:17:13-44
+70-->[ru.rustore.sdk:core:8.0.0-alpha01] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\62345a18cdd5f5653618f01dd2781304\transformed\jetified-core-8.0.0-alpha01\AndroidManifest.xml:17:19-41
+71        </intent>
+72        <intent>
+72-->[ru.rustore.sdk:core:8.0.0-alpha01] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\62345a18cdd5f5653618f01dd2781304\transformed\jetified-core-8.0.0-alpha01\AndroidManifest.xml:19:9-21:18
+73            <action android:name="ru.vk.store.RequestIgnoreBatteryOptimizations" />
+73-->[ru.rustore.sdk:core:8.0.0-alpha01] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\62345a18cdd5f5653618f01dd2781304\transformed\jetified-core-8.0.0-alpha01\AndroidManifest.xml:20:13-84
+73-->[ru.rustore.sdk:core:8.0.0-alpha01] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\62345a18cdd5f5653618f01dd2781304\transformed\jetified-core-8.0.0-alpha01\AndroidManifest.xml:20:21-81
+74        </intent>
+75
+76        <package android:name="sunmi.remotemanager" />
+76-->[com.sunmi:connService.iotsdk:1.1.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\d85c9656cc37bb0a9c983f3c412031fc\transformed\jetified-connService.iotsdk-1.1.1\AndroidManifest.xml:12:9-55
+76-->[com.sunmi:connService.iotsdk:1.1.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\d85c9656cc37bb0a9c983f3c412031fc\transformed\jetified-connService.iotsdk-1.1.1\AndroidManifest.xml:12:18-52
+77        <package android:name="androidx.test.orchestrator" />
+77-->[androidx.test:runner:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\da72d7a51aa6c786cefb6f5a74fe5561\transformed\runner-1.6.1\AndroidManifest.xml:25:9-62
+77-->[androidx.test:runner:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\da72d7a51aa6c786cefb6f5a74fe5561\transformed\runner-1.6.1\AndroidManifest.xml:25:18-59
+78        <package android:name="androidx.test.services" />
+78-->[androidx.test:runner:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\da72d7a51aa6c786cefb6f5a74fe5561\transformed\runner-1.6.1\AndroidManifest.xml:26:9-58
+78-->[androidx.test:runner:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\da72d7a51aa6c786cefb6f5a74fe5561\transformed\runner-1.6.1\AndroidManifest.xml:26:18-55
+79        <package android:name="com.google.android.apps.common.testing.services" />
+79-->[androidx.test:runner:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\da72d7a51aa6c786cefb6f5a74fe5561\transformed\runner-1.6.1\AndroidManifest.xml:27:9-83
+79-->[androidx.test:runner:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\da72d7a51aa6c786cefb6f5a74fe5561\transformed\runner-1.6.1\AndroidManifest.xml:27:18-80
+80        <package android:name="com.sunmi.thingservice" />
+80-->[com.sunmi:ThingAdapter-SDK:1.0.9] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\f98306f17687c9b5999401a14b461738\transformed\jetified-ThingAdapter-SDK-1.0.9\AndroidManifest.xml:12:9-58
+80-->[com.sunmi:ThingAdapter-SDK:1.0.9] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\f98306f17687c9b5999401a14b461738\transformed\jetified-ThingAdapter-SDK-1.0.9\AndroidManifest.xml:12:18-55
+81    </queries> <!-- Required by older versions of Google Play services to create IID tokens -->
+82    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+82-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:26:5-82
+82-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:26:22-79
+83    <uses-permission android:name="android.permission.REORDER_TASKS" />
+83-->[androidx.test:core:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\4514d0edc1715853cc264921b0698283\transformed\jetified-core-1.6.1\AndroidManifest.xml:24:5-72
+83-->[androidx.test:core:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\4514d0edc1715853cc264921b0698283\transformed\jetified-core-1.6.1\AndroidManifest.xml:24:22-69
+84
+85    <permission
+85-->[androidx.core:core:1.13.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\59f939cb0a0e2eccff5f8b138df0d22e\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
+86        android:name="com.example.semimanufactures.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+86-->[androidx.core:core:1.13.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\59f939cb0a0e2eccff5f8b138df0d22e\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
+87        android:protectionLevel="signature" />
+87-->[androidx.core:core:1.13.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\59f939cb0a0e2eccff5f8b138df0d22e\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
+88
+89    <uses-permission android:name="com.example.semimanufactures.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+89-->[androidx.core:core:1.13.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\59f939cb0a0e2eccff5f8b138df0d22e\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
+89-->[androidx.core:core:1.13.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\59f939cb0a0e2eccff5f8b138df0d22e\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
+90    <uses-permission android:name="com.sunmi.connectionservice.PERMISSION.IOT" />
+90-->[com.sunmi:connService.iotsdk:1.1.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\d85c9656cc37bb0a9c983f3c412031fc\transformed\jetified-connService.iotsdk-1.1.1\AndroidManifest.xml:9:5-82
+90-->[com.sunmi:connService.iotsdk:1.1.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\d85c9656cc37bb0a9c983f3c412031fc\transformed\jetified-connService.iotsdk-1.1.1\AndroidManifest.xml:9:22-79
+91
+92    <uses-feature
+92-->[com.journeyapps:zxing-android-embedded:4.3.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\2ce2c35c036d23260f0f571d5db952f4\transformed\jetified-zxing-android-embedded-4.3.0\AndroidManifest.xml:28:5-30:36
+93        android:name="android.hardware.camera.front"
+93-->[com.journeyapps:zxing-android-embedded:4.3.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\2ce2c35c036d23260f0f571d5db952f4\transformed\jetified-zxing-android-embedded-4.3.0\AndroidManifest.xml:29:9-53
+94        android:required="false" />
+94-->[com.journeyapps:zxing-android-embedded:4.3.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\2ce2c35c036d23260f0f571d5db952f4\transformed\jetified-zxing-android-embedded-4.3.0\AndroidManifest.xml:30:9-33
+95    <uses-feature
+95-->[com.journeyapps:zxing-android-embedded:4.3.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\2ce2c35c036d23260f0f571d5db952f4\transformed\jetified-zxing-android-embedded-4.3.0\AndroidManifest.xml:39:5-41:36
+96        android:name="android.hardware.screen.landscape"
+96-->[com.journeyapps:zxing-android-embedded:4.3.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\2ce2c35c036d23260f0f571d5db952f4\transformed\jetified-zxing-android-embedded-4.3.0\AndroidManifest.xml:40:9-57
+97        android:required="false" />
+97-->[com.journeyapps:zxing-android-embedded:4.3.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\2ce2c35c036d23260f0f571d5db952f4\transformed\jetified-zxing-android-embedded-4.3.0\AndroidManifest.xml:41:9-33
+98    <uses-feature
+98-->[com.journeyapps:zxing-android-embedded:4.3.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\2ce2c35c036d23260f0f571d5db952f4\transformed\jetified-zxing-android-embedded-4.3.0\AndroidManifest.xml:42:5-44:36
+99        android:name="android.hardware.wifi"
+99-->[com.journeyapps:zxing-android-embedded:4.3.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\2ce2c35c036d23260f0f571d5db952f4\transformed\jetified-zxing-android-embedded-4.3.0\AndroidManifest.xml:43:9-45
+100        android:required="false" />
+100-->[com.journeyapps:zxing-android-embedded:4.3.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\2ce2c35c036d23260f0f571d5db952f4\transformed\jetified-zxing-android-embedded-4.3.0\AndroidManifest.xml:44:9-33
+101
+102    <supports-screens
+102-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\8c77d27ca7e05e2aab22f80a4eb1247e\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:9:5-12:40
+103        android:anyDensity="true"
+103-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\8c77d27ca7e05e2aab22f80a4eb1247e\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:10:9-34
+104        android:largeScreens="true"
+104-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\8c77d27ca7e05e2aab22f80a4eb1247e\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:11:9-36
+105        android:normalScreens="true" />
+105-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\8c77d27ca7e05e2aab22f80a4eb1247e\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:12:9-37
+106
+107    <uses-feature
+107-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\8c77d27ca7e05e2aab22f80a4eb1247e\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:14:5-16:36
+108        android:name="android.hardware.location.network"
+108-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\8c77d27ca7e05e2aab22f80a4eb1247e\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:15:9-57
+109        android:required="false" />
+109-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\8c77d27ca7e05e2aab22f80a4eb1247e\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:16:9-33
+110    <uses-feature
+110-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\8c77d27ca7e05e2aab22f80a4eb1247e\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:17:5-19:36
+111        android:name="android.hardware.location.gps"
+111-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\8c77d27ca7e05e2aab22f80a4eb1247e\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:18:9-53
+112        android:required="false" />
+112-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\8c77d27ca7e05e2aab22f80a4eb1247e\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:19:9-33
+113
+114    <application
+114-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:54:5-276:19
+115        android:name="com.example.semimanufactures.App"
+115-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:55:9-28
+116        android:allowBackup="true"
+116-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:56:9-35
+117        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+117-->[androidx.core:core:1.13.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\59f939cb0a0e2eccff5f8b138df0d22e\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
+118        android:dataExtractionRules="@xml/data_extraction_rules"
+118-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:57:9-65
+119        android:debuggable="true"
+120        android:enableOnBackInvokedCallback="true"
+120-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:58:9-51
+121        android:extractNativeLibs="false"
+122        android:fullBackupContent="@xml/backup_rules"
+122-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:59:9-54
+123        android:hardwareAccelerated="true"
+123-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:65:9-43
+124        android:icon="@drawable/png_512"
+124-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:60:9-41
+125        android:label="@string/app_name"
+125-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:61:9-41
+126        android:networkSecurityConfig="@xml/network_security_config"
+126-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:62:9-69
+127        android:requestLegacyExternalStorage="true"
+127-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:63:9-52
+128        android:roundIcon="@drawable/png_512"
+128-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:64:9-46
+129        android:supportsRtl="true"
+129-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:66:9-35
+130        android:testOnly="true"
+131        android:theme="@style/Theme.Semimanufactures"
+131-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:67:9-54
+132        android:usesCleartextTraffic="true" >
+132-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:68:9-44
+133        <activity
+133-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:70:9-76:61
+134            android:name="com.example.semimanufactures.WebMapActivity"
+134-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:71:13-43
+135            android:exported="false"
+135-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:72:13-37
+136            android:hardwareAccelerated="true"
+136-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:74:13-47
+137            android:label="Карта"
+137-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:73:13-34
+138            android:theme="@style/Theme.Semimanufactures"
+138-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:76:13-58
+139            android:usesCleartextTraffic="true" />
+139-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:75:13-48
+140        <activity
+140-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:77:9-81:61
+141            android:name="com.example.semimanufactures.CreatingLogisticOtherActivity"
+141-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:78:13-58
+142            android:exported="false"
+142-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:79:13-37
+143            android:label="@string/title_activity_creating_logistic_other"
+143-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:80:13-75
+144            android:theme="@style/Theme.Semimanufactures" />
+144-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:81:13-58
+145        <activity
+145-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:82:9-86:61
+146            android:name="com.example.semimanufactures.NotificationActivity"
+146-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:83:13-49
+147            android:exported="false"
+147-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:84:13-37
+148            android:label="@string/title_activity_notification"
+148-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:85:13-64
+149            android:theme="@style/Theme.Semimanufactures" />
+149-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:86:13-58
+150        <activity
+150-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:87:9-91:61
+151            android:name="com.example.semimanufactures.TgAuthorizationActivity"
+151-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:88:13-52
+152            android:exported="false"
+152-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:89:13-37
+153            android:label="@string/title_activity_tg_authorization"
+153-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:90:13-68
+154            android:theme="@style/Theme.Semimanufactures" />
+154-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:91:13-58
+155        <activity
+155-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:92:9-96:61
+156            android:name="com.example.semimanufactures.GettingTelegramUsersActivity"
+156-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:93:13-57
+157            android:exported="false"
+157-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:94:13-37
+158            android:label="@string/title_activity_getting_telegram_users"
+158-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:95:13-74
+159            android:theme="@style/Theme.Semimanufactures" />
+159-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:96:13-58
+160        <activity
+160-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:97:9-101:61
+161            android:name="com.example.semimanufactures.GifActivity"
+161-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:98:13-40
+162            android:exported="false"
+162-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:99:13-37
+163            android:label="@string/title_activity_gif"
+163-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:100:13-55
+164            android:theme="@style/Theme.Semimanufactures" />
+164-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:101:13-58
+165        <activity
+165-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:102:9-106:61
+166            android:name="com.example.semimanufactures.SettingsActivity"
+166-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:103:13-45
+167            android:exported="false"
+167-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:104:13-37
+168            android:label="@string/title_activity_settings"
+168-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:105:13-60
+169            android:theme="@style/Theme.Semimanufactures" /> <!-- <provider -->
+169-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:106:13-58
+170        <!-- android:name="androidx.core.content.FileProvider" -->
+171        <!-- android:authorities="${applicationId}.provider" -->
+172        <!-- android:exported="false" -->
+173        <!-- android:grantUriPermissions="true"> -->
+174        <!-- <meta-data -->
+175        <!-- android:name="android.support.FILE_PROVIDER_PATHS" -->
+176        <!-- android:resource="@xml/file_paths" /> -->
+177        <!-- </provider> -->
+178        <activity
+178-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:115:9-120:61
+179            android:name="com.example.semimanufactures.service_mode.ServiceModeActivity"
+179-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:116:13-61
+180            android:excludeFromRecents="true"
+180-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:117:13-46
+181            android:exported="false"
+181-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:118:13-37
+182            android:launchMode="singleTask"
+182-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:119:13-44
+183            android:theme="@style/Theme.Semimanufactures" />
+183-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:120:13-58
+184        <activity
+184-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:121:9-125:61
+185            android:name="com.example.semimanufactures.NewLogisticDocActivity"
+185-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:122:13-51
+186            android:exported="false"
+186-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:123:13-37
+187            android:label="@string/title_activity_new_logistic_doc"
+187-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:124:13-68
+188            android:theme="@style/Theme.Semimanufactures" />
+188-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:125:13-58
+189        <activity
+189-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:126:9-130:61
+190            android:name="com.example.semimanufactures.CreatingLogisticDocActivity"
+190-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:127:13-56
+191            android:exported="false"
+191-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:128:13-37
+192            android:label="@string/title_activity_creating_logistic_doc"
+192-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:129:13-73
+193            android:theme="@style/Theme.Semimanufactures" />
+193-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:130:13-58
+194
+195        <receiver
+195-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:132:9-142:20
+196            android:name="com.example.semimanufactures.PM84ScannerManager$ScanResultReceiver"
+196-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:133:13-66
+197            android:enabled="true"
+197-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:134:13-35
+198            android:exported="true" >
+198-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:135:13-36
+199            <intent-filter>
+199-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:136:13-141:29
+200                <action android:name="unitech.scanservice.data" />
+200-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:137:17-67
+200-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:137:25-64
+201                <action android:name="unitech.scanservice.databyte" />
+201-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:138:17-71
+201-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:138:25-68
+202                <action android:name="unitech.scanservice.datalength" />
+202-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:139:17-73
+202-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:139:25-70
+203                <action android:name="unitech.scanservice.datatype" />
+203-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:140:17-71
+203-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:140:25-68
+204            </intent-filter>
+205        </receiver>
+206
+207        <provider
+208            android:name="androidx.core.content.FileProvider"
+208-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:145:13-62
+209            android:authorities="com.example.semimanufactures.provider"
+209-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:146:13-60
+210            android:exported="false"
+210-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:147:13-37
+211            android:grantUriPermissions="true" >
+211-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:148:13-47
+212            <meta-data
+212-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:149:13-151:54
+213                android:name="android.support.FILE_PROVIDER_PATHS"
+213-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:150:17-67
+214                android:resource="@xml/file_paths" />
+214-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:151:17-51
+215        </provider>
+216
+217        <service
+217-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:154:9-157:40
+218            android:name="com.example.semimanufactures.NotificationStorageService"
+218-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:155:13-55
+219            android:enabled="true"
+219-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:156:13-35
+220            android:exported="false" />
+220-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:157:13-37
+221
+222        <activity
+222-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:159:9-163:61
+223            android:name="com.example.semimanufactures.InventarisationFirsovActivity"
+223-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:160:13-58
+224            android:exported="false"
+224-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:161:13-37
+225            android:label="@string/title_activity_inventarisation_firsov"
+225-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:162:13-74
+226            android:theme="@style/Theme.Semimanufactures" />
+226-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:163:13-58
+227        <activity
+227-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:164:9-169:55
+228            android:name="com.example.semimanufactures.NewLogisticActivity"
+228-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:165:13-48
+229            android:exported="true"
+229-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:166:13-36
+230            android:label="@string/title_activity_new_logistic"
+230-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:167:13-64
+231            android:theme="@style/Theme.Semimanufactures"
+231-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:168:13-58
+232            android:windowSoftInputMode="adjustPan" />
+232-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:169:13-52
+233        <activity
+233-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:170:9-180:20
+234            android:name="com.example.semimanufactures.CreatingLogisticActivity"
+234-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:171:13-53
+235            android:exported="false"
+235-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:172:13-37
+236            android:theme="@style/Theme.Semimanufactures"
+236-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:173:13-58
+237            android:windowSoftInputMode="adjustPan" >
+237-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:174:13-52
+238            <intent-filter>
+238-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:175:13-179:29
+239                <action android:name="android.nfc.action.TAG_DISCOVERED" />
+239-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:176:17-76
+239-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:176:25-73
+240
+241                <category android:name="android.intent.category.DEFAULT" />
+241-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:178:17-76
+241-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:178:27-73
+242            </intent-filter>
+243        </activity>
+244        <activity
+244-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:181:9-185:61
+245            android:name="com.example.semimanufactures.CheckingPrPSkladSunmiActivity"
+245-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:182:13-58
+246            android:exported="false"
+246-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:183:13-37
+247            android:label="@string/title_activity_checking_pr_psklad_sunmi"
+247-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:184:13-76
+248            android:theme="@style/Theme.Semimanufactures" />
+248-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:185:13-58
+249        <activity
+249-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:186:9-198:20
+250            android:name="com.example.semimanufactures.DetailLogisticsActivity"
+250-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:187:13-52
+251            android:configChanges="orientation|screenSize"
+251-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:188:13-59
+252            android:exported="false"
+252-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:189:13-37
+253            android:label="@string/title_activity_detail_logistics"
+253-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:190:13-68
+254            android:launchMode="singleTop"
+254-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:191:13-43
+255            android:theme="@style/Theme.Semimanufactures" >
+255-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:192:13-58
+256            <intent-filter>
+256-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:175:13-179:29
+257                <action android:name="android.nfc.action.TAG_DISCOVERED" />
+257-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:176:17-76
+257-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:176:25-73
+258
+259                <category android:name="android.intent.category.DEFAULT" />
+259-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:178:17-76
+259-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:178:27-73
+260            </intent-filter>
+261        </activity>
+262        <activity
+262-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:199:9-203:61
+263            android:name="com.example.semimanufactures.CheckingPrPSkladActivity"
+263-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:200:13-53
+264            android:exported="false"
+264-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:201:13-37
+265            android:label="@string/title_activity_checking_pr_psklad"
+265-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:202:13-70
+266            android:theme="@style/Theme.Semimanufactures" />
+266-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:203:13-58
+267        <activity
+267-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:204:9-209:55
+268            android:name="com.example.semimanufactures.LogisticActivity"
+268-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:205:13-45
+269            android:exported="true"
+269-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:206:13-36
+270            android:label="@string/title_activity_logistic"
+270-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:207:13-60
+271            android:theme="@style/Theme.Semimanufactures"
+271-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:208:13-58
+272            android:windowSoftInputMode="adjustPan" />
+272-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:209:13-52
+273        <activity
+273-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:210:9-214:61
+274            android:name="com.example.semimanufactures.CreateNotificationSunmiActivity"
+274-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:211:13-60
+275            android:exported="false"
+275-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:212:13-37
+276            android:label="@string/title_activity_create_notification_sunmi"
+276-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:213:13-77
+277            android:theme="@style/Theme.Semimanufactures" />
+277-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:214:13-58
+278        <activity
+278-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:215:9-223:20
+279            android:name="com.example.semimanufactures.CreateNotificationActivity"
+279-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:216:13-55
+280            android:exported="false"
+280-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:217:13-37
+281            android:label="@string/create_activity_notification"
+281-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:218:13-65
+282            android:theme="@style/Theme.Semimanufactures" >
+282-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:219:13-58
+283            <meta-data
+283-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:220:13-222:36
+284                android:name="android.app.lib_name"
+284-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:221:17-52
+285                android:value="" />
+285-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:222:17-33
+286        </activity>
+287        <activity
+287-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:224:9-232:20
+288            android:name="com.example.semimanufactures.AddActivity"
+288-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:225:13-40
+289            android:exported="false"
+289-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:226:13-37
+290            android:label="@string/title_activity_add_activity"
+290-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:227:13-64
+291            android:theme="@style/Theme.Semimanufactures" >
+291-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:228:13-58
+292            <meta-data
+292-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:220:13-222:36
+293                android:name="android.app.lib_name"
+293-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:221:17-52
+294                android:value="" />
+294-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:222:17-33
+295        </activity>
+296
+297        <service
+297-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:234:9-240:19
+298            android:name="com.example.semimanufactures.PushListenerService"
+298-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:235:13-48
+299            android:exported="true" >
+299-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:236:13-36
+300            <intent-filter>
+300-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:237:13-239:29
+301                <action android:name="ru.rustore.sdk.pushclient.MESSAGING_EVENT" />
+301-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:238:17-84
+301-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:238:25-81
+302            </intent-filter>
+303        </service>
+304
+305        <activity
+305-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:242:9-256:20
+306            android:name="com.example.semimanufactures.FeaturesOfTheFunctionalityActivity"
+306-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:243:13-63
+307            android:exported="true"
+307-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:244:13-36
+308            android:theme="@style/Theme.Semimanufactures"
+308-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:245:13-58
+309            android:windowSoftInputMode="adjustPan" >
+309-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:246:13-52
+310            <intent-filter>
+310-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:247:13-251:29
+311                <action android:name="android.intent.action.MAIN" />
+311-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:248:17-69
+311-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:248:25-66
+312
+313                <category android:name="android.intent.category.LAUNCHER" />
+313-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:250:17-77
+313-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:250:27-74
+314            </intent-filter>
+315
+316            <meta-data
+316-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:220:13-222:36
+317                android:name="android.app.lib_name"
+317-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:221:17-52
+318                android:value="" />
+318-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:222:17-33
+319        </activity>
+320        <activity
+320-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:257:9-271:20
+321            android:name="com.example.semimanufactures.MainActivity"
+321-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:258:13-41
+322            android:exported="true"
+322-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:259:13-36
+323            android:theme="@style/Theme.Semimanufactures" >
+323-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:260:13-58
+324
+325            <!-- <intent-filter> -->
+326            <!-- <action android:name="android.intent.action.MAIN" /> -->
+327
+328
+329            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+330            <!-- </intent-filter> -->
+331            <!-- <meta-data -->
+332            <!-- android:name="android.app.lib_name" -->
+333            <!-- android:value="" /> -->
+334        </activity>
+335
+336        <meta-data
+336-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:273:9-275:64
+337            android:name="ru.rustore.sdk.pushclient.metadata.PROJECT_ID"
+337-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:274:13-73
+338            android:value="tj1814XJcpfo399RIfMCrEADi0WZ3dR5" />
+338-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:275:13-61
+339
+340        <provider
+340-->[ru.rustore.sdk:pushclient:6.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\732cc341be2a0af08a6283f21b2b74b6\transformed\jetified-pushclient-6.5.0\AndroidManifest.xml:20:9-26:35
+341            android:name="ru.rustore.sdk.pushclient.provider.RuStorePushClientInitProvider"
+341-->[ru.rustore.sdk:pushclient:6.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\732cc341be2a0af08a6283f21b2b74b6\transformed\jetified-pushclient-6.5.0\AndroidManifest.xml:21:13-92
+342            android:authorities="com.example.semimanufactures.rustorepushclientinitprovider"
+342-->[ru.rustore.sdk:pushclient:6.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\732cc341be2a0af08a6283f21b2b74b6\transformed\jetified-pushclient-6.5.0\AndroidManifest.xml:22:13-81
+343            android:directBootAware="true"
+343-->[ru.rustore.sdk:pushclient:6.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\732cc341be2a0af08a6283f21b2b74b6\transformed\jetified-pushclient-6.5.0\AndroidManifest.xml:23:13-43
+344            android:exported="false"
+344-->[ru.rustore.sdk:pushclient:6.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\732cc341be2a0af08a6283f21b2b74b6\transformed\jetified-pushclient-6.5.0\AndroidManifest.xml:24:13-37
+345            android:initOrder="100" />
+345-->[ru.rustore.sdk:pushclient:6.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\732cc341be2a0af08a6283f21b2b74b6\transformed\jetified-pushclient-6.5.0\AndroidManifest.xml:25:13-36
+346
+347        <receiver
+347-->[ru.rustore.sdk:pushclient:6.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\732cc341be2a0af08a6283f21b2b74b6\transformed\jetified-pushclient-6.5.0\AndroidManifest.xml:28:9-34:20
+348            android:name="ru.rustore.sdk.pushclient.internal.arbiter.ArbiterBroadcastReceiver"
+348-->[ru.rustore.sdk:pushclient:6.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\732cc341be2a0af08a6283f21b2b74b6\transformed\jetified-pushclient-6.5.0\AndroidManifest.xml:29:13-95
+349            android:exported="true" >
+349-->[ru.rustore.sdk:pushclient:6.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\732cc341be2a0af08a6283f21b2b74b6\transformed\jetified-pushclient-6.5.0\AndroidManifest.xml:30:13-36
+350            <intent-filter>
+350-->[ru.rustore.sdk:pushclient:6.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\732cc341be2a0af08a6283f21b2b74b6\transformed\jetified-pushclient-6.5.0\AndroidManifest.xml:31:13-33:29
+351                <action android:name="com.vk.push.ACTION_MASTER_HOST_UPDATE" />
+351-->[ru.rustore.sdk:pushclient:6.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\732cc341be2a0af08a6283f21b2b74b6\transformed\jetified-pushclient-6.5.0\AndroidManifest.xml:32:17-80
+351-->[ru.rustore.sdk:pushclient:6.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\732cc341be2a0af08a6283f21b2b74b6\transformed\jetified-pushclient-6.5.0\AndroidManifest.xml:32:25-77
+352            </intent-filter>
+353        </receiver>
+354
+355        <service
+355-->[com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\55bc27bab851938506facf3af99f1757\transformed\jetified-play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:9:9-15:19
+356            android:name="com.google.mlkit.common.internal.MlKitComponentDiscoveryService"
+356-->[com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\55bc27bab851938506facf3af99f1757\transformed\jetified-play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:10:13-91
+357            android:directBootAware="true"
+357-->[com.google.mlkit:common:18.11.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\ec5b9ee9e391da79471262ba6bc9958b\transformed\jetified-common-18.11.0\AndroidManifest.xml:17:13-43
+358            android:exported="false" >
+358-->[com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\55bc27bab851938506facf3af99f1757\transformed\jetified-play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:11:13-37
+359            <meta-data
+359-->[com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\55bc27bab851938506facf3af99f1757\transformed\jetified-play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:12:13-14:85
+360                android:name="com.google.firebase.components:com.google.mlkit.vision.barcode.internal.BarcodeRegistrar"
+360-->[com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\55bc27bab851938506facf3af99f1757\transformed\jetified-play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:13:17-120
+361                android:value="com.google.firebase.components.ComponentRegistrar" />
+361-->[com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\55bc27bab851938506facf3af99f1757\transformed\jetified-play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:14:17-82
+362            <meta-data
+362-->[com.google.mlkit:vision-common:17.3.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\90672e0f4c0f22f567a5badd8de9d500\transformed\jetified-vision-common-17.3.0\AndroidManifest.xml:12:13-14:85
+363                android:name="com.google.firebase.components:com.google.mlkit.vision.common.internal.VisionCommonRegistrar"
+363-->[com.google.mlkit:vision-common:17.3.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\90672e0f4c0f22f567a5badd8de9d500\transformed\jetified-vision-common-17.3.0\AndroidManifest.xml:13:17-124
+364                android:value="com.google.firebase.components.ComponentRegistrar" />
+364-->[com.google.mlkit:vision-common:17.3.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\90672e0f4c0f22f567a5badd8de9d500\transformed\jetified-vision-common-17.3.0\AndroidManifest.xml:14:17-82
+365            <meta-data
+365-->[com.google.mlkit:common:18.11.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\ec5b9ee9e391da79471262ba6bc9958b\transformed\jetified-common-18.11.0\AndroidManifest.xml:20:13-22:85
+366                android:name="com.google.firebase.components:com.google.mlkit.common.internal.CommonComponentRegistrar"
+366-->[com.google.mlkit:common:18.11.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\ec5b9ee9e391da79471262ba6bc9958b\transformed\jetified-common-18.11.0\AndroidManifest.xml:21:17-120
+367                android:value="com.google.firebase.components.ComponentRegistrar" />
+367-->[com.google.mlkit:common:18.11.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\ec5b9ee9e391da79471262ba6bc9958b\transformed\jetified-common-18.11.0\AndroidManifest.xml:22:17-82
+368        </service>
+369
+370        <provider
+370-->[com.google.mlkit:common:18.11.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\ec5b9ee9e391da79471262ba6bc9958b\transformed\jetified-common-18.11.0\AndroidManifest.xml:9:9-13:38
+371            android:name="com.google.mlkit.common.internal.MlKitInitProvider"
+371-->[com.google.mlkit:common:18.11.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\ec5b9ee9e391da79471262ba6bc9958b\transformed\jetified-common-18.11.0\AndroidManifest.xml:10:13-78
+372            android:authorities="com.example.semimanufactures.mlkitinitprovider"
+372-->[com.google.mlkit:common:18.11.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\ec5b9ee9e391da79471262ba6bc9958b\transformed\jetified-common-18.11.0\AndroidManifest.xml:11:13-69
+373            android:exported="false"
+373-->[com.google.mlkit:common:18.11.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\ec5b9ee9e391da79471262ba6bc9958b\transformed\jetified-common-18.11.0\AndroidManifest.xml:12:13-37
+374            android:initOrder="99" />
+374-->[com.google.mlkit:common:18.11.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\ec5b9ee9e391da79471262ba6bc9958b\transformed\jetified-common-18.11.0\AndroidManifest.xml:13:13-35
+375
+376        <activity
+376-->[androidx.compose.ui:ui-tooling-android:1.6.6] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\2f4a1ca084c03ef6dbefb22ccd6a23ef\transformed\jetified-ui-tooling-release\AndroidManifest.xml:23:9-25:39
+377            android:name="androidx.compose.ui.tooling.PreviewActivity"
+377-->[androidx.compose.ui:ui-tooling-android:1.6.6] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\2f4a1ca084c03ef6dbefb22ccd6a23ef\transformed\jetified-ui-tooling-release\AndroidManifest.xml:24:13-71
+378            android:exported="true" />
+378-->[androidx.compose.ui:ui-tooling-android:1.6.6] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\2f4a1ca084c03ef6dbefb22ccd6a23ef\transformed\jetified-ui-tooling-release\AndroidManifest.xml:25:13-36
+379        <activity
+379-->[androidx.compose.ui:ui-test-manifest:1.6.6] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\c0b4537c9df10324a9253606af1fc978\transformed\jetified-ui-test-manifest-1.6.6\AndroidManifest.xml:23:9-25:39
+380            android:name="androidx.activity.ComponentActivity"
+380-->[androidx.compose.ui:ui-test-manifest:1.6.6] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\c0b4537c9df10324a9253606af1fc978\transformed\jetified-ui-test-manifest-1.6.6\AndroidManifest.xml:24:13-63
+381            android:exported="true" />
+381-->[androidx.compose.ui:ui-test-manifest:1.6.6] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\c0b4537c9df10324a9253606af1fc978\transformed\jetified-ui-test-manifest-1.6.6\AndroidManifest.xml:25:13-36
+382
+383        <meta-data
+383-->[com.github.bumptech.glide:okhttp3-integration:4.12.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\453fc36ff83ab3f5f148047be49013ef\transformed\jetified-okhttp3-integration-4.12.0\AndroidManifest.xml:11:9-13:43
+384            android:name="com.bumptech.glide.integration.okhttp3.OkHttpGlideModule"
+384-->[com.github.bumptech.glide:okhttp3-integration:4.12.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\453fc36ff83ab3f5f148047be49013ef\transformed\jetified-okhttp3-integration-4.12.0\AndroidManifest.xml:12:13-84
+385            android:value="GlideModule" />
+385-->[com.github.bumptech.glide:okhttp3-integration:4.12.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\453fc36ff83ab3f5f148047be49013ef\transformed\jetified-okhttp3-integration-4.12.0\AndroidManifest.xml:13:13-40
+386
+387        <receiver
+387-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:29:9-40:20
+388            android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver"
+388-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:30:13-78
+389            android:exported="true"
+389-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:31:13-36
+390            android:permission="com.google.android.c2dm.permission.SEND" >
+390-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:32:13-73
+391            <intent-filter>
+391-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:33:13-35:29
+392                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+392-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:34:17-81
+392-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:34:25-78
+393            </intent-filter>
+394
+395            <meta-data
+395-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:37:13-39:40
+396                android:name="com.google.android.gms.cloudmessaging.FINISHED_AFTER_HANDLED"
+396-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:38:17-92
+397                android:value="true" />
+397-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:39:17-37
+398        </receiver>
+399        <!--
+400             FirebaseMessagingService performs security checks at runtime,
+401             but set to not exported to explicitly avoid allowing another app to call it.
+402        -->
+403        <service
+403-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:46:9-53:19
+404            android:name="com.google.firebase.messaging.FirebaseMessagingService"
+404-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:47:13-82
+405            android:directBootAware="true"
+405-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:48:13-43
+406            android:exported="false" >
+406-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:49:13-37
+407            <intent-filter android:priority="-500" >
+407-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:50:13-52:29
+407-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:50:28-51
+408                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+408-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:51:17-78
+408-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:51:25-75
+409            </intent-filter>
+410        </service>
+411        <service
+411-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:54:9-63:19
+412            android:name="com.google.firebase.components.ComponentDiscoveryService"
+412-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:55:13-84
+413            android:directBootAware="true"
+413-->[com.google.firebase:firebase-common:21.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\6a29ddd7cfac8f9e0a82e02f2f1a5bc2\transformed\jetified-firebase-common-21.0.0\AndroidManifest.xml:32:13-43
+414            android:exported="false" >
+414-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:56:13-37
+415            <meta-data
+415-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:57:13-59:85
+416                android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingKtxRegistrar"
+416-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:58:17-122
+417                android:value="com.google.firebase.components.ComponentRegistrar" />
+417-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:59:17-82
+418            <meta-data
+418-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:60:13-62:85
+419                android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingRegistrar"
+419-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:61:17-119
+420                android:value="com.google.firebase.components.ComponentRegistrar" />
+420-->[com.google.firebase:firebase-messaging:24.1.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\82da94b2486bf6703f01867c444d67c3\transformed\jetified-firebase-messaging-24.1.0\AndroidManifest.xml:62:17-82
+421            <meta-data
+421-->[com.google.firebase:firebase-installations:17.2.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a17ac7e52528d2698f46a586685a9ff5\transformed\jetified-firebase-installations-17.2.0\AndroidManifest.xml:15:13-17:85
+422                android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsKtxRegistrar"
+422-->[com.google.firebase:firebase-installations:17.2.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a17ac7e52528d2698f46a586685a9ff5\transformed\jetified-firebase-installations-17.2.0\AndroidManifest.xml:16:17-130
+423                android:value="com.google.firebase.components.ComponentRegistrar" />
+423-->[com.google.firebase:firebase-installations:17.2.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a17ac7e52528d2698f46a586685a9ff5\transformed\jetified-firebase-installations-17.2.0\AndroidManifest.xml:17:17-82
+424            <meta-data
+424-->[com.google.firebase:firebase-installations:17.2.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a17ac7e52528d2698f46a586685a9ff5\transformed\jetified-firebase-installations-17.2.0\AndroidManifest.xml:18:13-20:85
+425                android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar"
+425-->[com.google.firebase:firebase-installations:17.2.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a17ac7e52528d2698f46a586685a9ff5\transformed\jetified-firebase-installations-17.2.0\AndroidManifest.xml:19:17-127
+426                android:value="com.google.firebase.components.ComponentRegistrar" />
+426-->[com.google.firebase:firebase-installations:17.2.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a17ac7e52528d2698f46a586685a9ff5\transformed\jetified-firebase-installations-17.2.0\AndroidManifest.xml:20:17-82
+427            <meta-data
+427-->[com.google.firebase:firebase-common-ktx:21.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\e14e36e130e30dd2e60e3553b7515191\transformed\jetified-firebase-common-ktx-21.0.0\AndroidManifest.xml:12:13-14:85
+428                android:name="com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonLegacyRegistrar"
+428-->[com.google.firebase:firebase-common-ktx:21.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\e14e36e130e30dd2e60e3553b7515191\transformed\jetified-firebase-common-ktx-21.0.0\AndroidManifest.xml:13:17-116
+429                android:value="com.google.firebase.components.ComponentRegistrar" />
+429-->[com.google.firebase:firebase-common-ktx:21.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\e14e36e130e30dd2e60e3553b7515191\transformed\jetified-firebase-common-ktx-21.0.0\AndroidManifest.xml:14:17-82
+430            <meta-data
+430-->[com.google.firebase:firebase-common:21.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\6a29ddd7cfac8f9e0a82e02f2f1a5bc2\transformed\jetified-firebase-common-21.0.0\AndroidManifest.xml:35:13-37:85
+431                android:name="com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar"
+431-->[com.google.firebase:firebase-common:21.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\6a29ddd7cfac8f9e0a82e02f2f1a5bc2\transformed\jetified-firebase-common-21.0.0\AndroidManifest.xml:36:17-109
+432                android:value="com.google.firebase.components.ComponentRegistrar" />
+432-->[com.google.firebase:firebase-common:21.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\6a29ddd7cfac8f9e0a82e02f2f1a5bc2\transformed\jetified-firebase-common-21.0.0\AndroidManifest.xml:37:17-82
+433            <meta-data
+433-->[com.google.firebase:firebase-datatransport:18.2.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\f896e9ec562c944fc38b47654db7ccba\transformed\jetified-firebase-datatransport-18.2.0\AndroidManifest.xml:25:13-27:85
+434                android:name="com.google.firebase.components:com.google.firebase.datatransport.TransportRegistrar"
+434-->[com.google.firebase:firebase-datatransport:18.2.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\f896e9ec562c944fc38b47654db7ccba\transformed\jetified-firebase-datatransport-18.2.0\AndroidManifest.xml:26:17-115
+435                android:value="com.google.firebase.components.ComponentRegistrar" />
+435-->[com.google.firebase:firebase-datatransport:18.2.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\f896e9ec562c944fc38b47654db7ccba\transformed\jetified-firebase-datatransport-18.2.0\AndroidManifest.xml:27:17-82
+436        </service>
+437
+438        <provider
+438-->[com.google.firebase:firebase-common:21.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\6a29ddd7cfac8f9e0a82e02f2f1a5bc2\transformed\jetified-firebase-common-21.0.0\AndroidManifest.xml:23:9-28:39
+439            android:name="com.google.firebase.provider.FirebaseInitProvider"
+439-->[com.google.firebase:firebase-common:21.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\6a29ddd7cfac8f9e0a82e02f2f1a5bc2\transformed\jetified-firebase-common-21.0.0\AndroidManifest.xml:24:13-77
+440            android:authorities="com.example.semimanufactures.firebaseinitprovider"
+440-->[com.google.firebase:firebase-common:21.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\6a29ddd7cfac8f9e0a82e02f2f1a5bc2\transformed\jetified-firebase-common-21.0.0\AndroidManifest.xml:25:13-72
+441            android:directBootAware="true"
+441-->[com.google.firebase:firebase-common:21.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\6a29ddd7cfac8f9e0a82e02f2f1a5bc2\transformed\jetified-firebase-common-21.0.0\AndroidManifest.xml:26:13-43
+442            android:exported="false"
+442-->[com.google.firebase:firebase-common:21.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\6a29ddd7cfac8f9e0a82e02f2f1a5bc2\transformed\jetified-firebase-common-21.0.0\AndroidManifest.xml:27:13-37
+443            android:initOrder="100" />
+443-->[com.google.firebase:firebase-common:21.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\6a29ddd7cfac8f9e0a82e02f2f1a5bc2\transformed\jetified-firebase-common-21.0.0\AndroidManifest.xml:28:13-36
+444
+445        <activity
+445-->[com.google.android.gms:play-services-base:18.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\8b81876f0b7bd4a5ae9c402feb13108c\transformed\jetified-play-services-base-18.5.0\AndroidManifest.xml:5:9-173
+446            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+446-->[com.google.android.gms:play-services-base:18.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\8b81876f0b7bd4a5ae9c402feb13108c\transformed\jetified-play-services-base-18.5.0\AndroidManifest.xml:5:19-85
+447            android:exported="false"
+447-->[com.google.android.gms:play-services-base:18.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\8b81876f0b7bd4a5ae9c402feb13108c\transformed\jetified-play-services-base-18.5.0\AndroidManifest.xml:5:146-170
+448            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+448-->[com.google.android.gms:play-services-base:18.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\8b81876f0b7bd4a5ae9c402feb13108c\transformed\jetified-play-services-base-18.5.0\AndroidManifest.xml:5:86-145
+449
+450        <service
+450-->[androidx.room:room-runtime:2.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\d135e89ca25ea98d0cb59420880a3fe8\transformed\room-runtime-2.6.1\AndroidManifest.xml:24:9-28:63
+451            android:name="androidx.room.MultiInstanceInvalidationService"
+451-->[androidx.room:room-runtime:2.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\d135e89ca25ea98d0cb59420880a3fe8\transformed\room-runtime-2.6.1\AndroidManifest.xml:25:13-74
+452            android:directBootAware="true"
+452-->[androidx.room:room-runtime:2.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\d135e89ca25ea98d0cb59420880a3fe8\transformed\room-runtime-2.6.1\AndroidManifest.xml:26:13-43
+453            android:exported="false" />
+453-->[androidx.room:room-runtime:2.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\d135e89ca25ea98d0cb59420880a3fe8\transformed\room-runtime-2.6.1\AndroidManifest.xml:27:13-37
+454
+455        <provider
+455-->[ru.rustore.sdk:push-core:6.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a566e6a9a8cf046303618cc69afbda73\transformed\jetified-push-core-6.5.0\AndroidManifest.xml:8:9-11:39
+456            android:name="com.vk.push.core.deviceid.contentprovider.VkpnsDeviceIdContentProvider"
+456-->[ru.rustore.sdk:push-core:6.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a566e6a9a8cf046303618cc69afbda73\transformed\jetified-push-core-6.5.0\AndroidManifest.xml:9:13-98
+457            android:authorities="com.example.semimanufactures.VkpnsDeviceIdContentProvider"
+457-->[ru.rustore.sdk:push-core:6.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a566e6a9a8cf046303618cc69afbda73\transformed\jetified-push-core-6.5.0\AndroidManifest.xml:10:13-80
+458            android:exported="true" />
+458-->[ru.rustore.sdk:push-core:6.5.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a566e6a9a8cf046303618cc69afbda73\transformed\jetified-push-core-6.5.0\AndroidManifest.xml:11:13-36
+459        <provider
+459-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:29:9-37:20
+460            android:name="androidx.startup.InitializationProvider"
+460-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:30:13-67
+461            android:authorities="com.example.semimanufactures.androidx-startup"
+461-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:31:13-68
+462            android:exported="false" >
+462-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:32:13-37
+463            <meta-data
+463-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:34:13-36:52
+464                android:name="androidx.work.WorkManagerInitializer"
+464-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:35:17-68
+465                android:value="androidx.startup" />
+465-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:36:17-49
+466            <meta-data
+466-->[androidx.emoji2:emoji2:1.3.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\aa666bf79c8794fbd8bbe90249796d3b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+467                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+467-->[androidx.emoji2:emoji2:1.3.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\aa666bf79c8794fbd8bbe90249796d3b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:30:17-75
+468                android:value="androidx.startup" />
+468-->[androidx.emoji2:emoji2:1.3.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\aa666bf79c8794fbd8bbe90249796d3b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:31:17-49
+469            <meta-data
+469-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\9a21beaf5bcac12f90d0d4c9d557c842\transformed\jetified-lifecycle-process-2.8.6\AndroidManifest.xml:29:13-31:52
+470                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+470-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\9a21beaf5bcac12f90d0d4c9d557c842\transformed\jetified-lifecycle-process-2.8.6\AndroidManifest.xml:30:17-78
+471                android:value="androidx.startup" />
+471-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\9a21beaf5bcac12f90d0d4c9d557c842\transformed\jetified-lifecycle-process-2.8.6\AndroidManifest.xml:31:17-49
+472            <meta-data
+472-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\61c85d445e258eab91e13c628694ce59\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:29:13-31:52
+473                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+473-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\61c85d445e258eab91e13c628694ce59\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:30:17-85
+474                android:value="androidx.startup" />
+474-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\61c85d445e258eab91e13c628694ce59\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:31:17-49
+475        </provider>
+476
+477        <service
+477-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:39:9-45:35
+478            android:name="androidx.work.impl.background.systemalarm.SystemAlarmService"
+478-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:40:13-88
+479            android:directBootAware="false"
+479-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:41:13-44
+480            android:enabled="@bool/enable_system_alarm_service_default"
+480-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:42:13-72
+481            android:exported="false" />
+481-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:43:13-37
+482        <service
+482-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:46:9-52:35
+483            android:name="androidx.work.impl.background.systemjob.SystemJobService"
+483-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:47:13-84
+484            android:directBootAware="false"
+484-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:48:13-44
+485            android:enabled="@bool/enable_system_job_service_default"
+485-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:49:13-70
+486            android:exported="true"
+486-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:50:13-36
+487            android:permission="android.permission.BIND_JOB_SERVICE" />
+487-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:51:13-69
+488        <service
+488-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:53:9-59:35
+489            android:name="androidx.work.impl.foreground.SystemForegroundService"
+489-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:54:13-81
+490            android:directBootAware="false"
+490-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:55:13-44
+491            android:enabled="@bool/enable_system_foreground_service_default"
+491-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:56:13-77
+492            android:exported="false" />
+492-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:57:13-37
+493
+494        <receiver
+494-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:61:9-66:35
+495            android:name="androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver"
+495-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:62:13-88
+496            android:directBootAware="false"
+496-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:63:13-44
+497            android:enabled="true"
+497-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:64:13-35
+498            android:exported="false" />
+498-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:65:13-37
+499        <receiver
+499-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:67:9-77:20
+500            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy"
+500-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:68:13-106
+501            android:directBootAware="false"
+501-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:69:13-44
+502            android:enabled="false"
+502-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:70:13-36
+503            android:exported="false" >
+503-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:71:13-37
+504            <intent-filter>
+504-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:73:13-76:29
+505                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+505-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:74:17-87
+505-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:74:25-84
+506                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+506-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:75:17-90
+506-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:75:25-87
+507            </intent-filter>
+508        </receiver>
+509        <receiver
+509-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:78:9-88:20
+510            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy"
+510-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:79:13-104
+511            android:directBootAware="false"
+511-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:80:13-44
+512            android:enabled="false"
+512-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:81:13-36
+513            android:exported="false" >
+513-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:82:13-37
+514            <intent-filter>
+514-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:84:13-87:29
+515                <action android:name="android.intent.action.BATTERY_OKAY" />
+515-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:85:17-77
+515-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:85:25-74
+516                <action android:name="android.intent.action.BATTERY_LOW" />
+516-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:86:17-76
+516-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:86:25-73
+517            </intent-filter>
+518        </receiver>
+519        <receiver
+519-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:89:9-99:20
+520            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy"
+520-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:90:13-104
+521            android:directBootAware="false"
+521-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:91:13-44
+522            android:enabled="false"
+522-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:92:13-36
+523            android:exported="false" >
+523-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:93:13-37
+524            <intent-filter>
+524-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:95:13-98:29
+525                <action android:name="android.intent.action.DEVICE_STORAGE_LOW" />
+525-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:96:17-83
+525-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:96:25-80
+526                <action android:name="android.intent.action.DEVICE_STORAGE_OK" />
+526-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:97:17-82
+526-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:97:25-79
+527            </intent-filter>
+528        </receiver>
+529        <receiver
+529-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:100:9-109:20
+530            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy"
+530-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:101:13-103
+531            android:directBootAware="false"
+531-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:102:13-44
+532            android:enabled="false"
+532-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:103:13-36
+533            android:exported="false" >
+533-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:104:13-37
+534            <intent-filter>
+534-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:106:13-108:29
+535                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+535-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:107:17-79
+535-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:107:25-76
+536            </intent-filter>
+537        </receiver>
+538        <receiver
+538-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:110:9-121:20
+539            android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver"
+539-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:111:13-88
+540            android:directBootAware="false"
+540-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:112:13-44
+541            android:enabled="false"
+541-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:113:13-36
+542            android:exported="false" >
+542-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:114:13-37
+543            <intent-filter>
+543-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:116:13-120:29
+544                <action android:name="android.intent.action.BOOT_COMPLETED" />
+544-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:117:17-79
+544-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:117:25-76
+545                <action android:name="android.intent.action.TIME_SET" />
+545-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:118:17-73
+545-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:118:25-70
+546                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+546-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:119:17-81
+546-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:119:25-78
+547            </intent-filter>
+548        </receiver>
+549        <receiver
+549-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:122:9-131:20
+550            android:name="androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver"
+550-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:123:13-99
+551            android:directBootAware="false"
+551-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:124:13-44
+552            android:enabled="@bool/enable_system_alarm_service_default"
+552-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:125:13-72
+553            android:exported="false" >
+553-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:126:13-37
+554            <intent-filter>
+554-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:128:13-130:29
+555                <action android:name="androidx.work.impl.background.systemalarm.UpdateProxies" />
+555-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:129:17-98
+555-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:129:25-95
+556            </intent-filter>
+557        </receiver>
+558        <receiver
+558-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:132:9-142:20
+559            android:name="androidx.work.impl.diagnostics.DiagnosticsReceiver"
+559-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:133:13-78
+560            android:directBootAware="false"
+560-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:134:13-44
+561            android:enabled="true"
+561-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:135:13-35
+562            android:exported="true"
+562-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:136:13-36
+563            android:permission="android.permission.DUMP" >
+563-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:137:13-57
+564            <intent-filter>
+564-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:139:13-141:29
+565                <action android:name="androidx.work.diagnostics.REQUEST_DIAGNOSTICS" />
+565-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:140:17-88
+565-->[androidx.work:work-runtime:2.10.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\a83cbad24eeacf9c602836149af97feb\transformed\work-runtime-2.10.0\AndroidManifest.xml:140:25-85
+566            </intent-filter>
+567        </receiver>
+568
+569        <activity
+569-->[androidx.test:core:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\4514d0edc1715853cc264921b0698283\transformed\jetified-core-1.6.1\AndroidManifest.xml:27:9-34:20
+570            android:name="androidx.test.core.app.InstrumentationActivityInvoker$BootstrapActivity"
+570-->[androidx.test:core:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\4514d0edc1715853cc264921b0698283\transformed\jetified-core-1.6.1\AndroidManifest.xml:28:13-99
+571            android:exported="true"
+571-->[androidx.test:core:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\4514d0edc1715853cc264921b0698283\transformed\jetified-core-1.6.1\AndroidManifest.xml:29:13-36
+572            android:theme="@style/WhiteBackgroundTheme" >
+572-->[androidx.test:core:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\4514d0edc1715853cc264921b0698283\transformed\jetified-core-1.6.1\AndroidManifest.xml:30:13-56
+573            <intent-filter android:priority="-100" >
+573-->[androidx.test:core:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\4514d0edc1715853cc264921b0698283\transformed\jetified-core-1.6.1\AndroidManifest.xml:31:13-33:29
+573-->[androidx.test:core:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\4514d0edc1715853cc264921b0698283\transformed\jetified-core-1.6.1\AndroidManifest.xml:31:28-51
+574                <category android:name="android.intent.category.LAUNCHER" />
+574-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:250:17-77
+574-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:250:27-74
+575            </intent-filter>
+576        </activity>
+577        <activity
+577-->[androidx.test:core:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\4514d0edc1715853cc264921b0698283\transformed\jetified-core-1.6.1\AndroidManifest.xml:35:9-42:20
+578            android:name="androidx.test.core.app.InstrumentationActivityInvoker$EmptyActivity"
+578-->[androidx.test:core:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\4514d0edc1715853cc264921b0698283\transformed\jetified-core-1.6.1\AndroidManifest.xml:36:13-95
+579            android:exported="true"
+579-->[androidx.test:core:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\4514d0edc1715853cc264921b0698283\transformed\jetified-core-1.6.1\AndroidManifest.xml:37:13-36
+580            android:theme="@style/WhiteBackgroundTheme" >
+580-->[androidx.test:core:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\4514d0edc1715853cc264921b0698283\transformed\jetified-core-1.6.1\AndroidManifest.xml:38:13-56
+581            <intent-filter android:priority="-100" >
+581-->[androidx.test:core:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\4514d0edc1715853cc264921b0698283\transformed\jetified-core-1.6.1\AndroidManifest.xml:31:13-33:29
+581-->[androidx.test:core:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\4514d0edc1715853cc264921b0698283\transformed\jetified-core-1.6.1\AndroidManifest.xml:31:28-51
+582                <category android:name="android.intent.category.LAUNCHER" />
+582-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:250:17-77
+582-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:250:27-74
+583            </intent-filter>
+584        </activity>
+585        <activity
+585-->[androidx.test:core:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\4514d0edc1715853cc264921b0698283\transformed\jetified-core-1.6.1\AndroidManifest.xml:43:9-50:20
+586            android:name="androidx.test.core.app.InstrumentationActivityInvoker$EmptyFloatingActivity"
+586-->[androidx.test:core:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\4514d0edc1715853cc264921b0698283\transformed\jetified-core-1.6.1\AndroidManifest.xml:44:13-103
+587            android:exported="true"
+587-->[androidx.test:core:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\4514d0edc1715853cc264921b0698283\transformed\jetified-core-1.6.1\AndroidManifest.xml:45:13-36
+588            android:theme="@style/WhiteBackgroundDialogTheme" >
+588-->[androidx.test:core:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\4514d0edc1715853cc264921b0698283\transformed\jetified-core-1.6.1\AndroidManifest.xml:46:13-62
+589            <intent-filter android:priority="-100" >
+589-->[androidx.test:core:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\4514d0edc1715853cc264921b0698283\transformed\jetified-core-1.6.1\AndroidManifest.xml:31:13-33:29
+589-->[androidx.test:core:1.6.1] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\4514d0edc1715853cc264921b0698283\transformed\jetified-core-1.6.1\AndroidManifest.xml:31:28-51
+590                <category android:name="android.intent.category.LAUNCHER" />
+590-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:250:17-77
+590-->C:\Users\n.galkin\AndroidStudioProjects\Semimanufactures\app\src\main\AndroidManifest.xml:250:27-74
+591            </intent-filter>
+592        </activity>
+593        <activity
+593-->[ru.rustore.sdk:activitylauncher:7.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\462677c85308881486697943bef823f4\transformed\jetified-activitylauncher-7.0.0\AndroidManifest.xml:8:9-11:73
+594            android:name="ru.rustore.sdk.activitylauncher.RuStoreActivityLauncher"
+594-->[ru.rustore.sdk:activitylauncher:7.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\462677c85308881486697943bef823f4\transformed\jetified-activitylauncher-7.0.0\AndroidManifest.xml:9:13-83
+595            android:exported="false"
+595-->[ru.rustore.sdk:activitylauncher:7.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\462677c85308881486697943bef823f4\transformed\jetified-activitylauncher-7.0.0\AndroidManifest.xml:10:13-37
+596            android:theme="@style/Theme.ActivityLauncher.Transparent" />
+596-->[ru.rustore.sdk:activitylauncher:7.0.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\462677c85308881486697943bef823f4\transformed\jetified-activitylauncher-7.0.0\AndroidManifest.xml:11:13-70
+597
+598        <service
+598-->[ru.rustore.sdk:metrics:8.0.0-alpha01] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\f75daca5d79b698052c27dcfd7c7c551\transformed\jetified-metrics-8.0.0-alpha01\AndroidManifest.xml:11:9-15:72
+599            android:name="ru.rustore.sdk.metrics.internal.presentation.SendMetricsEventJobService"
+599-->[ru.rustore.sdk:metrics:8.0.0-alpha01] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\f75daca5d79b698052c27dcfd7c7c551\transformed\jetified-metrics-8.0.0-alpha01\AndroidManifest.xml:12:13-99
+600            android:exported="false"
+600-->[ru.rustore.sdk:metrics:8.0.0-alpha01] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\f75daca5d79b698052c27dcfd7c7c551\transformed\jetified-metrics-8.0.0-alpha01\AndroidManifest.xml:13:13-37
+601            android:label="SendMetricsEventJobService"
+601-->[ru.rustore.sdk:metrics:8.0.0-alpha01] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\f75daca5d79b698052c27dcfd7c7c551\transformed\jetified-metrics-8.0.0-alpha01\AndroidManifest.xml:14:13-55
+602            android:permission="android.permission.BIND_JOB_SERVICE" />
+602-->[ru.rustore.sdk:metrics:8.0.0-alpha01] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\f75daca5d79b698052c27dcfd7c7c551\transformed\jetified-metrics-8.0.0-alpha01\AndroidManifest.xml:15:13-69
+603
+604        <meta-data
+604-->[com.google.android.gms:play-services-basement:18.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\f86cc269b7f036f2f17e8adb6f74c729\transformed\jetified-play-services-basement-18.4.0\AndroidManifest.xml:6:9-122
+605            android:name="com.google.android.gms.version"
+605-->[com.google.android.gms:play-services-basement:18.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\f86cc269b7f036f2f17e8adb6f74c729\transformed\jetified-play-services-basement-18.4.0\AndroidManifest.xml:6:20-65
+606            android:value="@integer/google_play_services_version" />
+606-->[com.google.android.gms:play-services-basement:18.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\f86cc269b7f036f2f17e8adb6f74c729\transformed\jetified-play-services-basement-18.4.0\AndroidManifest.xml:6:66-119
+607
+608        <receiver
+608-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\61c85d445e258eab91e13c628694ce59\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:34:9-52:20
+609            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+609-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\61c85d445e258eab91e13c628694ce59\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:35:13-76
+610            android:directBootAware="false"
+610-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\61c85d445e258eab91e13c628694ce59\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:36:13-44
+611            android:enabled="true"
+611-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\61c85d445e258eab91e13c628694ce59\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:37:13-35
+612            android:exported="true"
+612-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\61c85d445e258eab91e13c628694ce59\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:38:13-36
+613            android:permission="android.permission.DUMP" >
+613-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\61c85d445e258eab91e13c628694ce59\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:39:13-57
+614            <intent-filter>
+614-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\61c85d445e258eab91e13c628694ce59\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:40:13-42:29
+615                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+615-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\61c85d445e258eab91e13c628694ce59\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:41:17-91
+615-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\61c85d445e258eab91e13c628694ce59\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:41:25-88
+616            </intent-filter>
+617            <intent-filter>
+617-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\61c85d445e258eab91e13c628694ce59\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:43:13-45:29
+618                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+618-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\61c85d445e258eab91e13c628694ce59\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:44:17-85
+618-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\61c85d445e258eab91e13c628694ce59\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:44:25-82
+619            </intent-filter>
+620            <intent-filter>
+620-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\61c85d445e258eab91e13c628694ce59\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:46:13-48:29
+621                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+621-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\61c85d445e258eab91e13c628694ce59\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:47:17-88
+621-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\61c85d445e258eab91e13c628694ce59\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:47:25-85
+622            </intent-filter>
+623            <intent-filter>
+623-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\61c85d445e258eab91e13c628694ce59\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:49:13-51:29
+624                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+624-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\61c85d445e258eab91e13c628694ce59\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:50:17-95
+624-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\61c85d445e258eab91e13c628694ce59\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:50:25-92
+625            </intent-filter>
+626        </receiver>
+627
+628        <provider
+628-->[com.squareup.picasso:picasso:2.8] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\c5ba750a251268f074a004f01b018775\transformed\jetified-picasso-2.8\AndroidManifest.xml:8:9-11:40
+629            android:name="com.squareup.picasso.PicassoProvider"
+629-->[com.squareup.picasso:picasso:2.8] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\c5ba750a251268f074a004f01b018775\transformed\jetified-picasso-2.8\AndroidManifest.xml:9:13-64
+630            android:authorities="com.example.semimanufactures.com.squareup.picasso"
+630-->[com.squareup.picasso:picasso:2.8] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\c5ba750a251268f074a004f01b018775\transformed\jetified-picasso-2.8\AndroidManifest.xml:10:13-72
+631            android:exported="false" />
+631-->[com.squareup.picasso:picasso:2.8] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\c5ba750a251268f074a004f01b018775\transformed\jetified-picasso-2.8\AndroidManifest.xml:11:13-37
+632
+633        <service
+633-->[com.google.android.datatransport:transport-backend-cct:3.1.9] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\04d750e979e6bc4a8825ff52a2e2c1a1\transformed\jetified-transport-backend-cct-3.1.9\AndroidManifest.xml:28:9-34:19
+634            android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
+634-->[com.google.android.datatransport:transport-backend-cct:3.1.9] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\04d750e979e6bc4a8825ff52a2e2c1a1\transformed\jetified-transport-backend-cct-3.1.9\AndroidManifest.xml:29:13-103
+635            android:exported="false" >
+635-->[com.google.android.datatransport:transport-backend-cct:3.1.9] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\04d750e979e6bc4a8825ff52a2e2c1a1\transformed\jetified-transport-backend-cct-3.1.9\AndroidManifest.xml:30:13-37
+636            <meta-data
+636-->[com.google.android.datatransport:transport-backend-cct:3.1.9] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\04d750e979e6bc4a8825ff52a2e2c1a1\transformed\jetified-transport-backend-cct-3.1.9\AndroidManifest.xml:31:13-33:39
+637                android:name="backend:com.google.android.datatransport.cct.CctBackendFactory"
+637-->[com.google.android.datatransport:transport-backend-cct:3.1.9] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\04d750e979e6bc4a8825ff52a2e2c1a1\transformed\jetified-transport-backend-cct-3.1.9\AndroidManifest.xml:32:17-94
+638                android:value="cct" />
+638-->[com.google.android.datatransport:transport-backend-cct:3.1.9] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\04d750e979e6bc4a8825ff52a2e2c1a1\transformed\jetified-transport-backend-cct-3.1.9\AndroidManifest.xml:33:17-36
+639        </service>
+640        <service
+640-->[com.google.android.datatransport:transport-runtime:3.1.9] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\bf739e40f02ded4ffa8b10f7c93da4f1\transformed\jetified-transport-runtime-3.1.9\AndroidManifest.xml:26:9-30:19
+641            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
+641-->[com.google.android.datatransport:transport-runtime:3.1.9] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\bf739e40f02ded4ffa8b10f7c93da4f1\transformed\jetified-transport-runtime-3.1.9\AndroidManifest.xml:27:13-117
+642            android:exported="false"
+642-->[com.google.android.datatransport:transport-runtime:3.1.9] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\bf739e40f02ded4ffa8b10f7c93da4f1\transformed\jetified-transport-runtime-3.1.9\AndroidManifest.xml:28:13-37
+643            android:permission="android.permission.BIND_JOB_SERVICE" >
+643-->[com.google.android.datatransport:transport-runtime:3.1.9] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\bf739e40f02ded4ffa8b10f7c93da4f1\transformed\jetified-transport-runtime-3.1.9\AndroidManifest.xml:29:13-69
+644        </service>
+645
+646        <receiver
+646-->[com.google.android.datatransport:transport-runtime:3.1.9] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\bf739e40f02ded4ffa8b10f7c93da4f1\transformed\jetified-transport-runtime-3.1.9\AndroidManifest.xml:32:9-34:40
+647            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
+647-->[com.google.android.datatransport:transport-runtime:3.1.9] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\bf739e40f02ded4ffa8b10f7c93da4f1\transformed\jetified-transport-runtime-3.1.9\AndroidManifest.xml:33:13-132
+648            android:exported="false" />
+648-->[com.google.android.datatransport:transport-runtime:3.1.9] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\bf739e40f02ded4ffa8b10f7c93da4f1\transformed\jetified-transport-runtime-3.1.9\AndroidManifest.xml:34:13-37
+649
+650        <activity
+650-->[com.journeyapps:zxing-android-embedded:4.3.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\2ce2c35c036d23260f0f571d5db952f4\transformed\jetified-zxing-android-embedded-4.3.0\AndroidManifest.xml:47:9-53:63
+651            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+651-->[com.journeyapps:zxing-android-embedded:4.3.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\2ce2c35c036d23260f0f571d5db952f4\transformed\jetified-zxing-android-embedded-4.3.0\AndroidManifest.xml:48:13-74
+652            android:clearTaskOnLaunch="true"
+652-->[com.journeyapps:zxing-android-embedded:4.3.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\2ce2c35c036d23260f0f571d5db952f4\transformed\jetified-zxing-android-embedded-4.3.0\AndroidManifest.xml:49:13-45
+653            android:screenOrientation="sensorLandscape"
+653-->[com.journeyapps:zxing-android-embedded:4.3.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\2ce2c35c036d23260f0f571d5db952f4\transformed\jetified-zxing-android-embedded-4.3.0\AndroidManifest.xml:50:13-56
+654            android:stateNotNeeded="true"
+654-->[com.journeyapps:zxing-android-embedded:4.3.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\2ce2c35c036d23260f0f571d5db952f4\transformed\jetified-zxing-android-embedded-4.3.0\AndroidManifest.xml:51:13-42
+655            android:theme="@style/zxing_CaptureTheme"
+655-->[com.journeyapps:zxing-android-embedded:4.3.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\2ce2c35c036d23260f0f571d5db952f4\transformed\jetified-zxing-android-embedded-4.3.0\AndroidManifest.xml:52:13-54
+656            android:windowSoftInputMode="stateAlwaysHidden" />
+656-->[com.journeyapps:zxing-android-embedded:4.3.0] C:\Users\n.galkin\Downloads\gradle-8.7-bin\caches\transforms-4\2ce2c35c036d23260f0f571d5db952f4\transformed\jetified-zxing-android-embedded-4.3.0\AndroidManifest.xml:53:13-60
+657    </application>
+658
+659</manifest>

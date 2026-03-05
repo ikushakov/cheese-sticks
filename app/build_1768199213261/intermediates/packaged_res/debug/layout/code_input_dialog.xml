@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:background="@drawable/new_card_background_features"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/codeInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/NewCustomButtonNoInIssue"
+        android:textSize="14sp"
+        android:textColor="#001D64"
+        android:textColorHint="#001D64"
+        android:hint="Введите код подтверждения" />
+
+    <Button
+        android:id="@+id/submitButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColorHint="@color/white"
+        android:textSize="14sp"
+        android:layout_marginTop="10dp"
+        android:hint="Отправить"
+        style="@style/NewCustomButtonStyleAuthorization"/>
+
+</LinearLayout>

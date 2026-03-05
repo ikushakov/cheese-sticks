@@ -12,8 +12,10 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import com.google.gson.Gson
 
 class CreateNotificationActivity : ComponentActivity() {
+    private var tag: String = CreateNotificationActivity::class.java.simpleName
     private lateinit var recipient: EditText
     private lateinit var description: EditText
     private lateinit var button_submit: Button
@@ -23,28 +25,53 @@ class CreateNotificationActivity : ComponentActivity() {
     private lateinit var data_user_info: ImageView
     private lateinit var go_to_send_notification: ImageView
     private lateinit var go_to_logistic: ImageView
-    private var userId: Int = 0
-    private var username: String = ""
-    private var roleCheck: String = ""
-    private var mdmCode: String = ""
-    private var fio: String = ""
-    private var deviceInfo: String = ""
+    private var currentUsername: String? = null
+    private var currentUserId: Int? = null
+    private var currentRoleCheck: String? = null
+    private var currentMdmCode: String? = null
+    private var currentFio: String? = null
+    private var currentDeviceInfo: String? = null
+    private var currentRolesString: String? = null
+    private var currentDeviceToken: String? = null
+    private var currentIsAuthorized:  Boolean = false
     private val rolesList: MutableList<String> = mutableListOf()
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_create_notification)
-        userId = intent.getIntExtra("userId", 0)
-        username = intent.getStringExtra("username") ?: ""
-        roleCheck = intent.getStringExtra("roleCheck") ?: ""
-        mdmCode = intent.getStringExtra("mdmCode") ?: ""
-        fio = intent.getStringExtra("fio") ?: ""
-        val rolesString = intent.getStringExtra("rolesString") ?: ""
-        rolesList.addAll(rolesString.split(",").map { it.trim() })
-        rolesList.forEach { role ->
-            Log.d("Список ролей", "Роль: $role")
+        val userData = readUserData()
+        userData?.let {
+            currentUsername = it.username
+            currentUserId = it.userId
+            currentRoleCheck = it.roleCheck
+            currentMdmCode = it.mdmCode
+            currentFio = it.fio
+            currentDeviceInfo = it.deviceInfo
+            currentRolesString = it.rolesString
+            currentDeviceToken = it.device_token
+            currentIsAuthorized = it.isAuthorized
+            Log.d("UserData", "Логин: ${it.username}")
+            Log.d("UserData", "User ID: ${it.userId}")
+            Log.d("UserData", "Роль: ${it.roleCheck}")
+            Log.d("UserData", "MdmdCode: ${it.mdmCode}")
+            Log.d("UserData", "ФИО: ${it.fio}")
+            Log.d("UserData", "Название устройства: ${it.deviceInfo}")
+            Log.d("UserData", "Список ролей: ${it.rolesString}")
+            Log.d("UserData", "Токен устройства: ${it.device_token}")
+            Log.d("isAuthorized", "Авторизован? ${it.isAuthorized}")
+        } ?: run {
+            Toast.makeText(this, "Ошибка загрузки данных", Toast.LENGTH_SHORT).show()
         }
-        Log.d("CreateNotificationActivity", "User id: ${userId}, Username: $username, Role: $roleCheck, mdmCode: ${mdmCode}, fio: ${fio}")
+
+        if (!currentIsAuthorized) {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+            return
+        }
+        setContentView(R.layout.activity_create_notification)
+        if (currentRolesString?.isNotEmpty() == true) {
+            rolesList.addAll(currentRolesString!!.split(",").map { it.trim() })
+        }
+        Log.d(tag, "User id: $currentUserId, Username: $currentUsername, Role: $currentRoleCheck, MDM Code: $currentMdmCode")
         recipient = findViewById(R.id.recipient)
         description = findViewById(R.id.description)
         button_submit = findViewById(R.id.button_submit)
@@ -52,48 +79,21 @@ class CreateNotificationActivity : ComponentActivity() {
         go_to_search_and_add = findViewById(R.id.go_to_search_and_add)
         go_to_issue = findViewById(R.id.go_to_issue)
         data_user_info = findViewById(R.id.data_user_info)
-        deviceInfo = intent.getStringExtra("deviceInfo") ?: ""
         go_to_send_notification = findViewById(R.id.go_to_send_notification)
         go_to_authorization.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
         go_to_search_and_add.setOnClickListener {
-            Log.d("CreateNotificationActivity", "User id: ${userId}, Username: $username, Role: $roleCheck, mdmCode: ${mdmCode}, fio: ${fio}")
-            val intent = Intent(this, AddActivity::class.java).apply {
-                putExtra("userId", userId)
-                putExtra("username", username)
-                putExtra("roleCheck", roleCheck)
-                putExtra("mdmCode", mdmCode)
-                putExtra("fio", fio)
-                putExtra("deviceInfo", deviceInfo)
-                putExtra("rolesString", rolesString)
-            }
+            val intent = Intent(this, AddActivity::class.java)
             startActivity(intent)
         }
         go_to_issue.setOnClickListener {
-            Log.d("CreateNotificationActivity", "User id: ${userId}, Username: $username, Role: $roleCheck, mdmCode: ${mdmCode}, fio: ${fio}")
-            val intent = Intent(this, FeaturesOfTheFunctionalityActivity::class.java).apply {
-                putExtra("userId", userId)
-                putExtra("username", username)
-                putExtra("roleCheck", roleCheck)
-                putExtra("mdmCode", mdmCode)
-                putExtra("fio", fio)
-                putExtra("deviceInfo", deviceInfo)
-                putExtra("rolesString", rolesString)
-            }
+            val intent = Intent(this, FeaturesOfTheFunctionalityActivity::class.java)
             startActivity(intent)
         }
         data_user_info.setOnClickListener {
-            val intent = Intent(this@CreateNotificationActivity, SettingsActivity::class.java).apply {
-                putExtra("userId", userId)
-                putExtra("username", username)
-                putExtra("roleCheck", roleCheck)
-                putExtra("mdmCode", mdmCode)
-                putExtra("fio", fio)
-                putExtra("deviceInfo", deviceInfo)
-                putExtra("rolesString", rolesString)
-            }
+            val intent = Intent(this@CreateNotificationActivity, SettingsActivity::class.java)
             startActivity(intent)
         }
         go_to_send_notification.setOnClickListener {
@@ -101,36 +101,34 @@ class CreateNotificationActivity : ComponentActivity() {
         }
         go_to_logistic = findViewById(R.id.go_to_logistic)
         go_to_logistic.setOnClickListener {
-            Log.d("CreateNotificationActivity", "User id: ${userId}, Username: $username, Role: $roleCheck, mdmCode: ${mdmCode}, fio: ${fio}")
-            val intent = Intent(this, LogisticActivity::class.java).apply {
-                putExtra("userId", userId)
-                putExtra("username", username)
-                putExtra("roleCheck", roleCheck)
-                putExtra("mdmCode", mdmCode)
-                putExtra("fio", fio)
-                putExtra("deviceInfo", deviceInfo)
-                putExtra("rolesString", rolesString)
-            }
+            val intent = Intent(this, LogisticActivity::class.java)
             startActivity(intent)
+        }
+    }
+    private fun readUserData(): UserData? {
+        return try {
+            openFileInput("user_data").use {
+                val json = it.bufferedReader().use { reader -> reader.readText() }
+                Gson().fromJson(json, UserData::class.java)
+            }
+        } catch (e: Exception) {
+            Log.e("FeaturesActivity", "Error reading user data", e)
+            null
         }
     }
     @SuppressLint("MissingInflatedId")
     private fun showPopupMenuNotification(view: View) {
         val popupView = layoutInflater.inflate(R.layout.custom_menu_notification, null)
-        val popupWindow = PopupWindow(popupView, 500, 500)
-        Log.d("CreateNotificationActivity", "User id: ${userId}, Username: $username, Role: $roleCheck, mdmCode: ${mdmCode}, fio: ${fio}")
+        val popupWindow = PopupWindow(popupView, 550, 500)
         popupView.findViewById<LinearLayout>(R.id.item_write_sms).setOnClickListener {
-            Log.d("CreateNotificationActivity", "User id: ${userId}, Username: $username, Role: $roleCheck, mdmCode: ${mdmCode}, fio: ${fio}")
             Toast.makeText(this, "Написать нажаты", Toast.LENGTH_SHORT).show()
             popupWindow.dismiss()
         }
         popupView.findViewById<LinearLayout>(R.id.item_incoming_sms).setOnClickListener {
-            Log.d("CreateNotificationActivity", "User id: ${userId}, Username: $username, Role: $roleCheck, mdmCode: ${mdmCode}, fio: ${fio}")
             Toast.makeText(this, "Входящие нажаты", Toast.LENGTH_SHORT).show()
             popupWindow.dismiss()
         }
         popupView.findViewById<LinearLayout>(R.id.item_sent_sms).setOnClickListener {
-            Log.d("CreateNotificationActivity", "User id: ${userId}, Username: $username, Role: $roleCheck, mdmCode: ${mdmCode}, fio: ${fio}")
             Toast.makeText(this, "Отправленные нажаты", Toast.LENGTH_SHORT).show()
             popupWindow.dismiss()
         }

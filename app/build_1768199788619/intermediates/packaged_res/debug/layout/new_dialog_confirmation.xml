@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:layout_gravity="center"
+    android:background="@drawable/rounded_white_yes_no">
+
+    <TextView
+        android:id="@+id/messageTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/TheInterMediumText"
+        android:text="Точно хотите выдать?"
+        android:textSize="16sp"
+        android:textColor="#1F2024"
+        android:paddingBottom="20dp"
+        android:gravity="center_horizontal"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal">
+
+        <Button
+            android:id="@+id/buttonYes"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:text="Да"
+            style="@style/NewCustomButtonNoInIssue"
+            android:textSize="14sp"
+            android:textColor="#001D64"/>
+
+        <Button
+            android:id="@+id/buttonNo"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:text="Нет"
+            android:layout_marginStart="10dp"
+            style="@style/NewCustomButtonStyleAuthorization"
+            android:textColor="@color/white"
+            android:textSize="14sp"/>
+    </LinearLayout>
+</LinearLayout>

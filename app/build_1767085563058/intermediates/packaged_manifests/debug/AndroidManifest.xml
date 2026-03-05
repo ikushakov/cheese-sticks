@@ -1,0 +1,659 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.semimanufactures"
+    android:versionCode="66"
+    android:versionName="8.0" >
+
+    <uses-sdk
+        android:minSdkVersion="24"
+        android:targetSdkVersion="35" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-permission android:name="android.permission.USB_PERMISSION" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" /> <!-- <uses-permission android:name="android.permission.BROADCAST_STICKY" /> -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.flash"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.nfc.peer_to_peer"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.nfc"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <queries>
+        <package android:name="ru.vk.store" />
+
+        <intent>
+            <action android:name="com.vk.push.HOST_SERVICE" />
+        </intent>
+        <intent>
+            <action android:name="ru.vk.store.provider.appupdate.RemoteAppUpdateFlowProvider" />
+        </intent>
+        <intent>
+            <action android:name="ru.vk.store.provider.analytics.AnalyticsProvider" />
+        </intent>
+
+        <package android:name="ru.vk.store.qa" /> <!-- Internet browser activities. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+
+            <category android:name="android.intent.category.BROWSABLE" />
+
+            <data android:scheme="https" />
+        </intent>
+        <intent>
+            <action android:name="ru.vk.store.RequestIgnoreBatteryOptimizations" />
+        </intent>
+
+        <package android:name="sunmi.remotemanager" />
+        <package android:name="androidx.test.orchestrator" />
+        <package android:name="androidx.test.services" />
+        <package android:name="com.google.android.apps.common.testing.services" />
+        <package android:name="com.sunmi.thingservice" />
+    </queries> <!-- Required by older versions of Google Play services to create IID tokens -->
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.REORDER_TASKS" />
+
+    <permission
+        android:name="com.example.semimanufactures.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.example.semimanufactures.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+    <uses-permission android:name="com.sunmi.connectionservice.PERMISSION.IOT" />
+
+    <uses-feature
+        android:name="android.hardware.camera.front"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.screen.landscape"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.wifi"
+        android:required="false" />
+
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true" />
+
+    <uses-feature
+        android:name="android.hardware.location.network"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false" />
+
+    <application
+        android:name="com.example.semimanufactures.App"
+        android:allowBackup="true"
+        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:debuggable="true"
+        android:enableOnBackInvokedCallback="true"
+        android:extractNativeLibs="false"
+        android:fullBackupContent="@xml/backup_rules"
+        android:hardwareAccelerated="true"
+        android:icon="@drawable/png_512"
+        android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:requestLegacyExternalStorage="true"
+        android:roundIcon="@drawable/png_512"
+        android:supportsRtl="true"
+        android:testOnly="true"
+        android:theme="@style/Theme.Semimanufactures"
+        android:usesCleartextTraffic="true" >
+        <activity
+            android:name="com.example.semimanufactures.WebMapActivity"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:label="Карта"
+            android:theme="@style/Theme.Semimanufactures"
+            android:usesCleartextTraffic="true" />
+        <activity
+            android:name="com.example.semimanufactures.CreatingLogisticOtherActivity"
+            android:exported="false"
+            android:label="@string/title_activity_creating_logistic_other"
+            android:theme="@style/Theme.Semimanufactures" />
+        <activity
+            android:name="com.example.semimanufactures.NotificationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_notification"
+            android:theme="@style/Theme.Semimanufactures" />
+        <activity
+            android:name="com.example.semimanufactures.TgAuthorizationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_tg_authorization"
+            android:theme="@style/Theme.Semimanufactures" />
+        <activity
+            android:name="com.example.semimanufactures.GettingTelegramUsersActivity"
+            android:exported="false"
+            android:label="@string/title_activity_getting_telegram_users"
+            android:theme="@style/Theme.Semimanufactures" />
+        <activity
+            android:name="com.example.semimanufactures.GifActivity"
+            android:exported="false"
+            android:label="@string/title_activity_gif"
+            android:theme="@style/Theme.Semimanufactures" />
+        <activity
+            android:name="com.example.semimanufactures.SettingsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_settings"
+            android:theme="@style/Theme.Semimanufactures" /> <!-- <provider -->
+        <!-- android:name="androidx.core.content.FileProvider" -->
+        <!-- android:authorities="${applicationId}.provider" -->
+        <!-- android:exported="false" -->
+        <!-- android:grantUriPermissions="true"> -->
+        <!-- <meta-data -->
+        <!-- android:name="android.support.FILE_PROVIDER_PATHS" -->
+        <!-- android:resource="@xml/file_paths" /> -->
+        <!-- </provider> -->
+        <activity
+            android:name="com.example.semimanufactures.service_mode.ServiceModeActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.Semimanufactures" />
+        <activity
+            android:name="com.example.semimanufactures.NewLogisticDocActivity"
+            android:exported="false"
+            android:label="@string/title_activity_new_logistic_doc"
+            android:theme="@style/Theme.Semimanufactures" />
+        <activity
+            android:name="com.example.semimanufactures.CreatingLogisticDocActivity"
+            android:exported="false"
+            android:label="@string/title_activity_creating_logistic_doc"
+            android:theme="@style/Theme.Semimanufactures" />
+
+        <receiver
+            android:name="com.example.semimanufactures.PM84ScannerManager$ScanResultReceiver"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="unitech.scanservice.data" />
+                <action android:name="unitech.scanservice.databyte" />
+                <action android:name="unitech.scanservice.datalength" />
+                <action android:name="unitech.scanservice.datatype" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.semimanufactures.provider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <service
+            android:name="com.example.semimanufactures.NotificationStorageService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <activity
+            android:name="com.example.semimanufactures.InventarisationFirsovActivity"
+            android:exported="false"
+            android:label="@string/title_activity_inventarisation_firsov"
+            android:theme="@style/Theme.Semimanufactures" />
+        <activity
+            android:name="com.example.semimanufactures.NewLogisticActivity"
+            android:exported="true"
+            android:label="@string/title_activity_new_logistic"
+            android:theme="@style/Theme.Semimanufactures"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.example.semimanufactures.CreatingLogisticActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Semimanufactures"
+            android:windowSoftInputMode="adjustPan" >
+            <intent-filter>
+                <action android:name="android.nfc.action.TAG_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.example.semimanufactures.CheckingPrPSkladSunmiActivity"
+            android:exported="false"
+            android:label="@string/title_activity_checking_pr_psklad_sunmi"
+            android:theme="@style/Theme.Semimanufactures" />
+        <activity
+            android:name="com.example.semimanufactures.DetailLogisticsActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="false"
+            android:label="@string/title_activity_detail_logistics"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.Semimanufactures" >
+            <intent-filter>
+                <action android:name="android.nfc.action.TAG_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.example.semimanufactures.CheckingPrPSkladActivity"
+            android:exported="false"
+            android:label="@string/title_activity_checking_pr_psklad"
+            android:theme="@style/Theme.Semimanufactures" />
+        <activity
+            android:name="com.example.semimanufactures.LogisticActivity"
+            android:exported="true"
+            android:label="@string/title_activity_logistic"
+            android:theme="@style/Theme.Semimanufactures"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="com.example.semimanufactures.CreateNotificationSunmiActivity"
+            android:exported="false"
+            android:label="@string/title_activity_create_notification_sunmi"
+            android:theme="@style/Theme.Semimanufactures" />
+        <activity
+            android:name="com.example.semimanufactures.CreateNotificationActivity"
+            android:exported="false"
+            android:label="@string/create_activity_notification"
+            android:theme="@style/Theme.Semimanufactures" >
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name="com.example.semimanufactures.AddActivity"
+            android:exported="false"
+            android:label="@string/title_activity_add_activity"
+            android:theme="@style/Theme.Semimanufactures" >
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+
+        <service
+            android:name="com.example.semimanufactures.PushListenerService"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="ru.rustore.sdk.pushclient.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name="com.example.semimanufactures.FeaturesOfTheFunctionalityActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Semimanufactures"
+            android:windowSoftInputMode="adjustPan" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name="com.example.semimanufactures.MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Semimanufactures" >
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
+            <!-- <meta-data -->
+            <!-- android:name="android.app.lib_name" -->
+            <!-- android:value="" /> -->
+        </activity>
+
+        <meta-data
+            android:name="ru.rustore.sdk.pushclient.metadata.PROJECT_ID"
+            android:value="tj1814XJcpfo399RIfMCrEADi0WZ3dR5" />
+
+        <provider
+            android:name="ru.rustore.sdk.pushclient.provider.RuStorePushClientInitProvider"
+            android:authorities="com.example.semimanufactures.rustorepushclientinitprovider"
+            android:directBootAware="true"
+            android:exported="false"
+            android:initOrder="100" />
+
+        <receiver
+            android:name="ru.rustore.sdk.pushclient.internal.arbiter.ArbiterBroadcastReceiver"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="com.vk.push.ACTION_MASTER_HOST_UPDATE" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="com.google.mlkit.common.internal.MlKitComponentDiscoveryService"
+            android:directBootAware="true"
+            android:exported="false" >
+            <meta-data
+                android:name="com.google.firebase.components:com.google.mlkit.vision.barcode.internal.BarcodeRegistrar"
+                android:value="com.google.firebase.components.ComponentRegistrar" />
+            <meta-data
+                android:name="com.google.firebase.components:com.google.mlkit.vision.common.internal.VisionCommonRegistrar"
+                android:value="com.google.firebase.components.ComponentRegistrar" />
+            <meta-data
+                android:name="com.google.firebase.components:com.google.mlkit.common.internal.CommonComponentRegistrar"
+                android:value="com.google.firebase.components.ComponentRegistrar" />
+        </service>
+
+        <provider
+            android:name="com.google.mlkit.common.internal.MlKitInitProvider"
+            android:authorities="com.example.semimanufactures.mlkitinitprovider"
+            android:exported="false"
+            android:initOrder="99" />
+
+        <activity
+            android:name="androidx.compose.ui.tooling.PreviewActivity"
+            android:exported="true" />
+        <activity
+            android:name="androidx.activity.ComponentActivity"
+            android:exported="true" />
+
+        <meta-data
+            android:name="com.bumptech.glide.integration.okhttp3.OkHttpGlideModule"
+            android:value="GlideModule" />
+
+        <receiver
+            android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="com.google.android.gms.cloudmessaging.FINISHED_AFTER_HANDLED"
+                android:value="true" />
+        </receiver>
+        <!--
+             FirebaseMessagingService performs security checks at runtime,
+             but set to not exported to explicitly avoid allowing another app to call it.
+        -->
+        <service
+            android:name="com.google.firebase.messaging.FirebaseMessagingService"
+            android:directBootAware="true"
+            android:exported="false" >
+            <intent-filter android:priority="-500" >
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.google.firebase.components.ComponentDiscoveryService"
+            android:directBootAware="true"
+            android:exported="false" >
+            <meta-data
+                android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingKtxRegistrar"
+                android:value="com.google.firebase.components.ComponentRegistrar" />
+            <meta-data
+                android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingRegistrar"
+                android:value="com.google.firebase.components.ComponentRegistrar" />
+            <meta-data
+                android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsKtxRegistrar"
+                android:value="com.google.firebase.components.ComponentRegistrar" />
+            <meta-data
+                android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar"
+                android:value="com.google.firebase.components.ComponentRegistrar" />
+            <meta-data
+                android:name="com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonLegacyRegistrar"
+                android:value="com.google.firebase.components.ComponentRegistrar" />
+            <meta-data
+                android:name="com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar"
+                android:value="com.google.firebase.components.ComponentRegistrar" />
+            <meta-data
+                android:name="com.google.firebase.components:com.google.firebase.datatransport.TransportRegistrar"
+                android:value="com.google.firebase.components.ComponentRegistrar" />
+        </service>
+
+        <provider
+            android:name="com.google.firebase.provider.FirebaseInitProvider"
+            android:authorities="com.example.semimanufactures.firebaseinitprovider"
+            android:directBootAware="true"
+            android:exported="false"
+            android:initOrder="100" />
+
+        <activity
+            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <service
+            android:name="androidx.room.MultiInstanceInvalidationService"
+            android:directBootAware="true"
+            android:exported="false" />
+
+        <provider
+            android:name="com.vk.push.core.deviceid.contentprovider.VkpnsDeviceIdContentProvider"
+            android:authorities="com.example.semimanufactures.VkpnsDeviceIdContentProvider"
+            android:exported="true" />
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="com.example.semimanufactures.androidx-startup"
+            android:exported="false" >
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+                android:value="androidx.startup" />
+        </provider>
+
+        <service
+            android:name="androidx.work.impl.background.systemalarm.SystemAlarmService"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_alarm_service_default"
+            android:exported="false" />
+        <service
+            android:name="androidx.work.impl.background.systemjob.SystemJobService"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_job_service_default"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_foreground_service_default"
+            android:exported="false" />
+
+        <receiver
+            android:name="androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver"
+            android:directBootAware="false"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.BATTERY_OKAY" />
+                <action android:name="android.intent.action.BATTERY_LOW" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEVICE_STORAGE_LOW" />
+                <action android:name="android.intent.action.DEVICE_STORAGE_OK" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_alarm_service_default"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="androidx.work.impl.background.systemalarm.UpdateProxies" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.diagnostics.DiagnosticsReceiver"
+            android:directBootAware="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.DUMP" >
+            <intent-filter>
+                <action android:name="androidx.work.diagnostics.REQUEST_DIAGNOSTICS" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name="androidx.test.core.app.InstrumentationActivityInvoker$BootstrapActivity"
+            android:exported="true"
+            android:theme="@style/WhiteBackgroundTheme" >
+            <intent-filter android:priority="-100" >
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="androidx.test.core.app.InstrumentationActivityInvoker$EmptyActivity"
+            android:exported="true"
+            android:theme="@style/WhiteBackgroundTheme" >
+            <intent-filter android:priority="-100" >
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="androidx.test.core.app.InstrumentationActivityInvoker$EmptyFloatingActivity"
+            android:exported="true"
+            android:theme="@style/WhiteBackgroundDialogTheme" >
+            <intent-filter android:priority="-100" >
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="ru.rustore.sdk.activitylauncher.RuStoreActivityLauncher"
+            android:exported="false"
+            android:theme="@style/Theme.ActivityLauncher.Transparent" />
+
+        <service
+            android:name="ru.rustore.sdk.metrics.internal.presentation.SendMetricsEventJobService"
+            android:exported="false"
+            android:label="SendMetricsEventJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <receiver
+            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+            android:directBootAware="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.DUMP" >
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name="com.squareup.picasso.PicassoProvider"
+            android:authorities="com.example.semimanufactures.com.squareup.picasso"
+            android:exported="false" />
+
+        <service
+            android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
+            android:exported="false" >
+            <meta-data
+                android:name="backend:com.google.android.datatransport.cct.CctBackendFactory"
+                android:value="cct" />
+        </service>
+        <service
+            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" >
+        </service>
+
+        <receiver
+            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
+            android:exported="false" />
+
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:clearTaskOnLaunch="true"
+            android:screenOrientation="sensorLandscape"
+            android:stateNotNeeded="true"
+            android:theme="@style/zxing_CaptureTheme"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+    </application>
+
+</manifest>

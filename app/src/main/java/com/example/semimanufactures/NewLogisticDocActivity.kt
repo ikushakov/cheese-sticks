@@ -17,7 +17,6 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
-import android.widget.ProgressBar
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
@@ -25,19 +24,24 @@ import androidx.activity.ComponentActivity
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
-import com.example.semimanufactures.DatabaseManager.fetchMobileVersion
+import com.example.semimanufactures.Auth.authToken
+import com.example.semimanufactures.Auth.authTokenAPI
+//import com.example.semimanufactures.DatabaseManager.fetchMobileVersion
 import com.example.semimanufactures.DatabaseManager.getAllSotrudnikiInfo
 import com.example.semimanufactures.DatabaseManager.getFilteredSotrudnikiInfo
+import com.example.semimanufactures.service_mode.ServiceModeException
+import com.google.gson.Gson
+import com.squareup.picasso.BuildConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.net.SocketTimeoutException
@@ -45,6 +49,11 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLContext
+import javax.net.ssl.SSLSocketFactory
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
+import java.security.cert.X509Certificate
 
 class NewLogisticDocActivity : ComponentActivity() {
     private var tag: String = NewLogisticActivity::class.java.simpleName
@@ -53,12 +62,6 @@ class NewLogisticDocActivity : ComponentActivity() {
     private lateinit var go_to_send_notification: ImageView
     private lateinit var go_to_logistic: ImageView
     private lateinit var data_user_info: ImageView
-    private var deviceInfo: String = ""
-    private var userId: Int = 0
-    private var username: String = ""
-    private var roleCheck: String = ""
-    private var mdmCode: String = ""
-    private var fio: String = ""
     private var typeDoc: String = "doc"
     private lateinit var what_object: TextView
     private lateinit var when_go: TextView
@@ -86,65 +89,89 @@ class NewLogisticDocActivity : ComponentActivity() {
     private lateinit var card_view: CardView
     private lateinit var card_layout: LinearLayout
     private lateinit var scroll_view: ScrollView
+    //
+    private var currentUsername: String? = null
+    private var currentUserId: Int? = null
+    private var currentRoleCheck: String? = null
+    private var currentMdmCode: String? = null
+    private var currentFio: String? = null
+    private var currentDeviceInfo: String? = null
+    private var currentRolesString: String? = null
+    private var currentDeviceToken: String? = null
+    private var currentIsAuthorized:  Boolean = false
+    //
+    //
+    private var lastSelectedOtpravitel: String? = null
+    private var lastSelectedPriemshchik: String? = null
+    private var isPhoneOtpravitelyaEdited = false
+    private var isPhonePriemshchikaEdited = false
+    //
     private val rolesList: MutableList<String> = mutableListOf()
-    private lateinit var progressBar: ProgressBar
-    private var senderName: String = ""
-    private var receiverName: String = ""
-    private var sendToTitle: String = ""
-    private var sendFromTitle: String = ""
     @SuppressLint("MissingInflatedId", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val userData = readUserData()
+        userData?.let {
+            currentUsername = it.username
+            currentUserId = it.userId
+            currentRoleCheck = it.roleCheck
+            currentMdmCode = it.mdmCode
+            currentFio = it.fio
+            currentDeviceInfo = it.deviceInfo
+            currentRolesString = it.rolesString
+            currentDeviceToken = it.device_token
+            currentIsAuthorized = it.isAuthorized
+            Log.d("UserData", "Логин: ${it.username}")
+            Log.d("UserData", "User ID: ${it.userId}")
+            Log.d("UserData", "Роль: ${it.roleCheck}")
+            Log.d("UserData", "MdmdCode: ${it.mdmCode}")
+            Log.d("UserData", "ФИО: ${it.fio}")
+            Log.d("UserData", "Название устройства: ${it.deviceInfo}")
+            Log.d("UserData", "Список ролей: ${it.rolesString}")
+            Log.d("UserData", "Токен устройства: ${it.device_token}")
+            Log.d("isAuthorized", "Авторизован? ${it.isAuthorized}")
+        } ?: run {
+            Toast.makeText(this, "Ошибка загрузки данных", Toast.LENGTH_SHORT).show()
+        }
+
+        if (!currentIsAuthorized) {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+            return
+        }
         setContentView(R.layout.activity_new_logistic_doc)
         val intent = intent
-        username = intent.getStringExtra("username") ?: ""
-        val password = intent.getStringExtra("password") ?: ""
-        roleCheck = intent.getStringExtra("roleCheck") ?: ""
-        userId = intent.getIntExtra("userId", 0)
-        mdmCode = intent.getStringExtra("mdmCode") ?: ""
-        deviceInfo = intent.getStringExtra("deviceInfo") ?: ""
-        fio = intent.getStringExtra("fio") ?: ""
         responseBody = intent.getStringExtra("responseBody") ?: ""
         docValue = intent.getStringExtra("box_id") ?: ""
-        val rolesString = intent.getStringExtra("rolesString") ?: ""
-        rolesList.addAll(rolesString.split(",").map { it.trim() })
-        rolesList.forEach { role ->
-            Log.d("Список ролей", "Роль: $role")
+        if (currentRolesString?.isNotEmpty() == true) {
+            rolesList.addAll(currentRolesString!!.split(",").map { it.trim() })
         }
-        try {
-            val jsonObject = JSONObject(responseBody)
-
-            // Проверяем, есть ли ошибка в JSON-ответе
-            if (jsonObject.has("error")) {
-                val errorMessage = jsonObject.getString("error")
-                Log.e(tag, "Ошибка с сервера: $errorMessage")
-                Toast.makeText(this, "Для данного документа можно создать заявку только через сервис на ПК", Toast.LENGTH_LONG).show()
-                finish()
-                return
-            }
-
+        // начало
+        val jsonObject = JSONObject(responseBody)
+        if (jsonObject.has("id")) {
+            Log.d("Документ", "$jsonObject")
+            val id = jsonObject.getString("id")
             val plannedDate = jsonObject.getString("planned_date")
-            sendToTitle = jsonObject.getString("send_to_title")
-            sendFromTitle = jsonObject.getString("send_from_title")
-            senderName = jsonObject.getString("sender_name")
-            receiverName = jsonObject.getString("receiver_name")
-
-            Log.d(tag, "Planned Date: $plannedDate")
-            Log.d(tag, "Send To Title: $sendToTitle")
-            Log.d(tag, "Send From Title: $sendFromTitle")
-            Log.d(tag, "Sender Name: $senderName")
-            Log.d(tag, "Receiver Name: $receiverName")
-
+            val sendToTitle = jsonObject.getString("send_to_title")
+            val sendFromTitle = jsonObject.getString("send_from_title")
+            Log.d("NewLogisticActivity", "ID доставки: $id")
             what_object = findViewById(R.id.what_object)
             what_object.text = "Объект доставки: $docValue"
             when_go = findViewById(R.id.when_go)
             when_go.text = "Срок: $plannedDate"
+            gruzchik = findViewById(R.id.gruzchik)
+            pogruzchik = findViewById(R.id.pogruzchik)
+            gruzchik.setOnClickListener {
+                onGruzchikSelected()
+            }
+            pogruzchik.setOnClickListener {
+                onPogruzchikSelected()
+            }
+            assistant_status = ""
+            fetchSotrudnikiInfo()
             sklad_otpravki = findViewById(R.id.sklad_otpravki)
             sklad_otpravki.text = sendFromTitle
-            sklad_pribitiya = findViewById(R.id.sklad_pribitiya)
-            sklad_pribitiya.text = sendToTitle
             otpravitel = findViewById(R.id.otpravitel)
-            priemshchik = findViewById(R.id.priemshchik)
             lifecycleScope.launch {
                 try {
                     sotrudnikList = getFilteredSotrudnikiInfo(this@NewLogisticDocActivity, "")
@@ -153,6 +180,17 @@ class NewLogisticDocActivity : ComponentActivity() {
                     Log.e("Error", "Ошибка при получении информации о сотруднике: ${e.message}")
                 }
             }
+            otpravitel.setOnItemClickListener { parent, view, position, id ->
+                val selectedSotrudnik = parent.getItemAtPosition(position) as String
+                updateSelectedSotrudnik(selectedSotrudnik)
+            }
+            phone_otpravitelya = findViewById(R.id.phone_otpravitelya)
+            //phone_otpravitelya.setText("+7")
+            phone_otpravitelya.addTextChangedListener(PhoneTextWatcher(phone_otpravitelya))
+            comment_otpravitelyu = findViewById(R.id.comment_otpravitelyu)
+            sklad_pribitiya = findViewById(R.id.sklad_pribitiya)
+            sklad_pribitiya.text = sendToTitle
+            priemshchik = findViewById(R.id.priemshchik)
             lifecycleScope.launch {
                 try {
                     sotrudnikList = getFilteredSotrudnikiInfo(this@NewLogisticDocActivity, "")
@@ -161,169 +199,114 @@ class NewLogisticDocActivity : ComponentActivity() {
                     Log.e("Error", "Ошибка при получении информации о сотруднике: ${e.message}")
                 }
             }
-        } catch (e: JSONException) {
-            Log.e(tag, "Ошибка при парсинге JSON: ${e.message}", e)
-            Toast.makeText(this, "Ошибка при получении данных с сервера. Попробуйте позже.", Toast.LENGTH_LONG).show()
-            finish()
-            return
-        } catch (e: Exception) {
-            Log.e(tag, "Неожиданная ошибка: ${e.message}", e)
-            Toast.makeText(this, "Произошла ошибка. Попробуйте позже.", Toast.LENGTH_SHORT).show()
-            finish()
-            return
+            priemshchik.setOnItemClickListener { parent, view, position, id ->
+                val selectedSotrudnik = parent.getItemAtPosition(position) as String
+                updateSelectedSotrudnikPriemshchik(selectedSotrudnik)
+            }
+            phone_priemshchika = findViewById(R.id.phone_priemshchika)
+            //phone_priemshchika.setText("+7")
+            phone_priemshchika.addTextChangedListener(PhoneTextWatcher(phone_priemshchika))
+            setupPhoneListeners()
+            comment_priemshchika = findViewById(R.id.comment_priemshchika)
+            primechanie = findViewById(R.id.primechanie)
+            button_save_new_logistic = findViewById(R.id.button_save_new_logistic)
+            button_save_new_logistic.setOnClickListener {
+                val jsonObject = JSONObject(responseBody)
+                val id = jsonObject.getString("id")
+                if (sklad_pribitiya.text.toString().isBlank()) {
+                    Toast.makeText(this@NewLogisticDocActivity, "Поле 'Склад прибытия' не может быть пустым", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                else {
+                    updateLogistic(id)
+                }
+            }
         }
-        phone_otpravitelya = findViewById(R.id.phone_otpravitelya)
-        phone_otpravitelya.setText("+7")
-        phone_otpravitelya.addTextChangedListener(PhoneTextWatcher(phone_otpravitelya))
-        button_save_new_logistic = findViewById(R.id.button_save_new_logistic)
-        sklad_pribitiya = findViewById(R.id.sklad_pribitiya)
-        priemshchik = findViewById(R.id.priemshchik)
-        phone_priemshchika = findViewById(R.id.phone_priemshchika)
-        phone_priemshchika.setText("+7")
-        phone_priemshchika.addTextChangedListener(PhoneTextWatcher(phone_priemshchika))
-        main_layout = findViewById(R.id.main_layout)
-        card_layout = findViewById(R.id.card_layout)
+        else {
+            finish()
+            Toast.makeText(this, "Для данного документа можно создать заявку только через веб-сервис!", Toast.LENGTH_LONG).show()
+        }
+        // конец
+
         scroll_view = findViewById(R.id.scroll_view)
+        card_layout = findViewById(R.id.card_layout)
         card_view = findViewById(R.id.card_view)
-        otpravitel = findViewById(R.id.otpravitel)
-        primechanie = findViewById(R.id.primechanie)
-        progressBar = findViewById(R.id.progressBar)
-        pogruzchik = findViewById(R.id.pogruzchik)
-        gruzchik = findViewById(R.id.gruzchik)
-        comment_otpravitelyu = findViewById(R.id.comment_otpravitelyu)
-        comment_priemshchika = findViewById(R.id.comment_priemshchika)
-        button_save_new_logistic = findViewById(R.id.button_save_new_logistic)
-        progressBar = findViewById(R.id.progressBar)
         go_to_logistic = findViewById(R.id.go_to_logistic)
         go_to_logistic.setOnClickListener {
-            Log.d("NewLogisticActivity", "User id: ${userId}, Username: $username, Role: $roleCheck, mdmCode: ${mdmCode}, fio: ${fio}")
-            val intent = Intent(this@NewLogisticDocActivity, LogisticActivity::class.java).apply {
-                putExtra("userId", userId)
-                putExtra("username", username)
-                putExtra("roleCheck", roleCheck)
-                putExtra("mdmCode", mdmCode)
-                putExtra("fio", fio)
-                putExtra("deviceInfo", deviceInfo)
-                putExtra("rolesString", rolesString)
-            }
+            val intent = Intent(this@NewLogisticDocActivity, LogisticActivity::class.java)
             startActivity(intent)
         }
         data_user_info = findViewById(R.id.data_user_info)
         data_user_info.setOnClickListener {
-            val intent = Intent(this@NewLogisticDocActivity, SettingsActivity::class.java).apply {
-                putExtra("userId", userId)
-                putExtra("username", username)
-                putExtra("roleCheck", roleCheck)
-                putExtra("mdmCode", mdmCode)
-                putExtra("fio", fio)
-                putExtra("deviceInfo", deviceInfo)
-                putExtra("rolesString", rolesString)
-            }
+            val intent = Intent(this@NewLogisticDocActivity, SettingsActivity::class.java)
             startActivity(intent)
         }
         go_to_add = findViewById(R.id.go_to_add)
         go_to_add.setOnClickListener {
-            Log.d("NewLogisticActivity", "User id: ${userId}, Username: $username, Role: $roleCheck, mdmCode: ${mdmCode}, fio: ${fio}")
-            val intent = Intent(this@NewLogisticDocActivity, AddActivity::class.java).apply {
-                putExtra("userId", userId)
-                putExtra("username", username)
-                putExtra("roleCheck", roleCheck)
-                putExtra("mdmCode", mdmCode)
-                putExtra("fio", fio)
-                putExtra("deviceInfo", deviceInfo)
-                putExtra("rolesString", rolesString)
-            }
+            val intent = Intent(this@NewLogisticDocActivity, AddActivity::class.java)
             startActivity(intent)
         }
         go_to_send_notification = findViewById(R.id.go_to_send_notification)
         go_to_send_notification.setOnClickListener {
-            showPopupMenuNotification(it)
+            val intent = Intent(this@NewLogisticDocActivity, NotificationActivity::class.java)
+            startActivity(intent)
         }
         go_to_issue = findViewById(R.id.go_to_issue)
         go_to_issue.setOnClickListener {
-            Log.d("NewLogisticActivity", "User id: ${userId}, Username: $username, Role: $roleCheck, mdmCode: ${mdmCode}, fio: ${fio}")
-            val intent = Intent(this@NewLogisticDocActivity, FeaturesOfTheFunctionalityActivity::class.java).apply {
-                putExtra("userId", userId)
-                putExtra("username", username)
-                putExtra("roleCheck", roleCheck)
-                putExtra("mdmCode", mdmCode)
-                putExtra("fio", fio)
-                putExtra("deviceInfo", deviceInfo)
-                putExtra("rolesString", rolesString)
-            }
+            val intent = Intent(this@NewLogisticDocActivity, FeaturesOfTheFunctionalityActivity::class.java)
             startActivity(intent)
         }
-        button_save_new_logistic.setOnClickListener {
-            val jsonObject = JSONObject(responseBody)
-            val id = jsonObject.getString("id")
-            if (sklad_pribitiya.text.toString().isBlank()) {
-                Toast.makeText(this@NewLogisticDocActivity, "Поле 'Склад прибытия' не может быть пустым", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            else {
-                // Показываем индикатор загрузки
-                progressBar.visibility = View.VISIBLE
-                button_save_new_logistic.isEnabled = false // Отключаем кнопку, чтобы избежать повторных нажатий
-
-                updateLogistic(id)
-            }
-        }
-        scroll_view = findViewById(R.id.scroll_view)
-        card_layout = findViewById(R.id.card_layout)
-        card_view = findViewById(R.id.card_view)
         main_layout = findViewById(R.id.main_layout)
-        CoroutineScope(Dispatchers.Main).launch {
-            Log.d("MainActivity", "Запуск получения версии...")
-            val versionMobile = fetchMobileVersion(this@NewLogisticDocActivity)
-            Log.d("MainActivity", "Версия получена: $versionMobile")
-            if (versionMobile == null) {
-                Log.e("MainActivity", "Не удалось получить версию")
-                //disableUI()
-            } else {
-                Log.d("MainActivity", "Версия приложения: $versionMobile")
-                if (versionMobile.toInt() != myGlobalVariable) {
-                    Log.e("MainActivity", "Версии не совпадают. Доступ к функционалу отключен.")
-                    disableUI()
-                    main_layout.setOnClickListener {
-                        Toast.makeText(this@NewLogisticDocActivity, "Версия приложения устарела. Пожалуйста, обновите приложение.", Toast.LENGTH_LONG).show()
-                    }
-                }
+//        CoroutineScope(Dispatchers.Main).launch {
+//            Log.d("MainActivity", "Запуск получения версии...")
+//            val versionMobile = fetchMobileVersion(this@NewLogisticDocActivity)
+//            Log.d("MainActivity", "Версия получена: $versionMobile")
+//            if (versionMobile == null) {
+//                Log.e("MainActivity", "Не удалось получить версию")
+//                //disableUI()
+//            } else {
+//                Log.d("MainActivity", "Версия приложения: $versionMobile")
+//                if (versionMobile.toInt() != myGlobalVariable) {
+//                    Log.e("MainActivity", "Версии не совпадают. Доступ к функционалу отключен.")
+//                    disableUI()
+//                    main_layout.setOnClickListener {
+//                        Toast.makeText(this@NewLogisticDocActivity, "Версия приложения устарела. Пожалуйста, обновите приложение.", Toast.LENGTH_LONG).show()
+//                    }
+//                }
+//            }
+//        }
+    }
+    private fun readUserData(): UserData? {
+        return try {
+            openFileInput("user_data").use {
+                val json = it.bufferedReader().use { reader -> reader.readText() }
+                Gson().fromJson(json, UserData::class.java)
             }
+        } catch (e: Exception) {
+            Log.e("FeaturesActivity", "Error reading user data", e)
+            null
         }
     }
-    @SuppressLint("MissingInflatedId")
-    private fun showPopupMenuNotification(view: View) {
-        val popupView = layoutInflater.inflate(R.layout.custom_menu_notification, null)
-        val popupWindow = PopupWindow(popupView, 500, 450)
-        popupView.findViewById<LinearLayout>(R.id.item_write_sms).setOnClickListener {
-            val rolesString = intent.getStringExtra("rolesString") ?: ""
-            rolesList.addAll(rolesString.split(",").map { it.trim() })
-            rolesList.forEach { role ->
-                Log.d("Список ролей", "Роль: $role")
-            }
-            val intent = Intent(this, CreateNotificationActivity::class.java).apply {
-                putExtra("userId", userId)
-                putExtra("username", username)
-                putExtra("roleCheck", roleCheck)
-                putExtra("mdmCode", mdmCode)
-                putExtra("fio", fio)
-                putExtra("deviceInfo", deviceInfo)
-                putExtra("rolesString", rolesString)
-            }
-            startActivity(intent)
-            popupWindow.dismiss()
-        }
-        popupView.findViewById<LinearLayout>(R.id.item_incoming_sms).setOnClickListener {
-            Toast.makeText(this, "Входящие нажаты", Toast.LENGTH_SHORT).show()
-            popupWindow.dismiss()
-        }
-        popupView.findViewById<LinearLayout>(R.id.item_sent_sms).setOnClickListener {
-            Toast.makeText(this, "Отправленные нажаты", Toast.LENGTH_SHORT).show()
-            popupWindow.dismiss()
-        }
-        popupWindow.isFocusable = true
-        popupWindow.showAsDropDown(view)
-    }
+//    @SuppressLint("MissingInflatedId")
+//    private fun showPopupMenuNotification(view: View) {
+//        val popupView = layoutInflater.inflate(R.layout.custom_menu_notification, null)
+//        val popupWindow = PopupWindow(popupView, 550, 450)
+//        popupView.findViewById<LinearLayout>(R.id.item_write_sms).setOnClickListener {
+//            val intent = Intent(this, CreateNotificationActivity::class.java)
+//            startActivity(intent)
+//            popupWindow.dismiss()
+//        }
+//        popupView.findViewById<LinearLayout>(R.id.item_incoming_sms).setOnClickListener {
+//            Toast.makeText(this, "Входящие нажаты", Toast.LENGTH_SHORT).show()
+//            popupWindow.dismiss()
+//        }
+//        popupView.findViewById<LinearLayout>(R.id.item_sent_sms).setOnClickListener {
+//            Toast.makeText(this, "Отправленные нажаты", Toast.LENGTH_SHORT).show()
+//            popupWindow.dismiss()
+//        }
+//        popupWindow.isFocusable = true
+//        popupWindow.showAsDropDown(view)
+//    }
     private fun onGruzchikSelected() {
         if (assistant_status.contains("Грузчик")) {
             assistant_status = if (assistant_status.contains("и")) {
@@ -425,8 +408,9 @@ class NewLogisticDocActivity : ComponentActivity() {
             isFormatting = false
         }
     }
-    private fun setupSotrudnikOtpravitel(){
-        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, sotrudnikList.map { it.fio })
+    private fun setupSotrudnikOtpravitel() {
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line,
+            sotrudnikList.map { it.fio }) // Показываем только ФИО
         otpravitel.setAdapter(adapter)
         otpravitel.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
@@ -434,8 +418,10 @@ class NewLogisticDocActivity : ComponentActivity() {
             }
         }
     }
-    private fun setupSotrudnikPriemshchik(){
-        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, sotrudnikList.map { it.fio })
+
+    private fun setupSotrudnikPriemshchik() {
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line,
+            sotrudnikList.map { it.fio }) // Показываем только ФИО
         priemshchik.setAdapter(adapter)
         priemshchik.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
@@ -443,32 +429,57 @@ class NewLogisticDocActivity : ComponentActivity() {
             }
         }
     }
+    // Обновляем функцию выбора отправителя
     private fun updateSelectedSotrudnik(selectedSotrudnik: String) {
         val sotrudnikInfo = sotrudnikList.find { it.fio == selectedSotrudnik }
         if (sotrudnikInfo != null) {
+            // Проверяем, изменился ли сотрудник
+            val isSameOtpravitel = lastSelectedOtpravitel == selectedSotrudnik
+            lastSelectedOtpravitel = selectedSotrudnik
+
             sotrudnikMdmcodeNew = sotrudnikInfo.mdmcode
             sotrudnikFioNew = sotrudnikInfo.fio
-            Log.d("Сотрудник обновлен", """
-                отправитель_mdmcode: $sotrudnikMdmcodeNew
-                 отправитель_фио: $sotrudnikFioNew
-            """.trimIndent())
-        }
-        else {
-            Log.d("Сорудник не найден", "Выбранный сотрудник '$selectedSotrudnik' не найден.")
+
+            // Обновляем телефон только если:
+            // 1. Сотрудник изменился
+            // 2. Пользователь не редактировал телефон вручную
+            // 3. У сотрудника есть телефон
+            if (!isSameOtpravitel && !isPhoneOtpravitelyaEdited && sotrudnikInfo.phone.isNotBlank()) {
+                phone_otpravitelya.setText(formatPhoneNumber(sotrudnikInfo.phone))
+            }
         }
     }
+    // Обновляем функцию выбора получателя
     private fun updateSelectedSotrudnikPriemshchik(selectedSotrudnik: String) {
         val sotrudnikInfo = sotrudnikList.find { it.fio == selectedSotrudnik }
         if (sotrudnikInfo != null) {
+            // Проверяем, изменился ли сотрудник
+            val isSamePriemshchik = lastSelectedPriemshchik == selectedSotrudnik
+            lastSelectedPriemshchik = selectedSotrudnik
+
             sotrudnikMdmcodeNewPriemshchik = sotrudnikInfo.mdmcode
             sotrudnikFioNewPriemshchik = sotrudnikInfo.fio
-            Log.d("Сотрудник обновлен", """
-                получатель_mdmcode: $sotrudnikMdmcodeNewPriemshchik
-                 получатель_фио: $sotrudnikFioNewPriemshchik
-            """.trimIndent())
+
+            // Обновляем телефон только если:
+            // 1. Сотрудник изменился
+            // 2. Пользователь не редактировал телефон вручную
+            // 3. У сотрудника есть телефон
+            if (!isSamePriemshchik && !isPhonePriemshchikaEdited && sotrudnikInfo.phone.isNotBlank()) {
+                phone_priemshchika.setText(formatPhoneNumber(sotrudnikInfo.phone))
+            }
         }
-        else {
-            Log.d("Сорудник не найден", "Выбранный сотрудник '$selectedSotrudnik' не найден.")
+    }
+    private fun formatPhoneNumber(phone: String): String {
+        if (phone.isBlank()) return "+7"
+
+        // Удаляем все нецифровые символы
+        val digits = phone.replace(Regex("[^0-9]"), "")
+
+        return when {
+            digits.length == 11 && digits.startsWith("7") -> "+7 (${digits.substring(1, 4)}) ${digits.substring(4, 7)}-${digits.substring(7, 9)}-${digits.substring(9)}"
+            digits.length == 11 && digits.startsWith("8") -> "+7 (${digits.substring(1, 4)}) ${digits.substring(4, 7)}-${digits.substring(7, 9)}-${digits.substring(9)}"
+            digits.length == 10 -> "+7 (${digits.substring(0, 3)}) ${digits.substring(3, 6)}-${digits.substring(6, 8)}-${digits.substring(8)}"
+            else -> phone // Возвращаем как есть, если формат не распознан
         }
     }
     private fun fetchSotrudnikiInfo() {
@@ -476,7 +487,7 @@ class NewLogisticDocActivity : ComponentActivity() {
             try {
                 val sotrudnikiList = getAllSotrudnikiInfo(this@NewLogisticDocActivity)
                 for (sotrudnik in sotrudnikiList) {
-                    Log.d("SotrudnikiInfo", "MdmCode: ${sotrudnik.mdmcode}, FIO: ${sotrudnik.fio}")
+                    //Log.d("SotrudnikiInfo", "MdmCode: ${sotrudnik.mdmcode}, FIO: ${sotrudnik.fio}")
                 }
             } catch (e: Exception) {
                 Log.e("Error", "Ошибка при получении данных: ${e.message}")
@@ -485,116 +496,153 @@ class NewLogisticDocActivity : ComponentActivity() {
     }
     private fun updateLogistic(id: String) {
         if (id.isEmpty()) return
-        val url = "http://192.168.200.250/api/update_logistic/$id"
-        Log.d(tag, "Request URL: $url")
-        val currentDateTime = getCurrentDateTime()
-        val requestBody = MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart("send_from_title", sklad_otpravki.text.toString())
-            .addFormDataPart("send_comment", comment_otpravitelyu.text.toString())
-            .addFormDataPart("sender_phone", phone_otpravitelya.text.toString())
-            .addFormDataPart("receive_comment", comment_priemshchika.text.toString())
-            .addFormDataPart("receiver_phone", phone_priemshchika.text.toString())
-            .addFormDataPart("comment", primechanie.text.toString())
-            .addFormDataPart("loader", assistant_status)
-            .addFormDataPart("sender_mdm", sotrudnikMdmcodeNew ?: "")
-            .addFormDataPart("is_accepted_by", mdmCode)
-            .addFormDataPart("is_accepted_at", currentDateTime)
-            .addFormDataPart("status", "1")
-            .addFormDataPart("created_by", mdmCode)
-            .addFormDataPart("receiver_mdm", sotrudnikMdmcodeNewPriemshchik ?: "")
-        requestBody.addFormDataPart("sender_mdm", sotrudnikMdmcodeNew ?: "")
-        requestBody.addFormDataPart("receiver_mdm", sotrudnikMdmcodeNewPriemshchik ?: "")
-        val request = Request.Builder()
-            .url(url)
-            .post(requestBody.build())
-            .build()
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS) // Установка таймаута на соединение
-            .readTimeout(10, TimeUnit.SECONDS) // Установка таймаута на чтение
-            .build()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e(tag, "Ошибка во время обновления: ${e.message}")
-                runOnUiThread {
-                    progressBar.visibility = View.GONE
-                    button_save_new_logistic.isEnabled = true
-                    if (e is SocketTimeoutException) {
-                        Toast.makeText(this@NewLogisticDocActivity, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show()
+
+        // Нормализация телефонов: "+7" или пусто -> ""
+        fun normPhone(s: String): String =
+            if (s == "+7" || s.isBlank()) "" else s
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val client = (application as App).okHttpClient.newBuilder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .build()
+
+            // primary → fallback (как в предыдущих примерах)
+            val primaryUrl  = "https://api.gkmmz.ru/api/update_logistic_objects/$id"
+            val fallbackUrl = "https://09f2befcf01d4dd39cbe7e54717e28af.apicapis.ru-moscow-1.hc.sbercloud.ru/api/update_logistic_objects/$id"
+
+            val currentDateTime = getCurrentDateTime()
+
+            val body = MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("send_from_title", sklad_otpravki.text.toString())
+                .addFormDataPart("send_comment",    comment_otpravitelyu.text.toString())
+                .addFormDataPart("sender_phone",    normPhone(phone_otpravitelya.text.toString()))
+                .addFormDataPart("receive_comment", comment_priemshchika.text.toString())
+                .addFormDataPart("receiver_phone",  normPhone(phone_priemshchika.text.toString()))
+                .addFormDataPart("comment",         primechanie.text.toString())
+                .addFormDataPart("loader",          assistant_status)
+                .addFormDataPart("sender_mdm",      sotrudnikMdmcodeNew ?: "")
+                .addFormDataPart("receiver_mdm",    sotrudnikMdmcodeNewPriemshchik ?: "")
+                .addFormDataPart("is_accepted_by",  currentMdmCode ?: "")
+                .addFormDataPart("is_accepted_at",  currentDateTime)
+                .addFormDataPart("status",          "1")
+                .addFormDataPart("created_by",      currentMdmCode ?: "")
+                .addFormDataPart("executor",        currentMdmCode ?: "")
+                .addFormDataPart("mdm_code",        currentMdmCode ?: "")
+                .addFormDataPart("version_name",    version_name)
+                .build()
+
+            val baseReq = Request.Builder()
+                .post(body)
+                .addHeader("X-Apig-AppCode", authTokenAPI)
+                .addHeader("X-Auth-Token",  authToken)
+
+            fun exec(url: String): Response? = try {
+                client.newCall(baseReq.url(url).build()).execute()
+            } catch (e: IOException) {
+                Log.e("updateLogistic", "IO error for $url: ${e.message}")
+                null
+            }
+
+            try {
+                var resp = exec(primaryUrl)
+                if (resp == null || resp.code == 429) {
+                    resp?.close()
+                    Log.w("updateLogistic", "fallback → $fallbackUrl (reason: ${if (resp == null) "IO error" else "429"})")
+                    resp = exec(fallbackUrl)
+                }
+                if (resp == null) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(this@NewLogisticDocActivity, "Все серверы недоступны", Toast.LENGTH_LONG).show()
+                    }
+                    return@launch
+                }
+
+                resp.use { r ->
+                    val bodyStr = r.body?.string().orEmpty()
+                    Log.d("updateLogistic", "ResponseBody: $bodyStr")
+
+                    // Корректное логирование заголовков без ошибки типов
+                    for (i in 0 until r.headers.size) {
+                        Log.d("updateLogistic", "${r.headers.name(i)}: ${r.headers.value(i)}")
+                    }
+
+                    if (r.isSuccessful) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(this@NewLogisticDocActivity, "Данные успешно сохранились", Toast.LENGTH_SHORT).show()
+
+                            val context = this@NewLogisticDocActivity
+                            val rolesString = intent.getStringExtra("rolesString") ?: ""
+                            rolesList.addAll(rolesString.split(",").map { it.trim() })
+
+                            val intent = Intent(context, DetailLogisticsActivity::class.java).apply {
+                                putExtra("logistics_id", id)
+                                putExtra("type", typeDoc)
+                            }
+                            context.startActivity(intent)
+                            finish()
+                        }
                     } else {
-                        Toast.makeText(this@NewLogisticDocActivity, "Ошибка во время обновления: ${e.message}", Toast.LENGTH_SHORT).show()
+                        Log.e("updateLogistic", "Обновление не удалось: ${r.code} - ${r.message}")
+                        Log.e("updateLogistic", "Тело ошибки: $bodyStr")
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(this@NewLogisticDocActivity, "Ошибка сервера: ${r.code}", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
-            }
-            override fun onResponse(call: Call, response: Response) {
-                val responseBodyString = response.body?.string() ?: return
-                Log.d("ResponseBody: ", responseBodyString)
-                progressBar.visibility = View.GONE
-                button_save_new_logistic.isEnabled = true
-                if (response.isSuccessful) {
-                    Log.d(tag, "Обновление успешно: $responseBodyString")
-                    runOnUiThread {
-                        Toast.makeText(this@NewLogisticDocActivity, "Данные успешно сохранились", Toast.LENGTH_SHORT).show()
-                        val context = this@NewLogisticDocActivity
-                        val rolesString = intent.getStringExtra("rolesString") ?: ""
-                        rolesList.addAll(rolesString.split(",").map { it.trim() })
-                        rolesList.forEach { role ->
-                            Log.d("Список ролей", "Роль: $role")
-                        }
-                        val intent = Intent(context, DetailLogisticsActivity::class.java).apply {
-                            putExtra("logistics_id", id)
-                            putExtra("mdmCode", mdmCode)
-                            putExtra("userId", userId)
-                            putExtra("username", username)
-                            putExtra("roleCheck", roleCheck)
-                            putExtra("fio", fio)
-                            putExtra("deviceInfo", deviceInfo)
-                            putExtra("type", typeDoc)
-                            putExtra("rolesString", rolesString)
-                        }
-                        context.startActivity(intent)
-                        finish()
-                    }
-                } else {
-                    Log.e(tag, "Обновление не удалось: ${response.code} - ${response.message}")
-                    Log.e(tag, "Тело ошибки: $responseBodyString")
-                }
-                response.headers.forEach { header ->
-                    Log.d(tag, "${header.first}: ${header.second}")
+            } catch (e: ServiceModeException) {
+                // Интерсептор уже показал экран техработ; здесь просто выходим
+            } catch (t: Throwable) {
+                Log.e("updateLogistic", "Unexpected error", t)
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@NewLogisticDocActivity, "Ошибка: ${t.message}", Toast.LENGTH_LONG).show()
                 }
             }
-        })
+        }
     }
+
+
+    private fun getUnsafeSSLSocketFactory(): SSLSocketFactory {
+        val trustAllCerts = arrayOf<TrustManager>(getUnsafeTrustManager())
+        val sslContext = SSLContext.getInstance("SSL")
+        sslContext.init(null, trustAllCerts, java.security.SecureRandom())
+        return sslContext.socketFactory
+    }
+
+    private fun getUnsafeTrustManager(): X509TrustManager {
+        return object : X509TrustManager {
+            override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
+            override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
+            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+        }
+    }
+
     private fun getCurrentDateTime(): String {
         val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         return formatter.format(Date())
     }
-    private fun disableUI() {
-        go_to_logistic.isEnabled = false
-        what_object.isEnabled = false
-        when_go.isEnabled = false
-        gruzchik.isEnabled = false
-        pogruzchik.isEnabled = false
-//        go_to_authorization.isEnabled = false
-        sklad_otpravki.isEnabled = false
-        go_to_issue.isEnabled = false
-        otpravitel.isEnabled = false
-        phone_otpravitelya.isEnabled = false
-        comment_otpravitelyu.isEnabled = false
-        sklad_pribitiya.isEnabled = false
-        priemshchik.isEnabled = false
-        phone_priemshchika.isEnabled = false
-        primechanie.isEnabled = false
-        comment_priemshchika.isEnabled = false
-        button_save_new_logistic.isEnabled = false
-        go_to_add.isEnabled = false
-        go_to_issue.isEnabled = false
-        data_user_info.isEnabled = false
-        go_to_send_notification.isEnabled = false
-        card_view.isEnabled = false
-        card_layout.isEnabled = false
-        scroll_view.isEnabled = false
-        Toast.makeText(this, "Версия приложения устарела. Пожалуйста, обновите приложение.", Toast.LENGTH_LONG).show()
-    }
+    // Обновляем слушатели для полей телефонов
+    private fun setupPhoneListeners() {
+        phone_otpravitelya.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                if (s?.toString() != "+7") {
+                    isPhoneOtpravitelyaEdited = true
+                }
+            }
+        })
 
+        phone_priemshchika.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                if (s?.toString() != "+7") {
+                    isPhonePriemshchikaEdited = true
+                }
+            }
+        })
+    }
 }

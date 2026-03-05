@@ -17,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.AdapterView
@@ -28,13 +29,16 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.semimanufactures.DatabaseManager.fetchDaysToAddMezhZavod
 import com.example.semimanufactures.DatabaseManager.fetchDaysToAddOKR
 import com.example.semimanufactures.DatabaseManager.fetchDaysToAddPosleProdazhnoeObsluzhivanie
 import com.example.semimanufactures.DatabaseManager.fetchDaysToAddSeria
-import com.example.semimanufactures.DatabaseManager.fetchMobileVersion
+//import com.example.semimanufactures.DatabaseManager.fetchMobileVersion
 import com.example.semimanufactures.DatabaseManager.findDistributionDateByPrP
 import com.example.semimanufactures.DatabaseManager.showToast
+import com.google.gson.Gson
 import java.time.LocalDate
 
 class CheckingPrPSkladActivity : ComponentActivity() {
@@ -53,13 +57,7 @@ class CheckingPrPSkladActivity : ComponentActivity() {
     private lateinit var text_result_scan_sklad: TextView
     private lateinit var text_result_scan_prp: TextView
     private lateinit var button_for_inv_sklad: Button
-    private var userId: Int = 0
-    private var username: String = ""
-    private var roleCheck: String = ""
-    private var mdmCode: String = ""
-    private var fio: String = ""
     private lateinit var progressBar: ProgressBar
-//    private lateinit var go_to_authorization: ImageView
     private lateinit var go_to_add: ImageView
     private lateinit var go_to_issue: ImageView
     private lateinit var data_user_info: ImageView
@@ -70,9 +68,20 @@ class CheckingPrPSkladActivity : ComponentActivity() {
     private lateinit var go_to_logistic: ImageView
     private lateinit var text_result_add_barcode_scan_text: TextView
     private lateinit var text_result_add_qrcode_scan_text: TextView
-    private var deviceInfo: String = ""
+    //
+    private var currentUsername: String? = null
+    private var currentUserId: Int? = null
+    private var currentRoleCheck: String? = null
+    private var currentMdmCode: String? = null
+    private var currentFio: String? = null
+    private var currentDeviceInfo: String? = null
+    private var currentRolesString: String? = null
+    private var currentDeviceToken: String? = null
+    private var currentIsAuthorized:  Boolean = false
+    //
     private lateinit var main_layout: ConstraintLayout
     private val rolesList: MutableList<String> = mutableListOf()
+    private var pm84ScannerManager: PM84ScannerManager? = null
     private val mScanReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         @RequiresApi(Build.VERSION_CODES.O)
         override fun onReceive(context: Context, intent: Intent) {
@@ -105,90 +114,109 @@ class CheckingPrPSkladActivity : ComponentActivity() {
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val userData = readUserData()
+        userData?.let {
+            currentUsername = it.username
+            currentUserId = it.userId
+            currentRoleCheck = it.roleCheck
+            currentMdmCode = it.mdmCode
+            currentFio = it.fio
+            currentDeviceInfo = it.deviceInfo
+            currentRolesString = it.rolesString
+            currentDeviceToken = it.device_token
+            currentIsAuthorized = it.isAuthorized
+            Log.d("UserData", "Логин: ${it.username}")
+            Log.d("UserData", "User ID: ${it.userId}")
+            Log.d("UserData", "Роль: ${it.roleCheck}")
+            Log.d("UserData", "MdmdCode: ${it.mdmCode}")
+            Log.d("UserData", "ФИО: ${it.fio}")
+            Log.d("UserData", "Название устройства: ${it.deviceInfo}")
+            Log.d("UserData", "Список ролей: ${it.rolesString}")
+            Log.d("UserData", "Токен устройства: ${it.device_token}")
+            Log.d("isAuthorized", "Авторизован? ${it.isAuthorized}")
+        } ?: run {
+            Toast.makeText(this, "Ошибка загрузки данных", Toast.LENGTH_SHORT).show()
+        }
+
+        if (!currentIsAuthorized) {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+            return
+        }
         setContentView(R.layout.activity_new_checking_prp_sklad)
         initView()
         loadWarehouses()
         registerScannerReceiver()
         progressBar =  findViewById(R.id.progressBar)
-        userId = intent.getIntExtra("userId", 0)
-        username = intent.getStringExtra("username") ?: ""
-        roleCheck = intent.getStringExtra("roleCheck") ?: ""
-        mdmCode = intent.getStringExtra("mdmCode") ?: ""
-        fio = intent.getStringExtra("fio") ?: ""
-        deviceInfo = intent.getStringExtra("deviceInfo") ?: ""
-        val rolesString = intent.getStringExtra("rolesString") ?: ""
-        rolesList.addAll(rolesString.split(",").map { it.trim() })
-        rolesList.forEach { role ->
-            Log.d("Список ролей", "Роль: $role")
+        if (currentRolesString?.isNotEmpty() == true) {
+            rolesList.addAll(currentRolesString!!.split(",").map { it.trim() })
         }
-        Log.d(tag, "Passing Username: $username, Role: ${roleCheck} User ID: ${userId}, fio: ${fio}, mdmCode: $mdmCode")
+        Log.d(tag, "Passing Username: $currentUsername, Role: ${currentRoleCheck} User ID: ${currentUserId}, fio: ${currentFio}, mdmCode: $currentMdmCode")
         button_for_inv_sklad.setOnClickListener {
-            val barcodeValue = text_result_scan_prp.text.toString().replace("\\s".toRegex(), "")
-            val qrcodeValue = text_result_scan_sklad.text.toString().replace("\\s".toRegex(), "")
-            CoroutineScope(Dispatchers.Main).launch {
-                DatabaseManager.addInventoryRecord(
-                    this@CheckingPrPSkladActivity,
-                    barcodeValue,
-                    userId,
-                    qrcodeValue,
-                    fio,
-                    text_result_scan_sklad
-                )
+            if (currentUsername == "T.Test") {
+                Toast.makeText(this, "У вас недостаточно прав для совершения данной операции", Toast.LENGTH_LONG).show()
+            }
+            else {
+                val barcodeValue = text_result_scan_prp.text.toString().replace("\\s".toRegex(), "")
+                val qrcodeValue = text_result_scan_sklad.text.toString().replace("\\s".toRegex(), "")
+                CoroutineScope(Dispatchers.Main).launch {
+                    DatabaseManager.addInventoryRecord(
+                        this@CheckingPrPSkladActivity,
+                        barcodeValue,
+                        currentUserId ?: 0,
+                        qrcodeValue,
+                        currentFio ?: "",
+                        text_result_scan_sklad
+                    )
+                }
             }
         }
         text_result_add_barcode_scan_text = findViewById(R.id.text_result_add_barcode_scan_text)
         text_result_add_qrcode_scan_text = findViewById(R.id.text_result_add_qrcode_scan_text)
         spinner_warehouse_names = findViewById(R.id.spinner_warehouse_names)
         text_info_sklad_scan = findViewById(R.id.text_info_sklad_scan)
-//        go_to_authorization = findViewById(R.id.go_to_authorization)
-//        go_to_authorization.setOnClickListener {
-//            val intent = Intent(this@CheckingPrPSkladActivity, MainActivity::class.java)
-//            startActivity(intent)
-//        }
+
+        if (currentDeviceInfo == "PM84") {
+            pm84ScannerManager = PM84ScannerManager.getInstance(applicationContext)
+            pm84ScannerManager?.registerScannerReceiver()
+            pm84ScannerManager?.setOnScanResultListener(object : PM84ScannerManager.OnScanResultListener {
+                override fun onScanResultReceived(result: String) {
+                    handleScanResult(result.trim())
+                }
+            })
+
+            button_for_add_barcode_scan.setOnClickListener {
+                if (checkCameraPermission()) {
+                    pm84ScannerManager?.startScanning(text_result_scan_prp)
+                }
+            }
+
+            button_for_add_qrcode_scan.setOnClickListener {
+                if (checkCameraPermission()) {
+                    pm84ScannerManager?.startScanning(text_result_scan_sklad)
+                }
+            }
+        }
+
         go_to_add = findViewById(R.id.go_to_add)
         go_to_add.setOnClickListener {
-            Log.d(tag, "Passing Username: $username, Role: ${roleCheck} User ID: ${userId}, fio: ${fio}, mdmCode: $mdmCode")
-            val addIntent = Intent(this@CheckingPrPSkladActivity, AddActivity::class.java).apply {
-                putExtra("userId", userId)
-                putExtra("username", username)
-                putExtra("roleCheck", roleCheck)
-                putExtra("mdmCode", mdmCode)
-                putExtra("fio", fio)
-                putExtra("deviceInfo", deviceInfo)
-                putExtra("rolesString", rolesString)
-            }
+            val addIntent = Intent(this@CheckingPrPSkladActivity, AddActivity::class.java)
             startActivity(addIntent)
         }
         go_to_issue = findViewById(R.id.go_to_issue)
         go_to_issue.setOnClickListener {
-            Log.d(tag, "Passing Username: $username, Role: ${roleCheck} User ID: ${userId}, fio: ${fio}, mdmCode: $mdmCode")
-            val intent = Intent(this@CheckingPrPSkladActivity, FeaturesOfTheFunctionalityActivity::class.java).apply {
-                putExtra("userId", userId)
-                putExtra("username", username)
-                putExtra("roleCheck", roleCheck)
-                putExtra("mdmCode", mdmCode)
-                putExtra("fio", fio)
-                putExtra("deviceInfo", deviceInfo)
-                putExtra("rolesString", rolesString)
-            }
+            val intent = Intent(this@CheckingPrPSkladActivity, FeaturesOfTheFunctionalityActivity::class.java)
             startActivity(intent)
         }
         data_user_info = findViewById(R.id.data_user_info)
         data_user_info.setOnClickListener {
-            val intent = Intent(this@CheckingPrPSkladActivity, SettingsActivity::class.java).apply {
-                putExtra("userId", userId)
-                putExtra("username", username)
-                putExtra("roleCheck", roleCheck)
-                putExtra("mdmCode", mdmCode)
-                putExtra("fio", fio)
-                putExtra("deviceInfo", deviceInfo)
-                putExtra("rolesString", rolesString)
-            }
+            val intent = Intent(this@CheckingPrPSkladActivity, SettingsActivity::class.java)
             startActivity(intent)
         }
         go_to_send_notification = findViewById(R.id.go_to_send_notification)
         go_to_send_notification.setOnClickListener {
-            showPopupMenuNotification(it)
+            val intent = Intent(this@CheckingPrPSkladActivity, NotificationActivity::class.java)
+            startActivity(intent)
         }
         spinner_warehouse_names.setOnItemSelectedListener(object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
@@ -200,74 +228,41 @@ class CheckingPrPSkladActivity : ComponentActivity() {
         })
         go_to_logistic = findViewById(R.id.go_to_logistic)
         go_to_logistic.setOnClickListener {
-            Log.d(tag, "Passing Username: $username, Role: ${roleCheck} User ID: ${userId}, fio: ${fio}, mdmCode: $mdmCode")
-            val intent = Intent(this@CheckingPrPSkladActivity, LogisticActivity::class.java).apply {
-                putExtra("userId", userId)
-                putExtra("username", username)
-                putExtra("roleCheck", roleCheck)
-                putExtra("mdmCode", mdmCode)
-                putExtra("fio", fio)
-                putExtra("deviceInfo", deviceInfo)
-                putExtra("rolesString", rolesString)
-            }
+            val intent = Intent(this@CheckingPrPSkladActivity, LogisticActivity::class.java)
             startActivity(intent)
         }
         main_layout = findViewById(R.id.main_layout)
-        CoroutineScope(Dispatchers.Main).launch {
-            Log.d("CheckingPrPSkladSunmiActivity", "Запуск получения версии...")
-            val versionMobile = fetchMobileVersion(this@CheckingPrPSkladActivity)
-            Log.d("CheckingPrPSkladSunmiActivity", "Версия получена: $versionMobile")
 
-            if (versionMobile == null) {
-                Log.e("CheckingPrPSkladSunmiActivity", "Не удалось получить версию")
-                //disableUI()
-            } else {
-                Log.d("CheckingPrPSkladSunmiActivity", "Версия приложения: $versionMobile")
-                // Сравнение версий и отключение UI, если они не совпадают
-                if (versionMobile.toInt() != myGlobalVariable) {
-                    Log.e("CheckingPrPSkladSunmiActivity", "Версии не совпадают. Доступ к функционалу отключен.")
-                    disableUI()
-                    // Устанавливаем обработчик нажатия на Layout
-                    main_layout.setOnClickListener {
-                        // Код, который будет выполняться при нажатии на Layout
-                        Toast.makeText(this@CheckingPrPSkladActivity, "Версия приложения устарела. Пожалуйста, обновите приложение.", Toast.LENGTH_LONG).show()
-                    }
-                }
+    }
+    private fun readUserData(): UserData? {
+        return try {
+            openFileInput("user_data").use {
+                val json = it.bufferedReader().use { reader -> reader.readText() }
+                Gson().fromJson(json, UserData::class.java)
             }
+        } catch (e: Exception) {
+            Log.e("FeaturesActivity", "Error reading user data", e)
+            null
         }
     }
-    @SuppressLint("MissingInflatedId")
-    private fun showPopupMenuNotification(view: View) {
-        val popupView = layoutInflater.inflate(R.layout.custom_menu_notification, null)
-        val popupWindow = PopupWindow(popupView, 500, 450)
-        popupView.findViewById<LinearLayout>(R.id.item_write_sms).setOnClickListener {
-            val rolesString = intent.getStringExtra("rolesString") ?: ""
-            rolesList.addAll(rolesString.split(",").map { it.trim() })
-            rolesList.forEach { role ->
-                Log.d("Список ролей", "Роль: $role")
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun handleScanResult(result: String?) {
+        if (result.isNullOrEmpty()) {
+            Toast.makeText(this, "Сканирование не удалось", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        when (currentScanField) {
+            1 -> { // Обработка штрих-кода.
+                text_result_scan_prp.text = result
+                checkDistributionDate(result)
             }
-            val intent = Intent(this, CreateNotificationActivity::class.java).apply {
-                putExtra("userId", userId)
-                putExtra("username", username)
-                putExtra("roleCheck", roleCheck)
-                putExtra("mdmCode", mdmCode)
-                putExtra("fio", fio)
-                putExtra("deviceInfo", deviceInfo)
-                putExtra("rolesString", rolesString)
+            2 -> { // Обработка QR-кода.
+                text_result_scan_sklad.text = result
+                updateWarehouseInfo(result)
             }
-            startActivity(intent)
-            popupWindow.dismiss()
+            else -> Log.e(tag, "Неизвестное поле для сканирования")
         }
-        popupView.findViewById<LinearLayout>(R.id.item_incoming_sms).setOnClickListener {
-            Toast.makeText(this, "Входящие нажаты", Toast.LENGTH_SHORT).show()
-            popupWindow.dismiss()
-        }
-        popupView.findViewById<LinearLayout>(R.id.item_sent_sms).setOnClickListener {
-            Toast.makeText(this, "Отправленные нажаты", Toast.LENGTH_SHORT).show()
-            popupWindow.dismiss()
-        }
-        popupWindow.isFocusable = true
-        popupWindow.showAsDropDown(view)
     }
 
     private fun loadWarehouses() {
@@ -283,7 +278,7 @@ class CheckingPrPSkladActivity : ComponentActivity() {
         CoroutineScope(Dispatchers.Main).launch {
             val warehouseName = DatabaseManager.getWarehouseNameById(this@CheckingPrPSkladActivity, barcodeValue.trim())
             if (warehouseName != null) {
-                text_info_sklad_scan.text = warehouseName
+                text_info_sklad_scan.text = warehouseName.toString()
                 showToast(this@CheckingPrPSkladActivity, "Склад найден: $warehouseName", 5000)
             } else {
                 showToast(this@CheckingPrPSkladActivity, "Склад не найден по ID: $barcodeValue", 5000)
@@ -312,8 +307,8 @@ class CheckingPrPSkladActivity : ComponentActivity() {
 
                         Log.d("Сегодняшняя дата: ", "$currentDate")
                         val daysPlusSeria = fetchDaysToAddSeria(this@CheckingPrPSkladActivity) ?: 3
-                        val daysPlusMezhZavod = fetchDaysToAddMezhZavod(this@CheckingPrPSkladActivity) ?: 90
-                        val daysPlusOKR = fetchDaysToAddOKR(this@CheckingPrPSkladActivity) ?: 45
+                        val daysPlusMezhZavod = fetchDaysToAddMezhZavod(this@CheckingPrPSkladActivity) ?: 210
+                        val daysPlusOKR = fetchDaysToAddOKR(this@CheckingPrPSkladActivity) ?: 60
                         val daysPlusPosleProd = fetchDaysToAddPosleProdazhnoeObsluzhivanie(this@CheckingPrPSkladActivity) ?: 45
 
                         if (segment == "Серия" && date.isAfter(currentDate.plusDays(daysPlusSeria))) {
@@ -371,12 +366,16 @@ class CheckingPrPSkladActivity : ComponentActivity() {
             override fun afterTextChanged(s: Editable?) {}
         })
         button_for_add_barcode_scan.setOnClickListener {
-            currentScanField = 2
-            callScanner()
+            if (checkCameraPermission()) {
+                currentScanField = 2
+                callScanner()
+            }
         }
         button_for_add_qrcode_scan.setOnClickListener {
-            currentScanField = 1
-            callScanner()
+            if (checkCameraPermission()) {
+                currentScanField = 1
+                callScanner()
+            }
         }
         text_result_scan_sklad.setOnClickListener {
             currentScanField = 2
@@ -405,18 +404,47 @@ class CheckingPrPSkladActivity : ComponentActivity() {
         }
     }
     private fun registerScannerReceiver() {
-        val intentFilter = IntentFilter()
-        intentFilter.addAction(ACTION_RECEIVE_DATA)
-        intentFilter.addAction(ACTION_RECEIVE_DATABYTES)
-        intentFilter.addAction(ACTION_RECEIVE_DATALENGTH)
-        intentFilter.addAction(ACTION_RECEIVE_DATATYPE)
-        registerReceiver(mScanReceiver, intentFilter)
+        val intentFilter = IntentFilter().apply {
+            addAction(ACTION_RECEIVE_DATA)
+            addAction(ACTION_RECEIVE_DATABYTES)
+            addAction(ACTION_RECEIVE_DATALENGTH)
+            addAction(ACTION_RECEIVE_DATATYPE)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Для Android 14 и выше
+            registerReceiver(mScanReceiver, intentFilter, RECEIVER_EXPORTED)
+        } else {
+            // Для версий ниже Android 14
+            registerReceiver(mScanReceiver, intentFilter)
+        }
+    }
+    private fun checkCameraPermission(): Boolean {
+        return if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            true
+        } else {
+            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
+            false
+        }
+    }
+    private val REQUEST_CAMERA_PERMISSION = 1001
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CAMERA_PERMISSION && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            // Разрешение предоставлено
+        } else {
+            Toast.makeText(this, "Разрешение на использование камеры отклонено", Toast.LENGTH_SHORT).show()
+        }
     }
     override fun onDestroy() {
         super.onDestroy()
         Log.v(tag, "onDestroy()")
-        closeScanService()
-        unregisterReceiver(mScanReceiver)
+
+        if (currentDeviceInfo == "PM84") {
+            pm84ScannerManager?.unregisterScannerReceiver()
+        }
+
+        Log.v(tag, "onDestroy завершен")
     }
     private fun callScanner() {
         progressBar.visibility = View.VISIBLE
@@ -455,21 +483,5 @@ class CheckingPrPSkladActivity : ComponentActivity() {
         }
         val mIntent = Intent().setAction(CLOSE_SCANSERVICE).putExtras(bundle)
         sendBroadcast(mIntent)
-    }
-    private fun disableUI() {
-        go_to_logistic.isEnabled = false
-        text_result_scan_sklad.isEnabled = false
-        button_for_add_barcode_scan.isEnabled = false
-        spinner_warehouse_names.isEnabled = false
-        text_info_sklad_scan.isEnabled = false
-//        go_to_authorization.isEnabled = false
-        text_result_scan_prp.isEnabled = false
-        go_to_issue.isEnabled = false
-        button_for_add_qrcode_scan.isEnabled = false
-        button_for_inv_sklad.isEnabled = false
-        go_to_add.isEnabled = false
-        go_to_send_notification.isEnabled = false
-        data_user_info.isEnabled = false
-        Toast.makeText(this, "Версия приложения устарела. Пожалуйста, обновите приложение.", Toast.LENGTH_LONG).show()
     }
 }

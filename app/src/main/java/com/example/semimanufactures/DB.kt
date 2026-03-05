@@ -1,14 +1,19 @@
 package com.example.semimanufactures
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.text.SpannableString
 import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import com.example.semimanufactures.Auth.authToken
+import com.example.semimanufactures.Auth.authTokenAPI
+import com.example.semimanufactures.service_mode.ServiceModeException
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.squareup.moshi.KotlinJsonAdapterFactory
@@ -26,97 +31,145 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import okhttp3.FormBody
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.net.SocketTimeoutException
+import java.security.cert.X509Certificate
 import java.time.Instant
 import java.time.LocalDate
+import java.util.Date
 import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLContext
+import javax.net.ssl.SSLSocketFactory
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 
 object DatabaseManager {
-    private var database: Database? = null
-    suspend fun connect(context: Context) {
-        if (database != null) {
-            Log.w("DatabaseManager", "Already connected to the database")
-            showToast(context, "Уже подключен к базе данных", 5000)
-            return
-        }
-        withContext(Dispatchers.IO) {
-            try {
-                database = Database.connect(
-                    url = "jdbc:mysql://192.168.200.250:3306/individual_tasks?useSSL=false",
-                    user = "root",
-                    password = "bitrix"
-                )
-                Log.d("DatabaseManager", "Database connection successful")
-                showToast(context, "Успешное подключение к базе данных", 5000)
-            } catch (e: Exception) {
-                Log.e("DatabaseManager", "Failed to connect to database: ${e.message}", e)
-                showToast(context, "Не удалось подключиться к базе данных", 5000)
-                database = null
-            }
-        }
-    }
-    fun isConnected(): Boolean {
-        return database != null
-    }
+//    private var database: Database? = null
+//    suspend fun connect(context: Context) {
+//        if (database != null) {
+//            Log.w("DatabaseManager", "Already connected to the database")
+//            showToast(context, "Уже подключен к базе данных", 5000)
+//            return
+//        }
+//        withContext(Dispatchers.IO) {
+//            try {
+//                database = Database.connect(
+//                    url = "jdbc:mysql://192.168.200.250:3306/individual_tasks?useSSL=false",
+//                    user = "root",
+//                    password = "bitrix"
+//                )
+//                Log.d("DatabaseManager", "Database connection successful")
+//                showToast(context, "Успешное подключение к базе данных", 5000)
+//            } catch (e: Exception) {
+//                Log.e("DatabaseManager", "Failed to connect to database: ${e.message}", e)
+//                showToast(context, "Не удалось подключиться к базе данных", 5000)
+//                database = null
+//            }
+//        }
+//    }
+//    fun isConnected(): Boolean {
+//        return database != null
+//    }
     val client = OkHttpClient.Builder()
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(10, TimeUnit.SECONDS)
-        .writeTimeout(10, TimeUnit.SECONDS)
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
         .build()
     val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
     suspend fun fetchData(context: Context): List<CardItem> = withContext(Dispatchers.IO) {
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
+        val app = context.applicationContext as App
+        val client = app.okHttpClient.newBuilder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
             .build()
-        val apiUrl = "http://192.168.200.250/api/get_prp_for_get"
-        val cardItems = mutableListOf<CardItem>()
-        val request = Request.Builder()
-            .url(apiUrl)
-            .build()
-        try {
-            val response: Response = client.newCall(request).execute()
-            if (response.isSuccessful) {
-                response.body?.string()?.let { responseBody ->
-                    Log.d("API_RESPONSE", "Response body: $responseBody")
-                    val jsonArray = Json.parseToJsonElement(responseBody).jsonArray
-                    for (jsonElement in jsonArray) {
-                        val jsonObject = jsonElement.jsonObject
-                        val name = jsonObject["Название"]?.jsonPrimitive?.content ?: "Не указано"
-                        val prosk = jsonObject["Проск"]?.jsonPrimitive?.content ?: "Не указано"
-                        val demand = jsonObject["Спрос"]?.jsonPrimitive?.content ?: "Не указано"
-                        val quantity = jsonObject["Количество"]?.jsonPrimitive?.content ?: "Не указано"
-                        val plot = jsonObject["Участок"]?.jsonPrimitive?.content ?: "Не указано"
-                        val dateOfDistribution = jsonObject["Дата Распределения"]?.jsonPrimitive?.content
-                        val prp = jsonObject["ПрП"]?.jsonPrimitive?.content ?: "Не указано"
-                        val primarydemand_id = jsonObject["primarydemand_id"]?.jsonPrimitive?.content ?: "Не указано"
-                        val skladiDataId = jsonObject["skladi_data_id"]?.jsonPrimitive?.content ?: "Не указано"
-                        dateOfDistribution?.let {
-                            CardItem(name, prosk, demand, quantity, plot,
-                                it, prp, skladiDataId, primarydemand_id)
-                        }?.let { cardItems.add(it) }
+
+        val urls = listOf(
+            "https://09f2befcf01d4dd39cbe7e54717e28af.apicapis.ru-moscow-1.hc.sbercloud.ru/api/get_prp_for_get",
+            "https://api.gkmmz.ru/api/get_prp_for_get"
+        )
+
+        val items = mutableListOf<CardItem>()
+        var success = false
+
+        for ((i, url) in urls.withIndex()) {
+            try {
+                val req = Request.Builder()
+                    .url(url)
+                    .addHeader("X-Auth-Token", authToken)
+                    .addHeader("X-Apig-AppCode", authTokenAPI)
+                    .build()
+
+                client.newCall(req).execute().use { resp ->
+                    if (resp.code == 429) return@use // попробуем следующий URL
+
+                    if (!resp.isSuccessful) {
+                        throw IOException("HTTP ${resp.code} ${resp.message}")
                     }
+
+                    val body = resp.body?.string().orEmpty()
+                    Log.d("API_RESPONSE", "Response body: $body")
+
+                    val jsonArray = kotlinx.serialization.json.Json.parseToJsonElement(body).jsonArray
+                    for (el in jsonArray) {
+                        val o = el.jsonObject
+                        val name   = o["Название"]?.jsonPrimitive?.content ?: "Не указано"
+                        val prosk  = o["Проск"]?.jsonPrimitive?.content ?: "Не указано"
+                        val demand = o["Спрос"]?.jsonPrimitive?.content ?: "Не указано"
+                        val qty    = o["Количество"]?.jsonPrimitive?.content ?: "Не указано"
+                        val plot   = o["Участок"]?.jsonPrimitive?.content ?: "Не указано"
+                        val date   = o["Дата Распределения"]?.jsonPrimitive?.content
+                        val prp    = o["ПрП"]?.jsonPrimitive?.content ?: "Не указано"
+                        val primId = o["primarydemand_id"]?.jsonPrimitive?.content ?: "Не указано"
+                        val sklId  = o["skladi_data_id"]?.jsonPrimitive?.content ?: "Не указано"
+
+                        if (date != null) {
+                            items += CardItem(name, prosk, demand, qty, plot, date, prp, sklId, primId)
+                        }
+                    }
+                    success = true
                 }
-            } else {
-                throw Exception("Ошибка при получении данных: ${response.code}")
-            }
-        } catch (e: SocketTimeoutException) {
-            Log.e("fetchData", "Timeout error: ${e.message}")
-            withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show()
-            }
-        } catch (e: Exception) {
-            Log.e("fetchData", "Error fetching data: ${e.message}")
-            withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Ошибка при получении данных: ${e.message}", Toast.LENGTH_LONG).show()
+
+                if (success) break
+            } catch (e: ServiceModeException) {
+                // сервисный режим, экран уже откроется через интерсептор
+                return@withContext emptyList()
+            } catch (e: SocketTimeoutException) {
+                Log.e("fetchData", "Timeout: ${e.message}")
+                if (i == urls.lastIndex) withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show()
+                }
+            } catch (e: Exception) {
+                Log.e("fetchData", "Error: ${e.message}", e)
+                if (i == urls.lastIndex) withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Ошибка при получении данных: ${e.message}", Toast.LENGTH_LONG).show()
+                }
             }
         }
-        return@withContext cardItems
+
+        items
     }
+    private fun getUnsafeSSLSocketFactory(): SSLSocketFactory {
+        val trustAllCerts = arrayOf<TrustManager>(getUnsafeTrustManager())
+        val sslContext = SSLContext.getInstance("SSL")
+        sslContext.init(null, trustAllCerts, java.security.SecureRandom())
+        return sslContext.socketFactory
+    }
+
+    private fun getUnsafeTrustManager(): X509TrustManager {
+        return object : X509TrustManager {
+            override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
+            override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
+            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+        }
+    }
+    // 2) Добавление записи в skladi_data
     suspend fun addToSkladiData(
         context: Context,
         primarydemand_id: String,
@@ -124,62 +177,97 @@ object DatabaseManager {
         userFio: String,
         dateDistribution: String,
         demand: String
-    ) {
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
+    ) = withContext(Dispatchers.IO) {
+        if (userId == 0 || userFio.isEmpty()) {
+            withContext(Dispatchers.Main) { showToast(context, "Вернитесь в настройки, затем попробуйте снова", 10000) }
+            return@withContext
+        }
+
+        val app = context.applicationContext as App
+        val client = app.okHttpClient.newBuilder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
             .build()
-        val currentDate = System.currentTimeMillis() / 1000
-        val distributionValue = if (dateDistribution.isNullOrEmpty()) "" else dateDistribution
-        val formBody = MultipartBody.Builder()
+
+        val urls = listOf(
+            "https://09f2befcf01d4dd39cbe7e54717e28af.apicapis.ru-moscow-1.hc.sbercloud.ru/api/create_skladi_data",
+            "https://api.gkmmz.ru/api/create_skladi_data"
+        )
+
+        val nowSec = System.currentTimeMillis() / 1000
+        val bodyBuilder = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("primarydemand_id", primarydemand_id)
             .addFormDataPart("user_id", userId.toString())
             .addFormDataPart("user_fio", userFio)
-            .addFormDataPart("date_distribution", if (distributionValue.isNullOrEmpty() || distributionValue == "null") "" else distributionValue)
             .addFormDataPart("action", "1")
-            .addFormDataPart("system_name", "mobile")
-            .addFormDataPart("date", currentDate.toString())
+            .addFormDataPart("system_name", version_name)
+            .addFormDataPart("date", nowSec.toString())
             .addFormDataPart("prp_name", demand)
-            .build()
-        val request = Request.Builder()
-            .url("http://192.168.200.250/api/create_skladi_data")
-            .post(formBody)
-            .build()
-        withContext(Dispatchers.IO) {
+
+        if (dateDistribution.isNotEmpty() && dateDistribution != "null") {
+            bodyBuilder.addFormDataPart("date_distribution", dateDistribution)
+        }
+        val reqBody = bodyBuilder.build()
+
+        for ((i, url) in urls.withIndex()) {
             try {
-                val response = client.newCall(request).execute()
-                when (response.code) {
-                    in 200..299 -> {
-                        Log.d("API Success", "Запись успешно добавлена")
-                        showToast(context, "ПрП успешно выдана с ПРОСКф", 10000)
-                    }
-                    400 -> {
-                        Log.w("API Warning", "Данная ПрП не была добавлена на ПРОСК")
-                        showToast(context, "Данная ПрП не была добавлена на ПРОСК", 10000)
-                    }
-                    500 -> {
-                        Log.w("API Warning", "Данная ПрП была выдана, но неизвестно куда")
-                        showToast(context, "Данная ПрП была выдана, но неизвестно куда", 10000)
-                    }
-                    else -> {
-                        Log.w("API Warning", "Не удалось добавить запись: ${response.message}")
-                        showToast(context, "Не удалось добавить запись", 10000)
+                val req = Request.Builder()
+                    .url(url)
+                    .post(reqBody)
+                    .addHeader("X-Auth-Token", authToken)
+                    .addHeader("X-Apig-AppCode", authTokenAPI)
+                    .build()
+
+                client.newCall(req).execute().use { resp ->
+                    when {
+                        resp.isSuccessful -> {
+                            Log.d("API Success", "Запись успешно добавлена")
+                            withContext(Dispatchers.Main) { showToast(context, "ПрП успешно выдана с ПРОСКф", 10000) }
+                            return@withContext
+                        }
+                        resp.code == 429 && i < urls.lastIndex -> {
+                            Log.w("API Warning", "429 на $url — пробуем резервный…")
+                            return@use // идём к следующему URL
+                        }
+                        resp.code == 400 -> {
+                            Log.w("API Warning", "Данная ПрП не была добавлена на ПРОСК")
+                            withContext(Dispatchers.Main) { showToast(context, "Данная ПрП не была добавлена на ПРОСК", 10000) }
+                            return@withContext
+                        }
+                        resp.code == 500 -> {
+                            Log.w("API Warning", "Данная ПрП была выдана, но неизвестно куда")
+                            withContext(Dispatchers.Main) { showToast(context, "Данная ПрП была выдана, но неизвестно куда", 10000) }
+                            return@withContext
+                        }
+                        else -> {
+                            Log.w("API Warning", "Не удалось добавить запись: ${resp.code} ${resp.message}")
+                            if (i == urls.lastIndex) {
+                                withContext(Dispatchers.Main) { showToast(context, "Не удалось добавить запись", 10000) }
+                                return@withContext
+                            }
+                        }
                     }
                 }
-                response.close()
+            } catch (e: ServiceModeException) {
+                return@withContext
             } catch (e: SocketTimeoutException) {
-                Log.e("API Error", "Timeout error during request: ${e.message}")
-                showToast(context, "Попробуйте позже. Сервер не отвечает.", 10000)
-            } catch (e: IOException) {
-                Log.e("API Error", "Ошибка при выполнении запроса: ${e.message}")
-                showToast(context, "Ошибка при добавлении записи", 10000)
+                Log.e("API Error", "Timeout on $url: ${e.message}")
+                if (i == urls.lastIndex) {
+                    withContext(Dispatchers.Main) { showToast(context, "Попробуйте позже. Сервер не отвечает.", 10000) }
+                    return@withContext
+                }
             } catch (e: Exception) {
-                Log.e("API Error", "Unexpected error: ${e.message}")
-                showToast(context, "Неизвестная ошибка при добавлении записи.", 10000)
+                Log.e("API Error", "Request error on $url: ${e.message}", e)
+                if (i == urls.lastIndex) {
+                    withContext(Dispatchers.Main) { showToast(context, "Ошибка при добавлении записи", 10000) }
+                    return@withContext
+                }
             }
         }
     }
+
     suspend fun findCardByIdOrPrp(
         context: Context,
         prp: String? = null
@@ -201,64 +289,96 @@ object DatabaseManager {
             emptyList()
         }
     }
-    suspend fun findPrimaryDemandIdAndDate(context: Context, barcodeValue: String): SearchDataRaspredeleniyaAndSegmentAndPrimaryDemandId? {
-        val url = "http://192.168.200.250/api/get_task?title=$barcodeValue"
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
+    // 3) Поиск primaryDemandId / даты распределения / сегмента по штрихкоду
+    suspend fun findPrimaryDemandIdAndDate(
+        context: Context,
+        barcodeValue: String
+    ): SearchDataRaspredeleniyaAndSegmentAndPrimaryDemandId? = withContext(Dispatchers.IO) {
+
+        val app = context.applicationContext as App
+        val client = app.okHttpClient.newBuilder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
             .build()
-        Log.d("DatabaseManager", "Finding primaryDemandId, ДатаРаспределения and Сегмент for barcodeValue: $barcodeValue")
-        return withContext(Dispatchers.IO) {
+
+        val urls = listOf(
+            "https://09f2befcf01d4dd39cbe7e54717e28af.apicapis.ru-moscow-1.hc.sbercloud.ru/api/get_task?title=$barcodeValue",
+            "https://api.gkmmz.ru/api/get_task?title=$barcodeValue"
+        )
+
+        Log.d("DatabaseManager", "Поиск данных для штрихкода: $barcodeValue")
+
+        var found: SearchDataRaspredeleniyaAndSegmentAndPrimaryDemandId? = null
+
+        for ((i, url) in urls.withIndex()) {
             try {
-                val request = Request.Builder()
+                val req = Request.Builder()
                     .url(url)
+                    .addHeader("X-Auth-Token", authToken)
+                    .addHeader("X-Apig-AppCode", authTokenAPI)
                     .build()
-                Log.d("API Request", "Executing API request: $url")
-                client.newCall(request).execute().use { response ->
-                    if (!response.isSuccessful) {
-                        Log.e("API Request", "Unexpected code: ${response.code}")
-                        return@withContext null
-                    }
-                    val responseBody = response.body?.string() ?: run {
-                        Log.e("API Request", "Response body is null")
-                        return@withContext null
-                    }
-                    Log.d("API Response", "Received response: $responseBody")
-                    val jsonArray = Json.parseToJsonElement(responseBody).jsonArray
-                    if (jsonArray.isNotEmpty()) {
-                        val firstTask = jsonArray[0].jsonObject
-                        val primaryDemandId = firstTask["primarydemand_id"]?.jsonPrimitive?.content
-                        val dateDistribution = firstTask["ДатаРаспределения"]?.jsonPrimitive?.content
-                        val segment = firstTask["Сегмент"]?.jsonPrimitive?.content
-                        val demand = firstTask["Спрос"]?.jsonPrimitive?.content
-                        Log.d("API Response", "Found primaryDemandId: $primaryDemandId, ДатаРаспределения: $dateDistribution, Сегмент: $segment, Спрос: $demand")
-                        return@withContext SearchDataRaspredeleniyaAndSegmentAndPrimaryDemandId(
-                            primarydemand_id = primaryDemandId,
-                            dateDistribution = dateDistribution,
-                            segment = segment,
-                            demand = demand
-                        )
-                    } else {
-                        Log.d("API Response", "No tasks found for ПрП = $barcodeValue")
-                        return@withContext null
+
+                Log.d("API Request", "GET $url")
+
+                client.newCall(req).execute().use { resp ->
+                    when {
+                        resp.isSuccessful -> {
+                            val body = resp.body?.string().orEmpty()
+                            Log.d("API Response", "Ответ: $body")
+
+                            val arr = kotlinx.serialization.json.Json.parseToJsonElement(body).jsonArray
+                            val first = arr.firstOrNull()?.jsonObject
+                            if (first != null) {
+                                found = SearchDataRaspredeleniyaAndSegmentAndPrimaryDemandId(
+                                    primarydemand_id = first["primarydemand_id"]?.jsonPrimitive?.content,
+                                    dateDistribution = first["ДатаРаспределения"]?.jsonPrimitive?.content,
+                                    segment = first["Сегмент"]?.jsonPrimitive?.content,
+                                    demand = first["Спрос"]?.jsonPrimitive?.content
+                                )
+                                Log.d("API Response", "Найдены данные: $found")
+                            } else {
+                                Log.d("API Response", "Нет данных для ПрП = $barcodeValue")
+                            }
+                        }
+                        resp.code == 429 && i < urls.lastIndex -> {
+                            Log.w("API Warning", "429 на $url — пробуем резервный…")
+                            return@use
+                        }
+                        else -> {
+                            Log.e("API Request", "Ошибка сервера: ${resp.code}")
+                            if (i == urls.lastIndex) {
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(context, "Ошибка сервера: ${resp.code}", Toast.LENGTH_LONG).show()
+                                }
+                            }
+                        }
                     }
                 }
+
+                if (found != null) break
+            } catch (e: ServiceModeException) {
+                return@withContext null
             } catch (e: SocketTimeoutException) {
-                Log.e("API Request", "Timeout error: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show()
+                Log.e("API Request", "Таймаут: ${e.message}")
+                if (i == urls.lastIndex) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Сервер не отвечает. Попробуйте позже.", Toast.LENGTH_LONG).show()
+                    }
                 }
-                return@withContext null
             } catch (e: Exception) {
-                Log.e("API Request", "Error fetching data: ${e.message}", e)
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Ошибка при получении данных: ${e.message}", Toast.LENGTH_LONG).show()
+                Log.e("API Request", "Ошибка: ${e.message}", e)
+                if (i == urls.lastIndex) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Ошибка получения данных: ${e.message}", Toast.LENGTH_LONG).show()
+                    }
                 }
-                return@withContext null
             }
         }
+
+        found
     }
+
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun addToSkladiDataPrP(
         context: Context,
@@ -267,106 +387,159 @@ object DatabaseManager {
         skladId: String,
         userFio: String,
         textField: TextView
-    ): Boolean {
-        Log.d("DatabaseManager", "Adding to skladi_data for barcodeValue: $barcodeValue, userId: $userId, skladId: $skladId")
-        val searchData = findPrimaryDemandIdAndDate(context, barcodeValue)
-        if (searchData == null || searchData.primarydemand_id == null) {
-            Log.e("DatabaseManager", "ПрП не найден.")
-            return false
+    ): Boolean = withContext(Dispatchers.IO) {
+
+        Log.d("DatabaseManager", "Adding to skladi_data for barcode: $barcodeValue, userId=$userId, skladId=$skladId")
+
+        // 1) Проверки входных
+        if (userId == 0 || userFio.isEmpty()) {
+            withContext(Dispatchers.Main) { showToast(context, "Вернитесь в настройки, затем попробуйте снова", 10000) }
+            return@withContext false
         }
-        val primaryDemandId = searchData.primarydemand_id
-        val dateDistribution = searchData.dateDistribution
-        val segment = searchData.segment
-        val demand = searchData.demand
         if (skladId.isBlank()) {
-            Log.e("DatabaseManager", "Sklad ID не может быть пустым.")
-            showToast(context, "Склад не может быть пустым", 10000)
-            return false
+            withContext(Dispatchers.Main) { showToast(context, "Склад не может быть пустым", 10000) }
+            return@withContext false
         }
+
+        // 2) Достаём данные по ПрП
+        val searchData = findPrimaryDemandIdAndDate(context, barcodeValue)
+        val primaryDemandId = searchData?.primarydemand_id
+        val dateDistribution = searchData?.dateDistribution
+        val segment = searchData?.segment
+        val demand = searchData?.demand
+
+        if (primaryDemandId.isNullOrEmpty()) {
+            Log.e("DatabaseManager", "ПрП не найден.")
+            return@withContext false
+        }
+
+        // 3) Бизнес-правила по дате распределения/сегменту
         val currentDate = LocalDate.now()
-        val dateDistributionParsed = when {
-            dateDistribution.isNullOrEmpty() -> null
-            dateDistribution == "null" -> null
-            else -> LocalDate.parse(dateDistribution)
+        val dateDistributionParsed: LocalDate? = try {
+            if (dateDistribution.isNullOrEmpty() || dateDistribution == "null") null
+            else LocalDate.parse(dateDistribution)
+        } catch (_: Exception) { null }
+
+        val daysPlusSeria      = fetchDaysToAddSeria(context) ?: 3
+        val daysPlusMezhZavod  = fetchDaysToAddMezhZavod(context) ?: 210
+        val daysPlusOKR        = fetchDaysToAddOKR(context) ?: 60
+        val daysPlusPosleProd  = fetchDaysToAddPosleProdazhnoeObsluzhivanie(context) ?: 45
+
+        if (dateDistributionParsed != null) {
+            val allowed = when (segment) {
+                "Серия" -> dateDistributionParsed.isAfter(currentDate.plusDays(daysPlusSeria.toLong()))
+                "Межзавод" -> dateDistributionParsed.isAfter(currentDate.plusDays(daysPlusMezhZavod.toLong()))
+                "ОКР" -> dateDistributionParsed.isAfter(currentDate.plusDays(daysPlusOKR.toLong()))
+                "Послепродажное обслуживание" -> dateDistributionParsed.isAfter(currentDate.plusDays(daysPlusPosleProd.toLong()))
+                else -> false
+            }
+            if (!allowed) {
+                withContext(Dispatchers.Main) {
+                    showToast(
+                        context,
+                        "Запись не может быть добавлена: Дата распределения - $dateDistributionParsed и Сегмент - $segment",
+                        10000
+                    )
+                }
+                return@withContext false
+            }
         }
-        val daysPlusSeria = fetchDaysToAddSeria(context) ?: 3
-        val daysPlusMezhZavod = fetchDaysToAddMezhZavod(context) ?: 90
-        val daysPlusOKR = fetchDaysToAddOKR(context) ?: 45
-        val daysPlusPosleProd = fetchDaysToAddPosleProdazhnoeObsluzhivanie(context) ?: 45
-        if (dateDistributionParsed == null) {
-            Log.d("DatabaseManager", "Дата распределения пустая, запись будет добавлена.")
-        } else if (segment == "Серия" && dateDistributionParsed.isAfter(currentDate.plusDays(daysPlusSeria))) {
-            Log.d("DatabaseManager", "Сегмент и дата распределения допустимые, запись будет добавлена.")
-            showToast(context, "Сегмент и дата распределения допустимые, запись будет добавлена: Дата распределения - $dateDistributionParsed и Сегмент - $segment", 10000)
-        } else if (segment == "Межзавод" && dateDistributionParsed.isAfter(currentDate.plusDays(daysPlusMezhZavod))) {
-            Log.d("DatabaseManager", "Сегмент и дата распределения допустимые, запись будет добавлена.")
-            showToast(context, "Сегмент и дата распределения допустимые, запись будет добавлена: Дата распределения - $dateDistributionParsed и Сегмент - $segment", 10000)
-        }
-        else if (segment == "ОКР" && dateDistributionParsed.isAfter(currentDate.plusDays(daysPlusOKR))) {
-            Log.d("DatabaseManager", "Сегмент и дата распределения допустимые, запись будет добавлена.")
-            showToast(context, "Сегмент и дата распределения допустимые, запись будет добавлена: Дата распределения - $dateDistributionParsed и Сегмент - $segment", 10000)
-        }
-        else if (segment == "Послепродажное обслуживание" && dateDistributionParsed.isAfter(currentDate.plusDays(daysPlusPosleProd))) {
-            Log.d("DatabaseManager", "Сегмент и дата распределения допустимые, запись будет добавлена.")
-            showToast(context, "Сегмент и дата распределения допустимые, запись будет добавлена: Дата распределения - $dateDistributionParsed и Сегмент - $segment", 10000)
-        } else {
-            Log.e("DatabaseManager", "Не удается добавить запись. Дата распределения и сегмент не соответствуют условиям.")
-            showToast(context, "Запись не может быть добавлена: Дата распределения - $dateDistributionParsed и Сегмент - $segment", 10000)
-            return false
-        }
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
+
+        // 4) HTTP клиент
+        val app = context.applicationContext as App
+        val client = app.okHttpClient.newBuilder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .sslSocketFactory(getUnsafeSSLSocketFactory(), getUnsafeTrustManager())
+            .hostnameVerifier { _, _ -> true }
             .build()
-        val currentTimestamp = Instant.now().epochSecond
-        val requestBody = MultipartBody.Builder()
+
+        val urls = listOf(
+            "https://09f2befcf01d4dd39cbe7e54717e28af.apicapis.ru-moscow-1.hc.sbercloud.ru/api/create_skladi_data",
+            "https://api.gkmmz.ru/api/create_skladi_data"
+        )
+
+        val nowSec = Instant.now().epochSecond
+        val body = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("primarydemand_id", primaryDemandId)
             .addFormDataPart("sklad_id", skladId)
             .addFormDataPart("user_id", userId.toString())
             .addFormDataPart("user_fio", userFio)
-            .addFormDataPart("date_distribution", if (dateDistribution.isNullOrEmpty() || dateDistribution == "null") "" else dateDistribution)
             .addFormDataPart("action", "0")
-            .addFormDataPart("system_name", "mobile")
-            .addFormDataPart("date", currentTimestamp.toString())
-            .addFormDataPart("prp_name", demand.toString())
-            .build()
-        Log.d("DatabaseManager", "Тело запроса: ${requestBody.toString()}")
-        val request = Request.Builder()
-            .url("http://192.168.200.250/api/create_skladi_data")
-            .post(requestBody)
-            .build()
-        return try {
-            withContext(Dispatchers.IO) {
-                val response = client.newCall(request).execute()
-                Log.d("DatabaseManager", "Ответ от сервера: ${response.body?.string()}")
-                if (!response.isSuccessful) {
-                    Log.e("DatabaseManager", "Ошибка при добавлении записи: ${response.message}")
-                    when (response.code) {
-                        400 -> showToast(context, "Некорректно введены данные для добавления на ПРОСК", 10000)
-                        409 -> showToast(context, "Данная ПрП уже есть на складе на ПРОСК", 10000) // Код 409 для конфликта
-                        else -> showToast(context, "Произошла ошибка: ${response.message}", 10000)
-                    }
-                    return@withContext false
-                } else {
-                    Log.d("DatabaseManager", "Запись успешно добавлена в skladi_data.")
-                    showToast(context, "Запись успешно добавлена на ПРОСК пользователем $userId", 10000)
-                    true
+            .addFormDataPart("system_name", version_name)
+            .addFormDataPart("date", nowSec.toString())
+            .addFormDataPart("prp_name", demand ?: "")
+            .apply {
+                if (!dateDistribution.isNullOrEmpty() && dateDistribution != "null") {
+                    addFormDataPart("date_distribution", dateDistribution)
                 }
             }
-        } catch (e: SocketTimeoutException) {
-            Log.e("DatabaseManager", "Timeout error during request: ${e.message}")
-            withContext(Dispatchers.Main) {
-                showToast(context, "Попробуйте позже. Сервер не отвечает.", 10000)
+            .build()
+
+        var success = false
+
+        for ((i, url) in urls.withIndex()) {
+            try {
+                val req = Request.Builder()
+                    .url(url)
+                    .post(body)
+                    .addHeader("X-Auth-Token", authToken)
+                    .addHeader("X-Apig-AppCode", authTokenAPI)
+                    .build()
+
+                Log.d("API Request", "POST $url")
+
+                client.newCall(req).execute().use { resp ->
+                    when {
+                        resp.isSuccessful -> {
+                            success = true
+                            withContext(Dispatchers.Main) { showToast(context, "Запись успешно добавлена на ПРОСК", 10000) }
+                            return@withContext true
+                        }
+                        resp.code == 429 && i < urls.lastIndex -> {
+                            Log.w("API Warning", "429 на $url — пробуем резервный…")
+                            // идём на следующую итерацию
+                        }
+                        resp.code == 400 -> {
+                            withContext(Dispatchers.Main) { showToast(context, "Некорректно введены данные для добавления на ПРОСК", 10000) }
+                            return@withContext false
+                        }
+                        resp.code == 409 -> {
+                            withContext(Dispatchers.Main) { showToast(context, "Данная ПрП уже есть на складе на ПРОСК", 10000) }
+                            return@withContext false
+                        }
+                        else -> {
+                            Log.e("API Error", "Ошибка сервера: ${resp.code} ${resp.message}")
+                            if (i == urls.lastIndex) {
+                                withContext(Dispatchers.Main) { showToast(context, "Ошибка сервера: ${resp.code}", 10000) }
+                                return@withContext false
+                            } else {
+
+                            }
+                        }
+                    }
+                }
+            } catch (e: ServiceModeException) {
+                // сервисный режим — экран уже показан
+                return@withContext false
+            } catch (e: SocketTimeoutException) {
+                Log.e("API Error", "Timeout на $url: ${e.message}")
+                if (i == urls.lastIndex) {
+                    withContext(Dispatchers.Main) { showToast(context, "Сервер не отвечает. Попробуйте позже.", 10000) }
+                    return@withContext false
+                }
+            } catch (e: Exception) {
+                Log.e("API Error", "Ошибка запроса на $url: ${e.message}", e)
+                if (i == urls.lastIndex) {
+                    withContext(Dispatchers.Main) { showToast(context, "Ошибка при добавлении записи", 10000) }
+                    return@withContext false
+                }
             }
-            false
-        } catch (e: Exception) {
-            Log.e("DatabaseManager", "Не удалось добавить запись: ${e.message}", e)
-            withContext(Dispatchers.Main) {
-                showToast(context, "Ошибка при добавлении записи.", 10000)
-            }
-            false
         }
+
+        success
     }
     suspend fun showToast(context: Context, message: String, duration: Long) {
         withContext(Dispatchers.Main) {
@@ -377,164 +550,264 @@ object DatabaseManager {
             }, duration)
         }
     }
-    suspend fun findDistributionDateByPrP(context: Context, barcodeValue: String): SearchDataRaspredeleniyaAndSegment? {
-        val url = "http://192.168.200.250/api/get_task?title=$barcodeValue"
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
+    suspend fun findDistributionDateByPrP(
+        context: Context,
+        barcodeValue: String
+    ): SearchDataRaspredeleniyaAndSegment? = withContext(Dispatchers.IO) {
+
+        val app = context.applicationContext as App
+        val client = app.okHttpClient.newBuilder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .sslSocketFactory(getUnsafeSSLSocketFactory(), getUnsafeTrustManager())
+            .hostnameVerifier { _, _ -> true }
             .build()
-        Log.d("DatabaseManager", "Finding ДатаРаспределения and Сегмент for barcodeValue: $barcodeValue")
-        return withContext(Dispatchers.IO) {
+
+        val urls = listOf(
+            "https://09f2befcf01d4dd39cbe7e54717e28af.apicapis.ru-moscow-1.hc.sbercloud.ru/api/get_task?title=$barcodeValue",
+            "https://api.gkmmz.ru/api/get_task?title=$barcodeValue"
+        )
+
+        Log.d("DatabaseManager", "Finding date/segment for ПрП: $barcodeValue")
+
+        var result: SearchDataRaspredeleniyaAndSegment? = null
+
+        for ((i, url) in urls.withIndex()) {
             try {
-                val request = Request.Builder()
+                val req = Request.Builder()
                     .url(url)
+                    .addHeader("X-Auth-Token", authToken)
+                    .addHeader("X-Apig-AppCode", authTokenAPI)
                     .build()
-                Log.d("API Request", "Executing API request: $url")
-                client.newCall(request).execute().use { response ->
-                    if (!response.isSuccessful) {
-                        Log.e("API Request", "Unexpected code: ${response.code}")
-                        return@withContext null
-                    }
-                    val responseBody = response.body?.string() ?: run {
-                        Log.e("API Request", "Response body is null")
-                        return@withContext null
-                    }
-                    Log.d("API Response", "Received response: $responseBody")
-                    val jsonArray = Json.parseToJsonElement(responseBody).jsonArray
-                    if (jsonArray.isNotEmpty()) {
-                        val firstTask = jsonArray[0].jsonObject
-                        val dateDistribution = firstTask["ДатаРаспределения"]?.jsonPrimitive?.let {
-                            if (it.isString) it.content else null
+
+                Log.d("API Request", "GET $url")
+
+                client.newCall(req).execute().use { resp ->
+                    when {
+                        resp.isSuccessful -> {
+                            val body = resp.body?.string().orEmpty()
+                            Log.d("API Response", "Ответ: $body")
+
+                            val arr = kotlinx.serialization.json.Json.parseToJsonElement(body).jsonArray
+                            val firstValid = arr.firstOrNull { el ->
+                                val status = el.jsonObject["status"]?.jsonPrimitive?.content
+                                status != "68"
+                            }?.jsonObject
+
+                            if (firstValid != null) {
+                                val dateDistribution = firstValid["ДатаРаспределения"]?.jsonPrimitive?.content
+                                val segment = firstValid["Сегмент"]?.jsonPrimitive?.content
+                                val demand = firstValid["Спрос"]?.jsonPrimitive?.content
+                                val status = firstValid["status"]?.jsonPrimitive?.content
+
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        "Найдена операция: Дата $dateDistribution, Сегмент $segment, Статус $status",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+
+                                result = SearchDataRaspredeleniyaAndSegment(dateDistribution, segment, demand, status)
+                            } else {
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(context, "Не найдено операций с подходящим статусом", Toast.LENGTH_LONG).show()
+                                }
+                            }
                         }
-                        val segment = firstTask["Сегмент"]?.jsonPrimitive?.let {
-                            if (it.isString) it.content else null
+                        resp.code == 429 && i < urls.lastIndex -> {
+                            Log.w("API Warning", "429 на $url — переключаемся на резервный…")
                         }
-                        val demand = firstTask["Спрос"]?.jsonPrimitive?.let {
-                            if (it.isString) it.content else null
+                        else -> {
+                            Log.e("API Request", "Ошибка сервера: ${resp.code}")
+                            if (i == urls.lastIndex) {
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(context, "Ошибка сервера: ${resp.code}", Toast.LENGTH_LONG).show()
+                                }
+                            } else {
+
+                            }
                         }
-                        Log.d("API Response", "Найдена Дата Распределения: $dateDistribution, Сегмент: $segment для ПрП = $barcodeValue и $demand")
-                        showToast(context, "Найдена Дата Распределения: $dateDistribution, Сегмент: $segment для ПрП = $barcodeValue и $demand", 5000)
-                        return@withContext SearchDataRaspredeleniyaAndSegment(dateDistribution, segment, demand)
-                    } else {
-                        Log.d("API Response", "No ДатаРаспределения and Сегмент found for ПрП = $barcodeValue")
-                        showToast(context, "Не найдена Дата Распределения и Сегмент для ПрП = $barcodeValue", 5000)
-                        return@withContext null
                     }
+                }
+
+                if (result != null) break
+            } catch (e: ServiceModeException) {
+                return@withContext null
+            } catch (e: SocketTimeoutException) {
+                Log.e("API Request", "Таймаут: ${e.message}")
+                if (i == urls.lastIndex) {
+                    withContext(Dispatchers.Main) { Toast.makeText(context, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show() }
                 }
             } catch (e: Exception) {
-                Log.e("API Request", "Error fetching data: ${e.message}", e)
-                return@withContext null
-            }
-            catch (e: SocketTimeoutException) {
-                Log.e("API Request", "Timeout error: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show()
+                Log.e("API Request", "Ошибка: ${e.message}", e)
+                if (i == urls.lastIndex) {
+                    withContext(Dispatchers.Main) { Toast.makeText(context, "Ошибка при получении данных", Toast.LENGTH_LONG).show() }
                 }
-                return@withContext null
             }
         }
+
+        if (result == null) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "Не найдены данные для ПрП = $barcodeValue", Toast.LENGTH_LONG).show()
+            }
+        }
+
+        result
     }
-    suspend fun getWarehouseNameById(context: Context, skladiDataId: String): String? {
-        val apiUrl = "http://192.168.200.250/api/get_all_skladi"
-        Log.d("WarehouseManager", "Найден склад с id: $skladiDataId")
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
+
+    suspend fun getWarehouseNameById(
+        context: Context,
+        skladiDataId: String
+    ): Pair<String?, Boolean>? = withContext(Dispatchers.IO) {
+
+        val app = context.applicationContext as App
+        val client = app.okHttpClient.newBuilder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .sslSocketFactory(getUnsafeSSLSocketFactory(), getUnsafeTrustManager())
+            .hostnameVerifier { _, _ -> true }
             .build()
-        return withContext(Dispatchers.IO) {
-            val request = Request.Builder()
-                .url(apiUrl)
-                .build()
+
+        val urls = listOf(
+            "https://api.gkmmz.ru/api/get_all_skladi",
+            "https://09f2befcf01d4dd39cbe7e54717e28af.apicapis.ru-moscow-1.hc.sbercloud.ru/api/get_all_skladi"
+        )
+
+        Log.d("WarehouseManager", "Поиск склада id=$skladiDataId")
+
+        var pair: Pair<String?, Boolean>? = null
+
+        for ((i, url) in urls.withIndex()) {
             try {
-                val response: Response = client.newCall(request).execute()
-                if (response.isSuccessful) {
-                    response.body?.string()?.let { responseBody ->
-                        val jsonData = JSONObject(responseBody)
-                        val warehouseData = jsonData.optJSONObject(skladiDataId)
-                        if (warehouseData != null) {
-                            val warehouseName = warehouseData.getString("Наименование")
-                            Log.d("WarehouseManager", "Found warehouse name: $warehouseName for ID = $skladiDataId")
-                            withContext(Dispatchers.Main) {
-                                showToast(context, "Найден склад с наименованием: $warehouseName", 5000)
+                val req = Request.Builder()
+                    .url(url)
+                    .addHeader("X-Auth-Token", authToken)
+                    .addHeader("X-Apig-AppCode", authTokenAPI)
+                    .build()
+
+                Log.d("API Request", "GET $url")
+
+                client.newCall(req).execute().use { resp ->
+                    when {
+                        resp.isSuccessful -> {
+                            val body = resp.body?.string().orEmpty()
+                            val json = JSONObject(body)
+                            val obj = json.optJSONObject(skladiDataId)
+                            if (obj != null) {
+                                val name = obj.optString("Наименование", null)
+                                val isActive = obj.optInt("is_active", 0) == 1
+                                pair = name to isActive
+                            } else {
+
                             }
-                            return@withContext warehouseName
-                        } else {
-                            Log.d("WarehouseManager", "No warehouse found for ID = $skladiDataId")
-                            withContext(Dispatchers.Main) {
-                                showToast(context, "Не найден склад с id: $skladiDataId", 5000)
-                            }
-                            return@withContext null
+                        }
+                        resp.code == 429 && i < urls.lastIndex -> {
+                            Log.w("API Warning", "429 на $url — пробуем резервный…")
+                        }
+                        else -> {
+                            Log.e("WarehouseManager", "Ошибка сервера: ${resp.code}")
                         }
                     }
-                } else {
-                    Log.e("WarehouseManager", "Ошибка при получении данных: ${response.code}")
+                }
+
+                if (pair != null) {
                     withContext(Dispatchers.Main) {
-                        showToast(context, "Ошибка при получении данных: ${response.message}", 5000)
+                        showToast(context, "Найден склад: ${pair!!.first}", 5000)
                     }
-                    return@withContext null
+                    break
                 }
+            } catch (e: ServiceModeException) {
+                return@withContext null
             } catch (e: SocketTimeoutException) {
-                Log.e("WarehouseManager", "Timeout error during request: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    showToast(context, "Попробуйте позже. Сервер не отвечает.", 5000)
+                Log.e("WarehouseManager", "Таймаут: ${e.message}")
+                if (i == urls.lastIndex) {
+                    withContext(Dispatchers.Main) { showToast(context, "Сервер не отвечает. Попробуйте позже.", 5000) }
                 }
-                return@withContext null
             } catch (e: Exception) {
-                Log.e("WarehouseManager", "Не удалось получить данные: ${e.message}", e)
-                withContext(Dispatchers.Main) {
-                    showToast(context, "Не удалось получить данные: ${e.message}", 5000)
+                Log.e("WarehouseManager", "Ошибка: ${e.message}", e)
+                if (i == urls.lastIndex) {
+                    withContext(Dispatchers.Main) { showToast(context, "Ошибка получения данных: ${e.message}", 5000) }
                 }
-                return@withContext null
             }
         }
+
+        pair
     }
-    suspend fun getAllWarehouses(context: Context): List<Warehouse> {
-        val apiUrl = "http://192.168.200.250/api/get_all_skladi"
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
+
+    suspend fun getAllWarehouses(context: Context): List<Warehouse> = withContext(Dispatchers.IO) {
+        val app = context.applicationContext as App
+        val client = app.okHttpClient.newBuilder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .sslSocketFactory(getUnsafeSSLSocketFactory(), getUnsafeTrustManager())
+            .hostnameVerifier { _, _ -> true }
             .build()
-        return withContext(Dispatchers.IO) {
-            val warehouses = mutableListOf<Warehouse>()
-            val request = Request.Builder()
-                .url(apiUrl)
-                .build()
+        val urls = listOf(
+            "https://09f2befcf01d4dd39cbe7e54717e28af.apicapis.ru-moscow-1.hc.sbercloud.ru/api/get_all_skladi",
+            "https://api.gkmmz.ru/api/get_all_skladi"
+        )
+        var result: List<Warehouse>? = null
+        for ((i, url) in urls.withIndex()) {
             try {
-                val response: Response = client.newCall(request).execute()
-                if (response.isSuccessful) {
-                    response.body?.string()?.let { responseBody ->
-                        val jsonData = JSONObject(responseBody)
-                        for (key in jsonData.keys()) {
-                            val warehouseData = jsonData.getJSONObject(key)
-                            val id = warehouseData.getString("id")
-                            val name = warehouseData.getString("Наименование")
-                            val shelf = warehouseData.getString("Полка")
-                            val rack = warehouseData.getString("Стеллаж")
-                            val displayName = "$name $rack $shelf"
-                            warehouses.add(Warehouse(id, name, displayName))
+                val req = Request.Builder()
+                    .url(url)
+                    .addHeader("X-Auth-Token", authToken)
+                    .addHeader("X-Apig-AppCode", authTokenAPI)
+                    .build()
+                Log.d("API Request", "GET $url")
+                client.newCall(req).execute().use { resp ->
+                    when {
+                        resp.isSuccessful -> {
+                            val body = resp.body?.string().orEmpty()
+                            val json = JSONObject(body)
+                            val warehouses = mutableListOf<Warehouse>()
+                            val keys = json.keys()
+                            while (keys.hasNext()) {
+                                val key = keys.next()
+                                val o = json.getJSONObject(key)
+                                val id    = o.optString("id", key)
+                                val name  = o.optString("Наименование", "")
+                                val shelf = o.optString("Полка", "")
+                                val rack  = o.optString("Стеллаж", "")
+                                val displayName = listOf(name, rack, shelf).filter { it.isNotBlank() }.joinToString(" ")
+                                warehouses.add(Warehouse(id, name, displayName))
+                            }
+                            result = warehouses
+                        }
+                        resp.code == 429 && i < urls.lastIndex -> {
+                            Log.w("WarehouseManager", "429 на $url — пробуем резервный…")
+                        }
+                        else -> {
+                            Log.e("WarehouseManager", "Ошибка сервера: ${resp.code} ${resp.message}")
                         }
                     }
-                } else {
-                    Log.e("WarehouseManager", "Ошибка при получении данных: ${response.code}")
-                    throw Exception("Ошибка при получении данных: ${response.code}")
                 }
+                if (result != null) break
+            } catch (e: ServiceModeException) {
+                break
             } catch (e: SocketTimeoutException) {
-                Log.e("WarehouseManager", "Timeout error during request: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show()
+                Log.e("WarehouseManager", "Таймаут: ${e.message}")
+                if (i == urls.lastIndex) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Сервер не отвечает. Попробуйте позже.", Toast.LENGTH_LONG).show()
+                    }
                 }
-                return@withContext emptyList()
             } catch (e: Exception) {
-                Log.e("WarehouseManager", "Не удалось получить данные: ${e.message}", e)
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Не удалось получить данные: ${e.message}", Toast.LENGTH_LONG).show()
+                Log.e("WarehouseManager", "Ошибка: ${e.message}", e)
+                if (i == urls.lastIndex) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Ошибка получения данных: ${e.message}", Toast.LENGTH_LONG).show()
+                    }
                 }
-                return@withContext emptyList()
             }
-            warehouses
         }
+        result ?: emptyList()
     }
+
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun addInventoryRecord(
         context: Context,
@@ -543,466 +816,549 @@ object DatabaseManager {
         skladId: String,
         userFio: String,
         textField: TextView
-    ): Boolean {
-        Log.d("DatabaseManager", "Adding to skladi_data for barcodeValue: $barcodeValue, userId: $userId, skladId: $skladId")
+    ): Boolean = withContext(Dispatchers.IO) {
+
+        Log.d("DatabaseManager", "Inventory add: barcode=$barcodeValue, userId=$userId, skladId=$skladId")
+
         val searchData = findPrimaryDemandIdAndDate(context, barcodeValue)
-        if (searchData == null || searchData.primarydemand_id == null) {
+        val primaryDemandId = searchData?.primarydemand_id
+        val dateDistribution = searchData?.dateDistribution
+
+        if (primaryDemandId.isNullOrEmpty()) {
             Log.e("DatabaseManager", "ПрП не найден.")
-            return false
+            return@withContext false
         }
-        val primaryDemandId = searchData.primarydemand_id
-        val dateDistribution = searchData.dateDistribution
         if (skladId.isBlank()) {
-            Log.e("DatabaseManager", "Sklad ID не может быть пустым.")
-            return false
+            Log.e("DatabaseManager", "Sklad ID пуст.")
+            return@withContext false
         }
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
+
+        val app = context.applicationContext as App
+        val client = app.okHttpClient.newBuilder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .sslSocketFactory(getUnsafeSSLSocketFactory(), getUnsafeTrustManager())
+            .hostnameVerifier { _, _ -> true }
             .build()
-        val currentTimestamp = Instant.now().epochSecond
-        val requestBody = MultipartBody.Builder()
+
+        val nowSec = Instant.now().epochSecond
+        val body = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("primarydemand_id", primaryDemandId)
             .addFormDataPart("sklad_id", skladId)
             .addFormDataPart("user_id", userId.toString())
             .addFormDataPart("user_fio", userFio)
             .addFormDataPart("date_distribution", dateDistribution?.takeIf { it.isNotEmpty() } ?: "")
-            .addFormDataPart("system_name", "mobile")
-            .addFormDataPart("date", currentTimestamp.toString())
+            .addFormDataPart("system_name", version_name)
+            .addFormDataPart("date", nowSec.toString())
             .build()
-        val request = Request.Builder()
-            .url("http://192.168.200.250/api/create_skladi_inv_data")
-            .post(requestBody)
-            .build()
-        return try {
-            withContext(Dispatchers.IO) {
-                val response = client.newCall(request).execute()
-                if (!response.isSuccessful) {
-                    Log.e("DatabaseManager", "Ошибка при добавлении записи: ${response.message}")
-                    if (response.code == 400) {
-                        showToast(context, "Данная ПрП проинвентаризирована", 5000)
-                    }
-                    false
-                } else {
-                    Log.d("DatabaseManager", "ПрП успешно проинвентаризирована")
-                    showToast(context, "ПрП успешно проинвентаризирована сотрудником $userId", 5000)
-                    true
-                }
-            }
-        } catch (e: SocketTimeoutException) {
-            Log.e("DatabaseManager", "Timeout error during request: ${e.message}")
-            withContext(Dispatchers.Main) {
-                showToast(context, "Попробуйте позже. Сервер не отвечает.", 5000)
-            }
-            false
-        } catch (e: Exception) {
-            Log.e("DatabaseManager", "Не удалось добавить запись: ${e.message}", e)
-            withContext(Dispatchers.Main) {
-                showToast(context, "Ошибка при добавлении записи.", 5000)
-            }
-            false
-        }
-    }
-    suspend fun fetchDaysToAddSeria(context: Context): Long? {
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .build()
-        return withContext(Dispatchers.IO) {
-            val request = Request.Builder()
-                .url("http://192.168.200.250/api/get_project_setting/skladi_today_plus_value_Серия")
-                .build()
+
+        val urls = listOf(
+            "https://09f2befcf01d4dd39cbe7e54717e28af.apicapis.ru-moscow-1.hc.sbercloud.ru/api/create_skladi_inv_data",
+            "https://api.gkmmz.ru/api/create_skladi_inv_data"
+        )
+
+        for ((i, url) in urls.withIndex()) {
             try {
-                val response: Response = client.newCall(request).execute()
-                if (response.isSuccessful) {
-                    response.body?.string()?.let { responseData ->
-                        val adapter = moshi.adapter(ApiResponseDateValue::class.java)
-                        val apiResponse = adapter.fromJson(responseData)
-                        return@let apiResponse?.value?.toLongOrNull()
-                    }
-                } else {
-                    Log.e("ApiError", "Ошибка в ответе сервера: ${response.code}")
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "Ошибка при получении данных: ${response.code}", Toast.LENGTH_LONG).show()
-                    }
-                }
-            } catch (e: SocketTimeoutException) {
-                Log.e("ApiError", "Timeout error during request: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show()
-                }
-            } catch (e: Exception) {
-                Log.e("ApiError", "Ошибка при получении значения: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Не удалось получить данные: ${e.message}", Toast.LENGTH_LONG).show()
-                }
-            }
-            null
-        }
-    }
-    suspend fun fetchDaysToAddPosleProdazhnoeObsluzhivanie(context: Context): Long? {
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .build()
-        return withContext(Dispatchers.IO) {
-            val request = Request.Builder()
-                .url("http://192.168.200.250/api/get_project_setting/skladi_today_plus_value_Послепродажное обслуживание")
-                .build()
-            try {
-                val response: Response = client.newCall(request).execute()
-                if (response.isSuccessful) {
-                    response.body?.string()?.let { responseData ->
-                        val adapter = moshi.adapter(ApiResponseDateValue::class.java)
-                        val apiResponse = adapter.fromJson(responseData)
-                        return@let apiResponse?.value?.toLongOrNull()
-                    }
-                } else {
-                    Log.e("ApiError", "Ошибка в ответе сервера: ${response.code}")
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "Ошибка при получении данных: ${response.code}", Toast.LENGTH_LONG).show()
-                    }
-                }
-            } catch (e: SocketTimeoutException) {
-                Log.e("ApiError", "Timeout error during request: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show()
-                }
-            } catch (e: Exception) {
-                Log.e("ApiError", "Ошибка при получении значения: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Не удалось получить данные: ${e.message}", Toast.LENGTH_LONG).show()
-                }
-            }
-            null
-        }
-    }
-    suspend fun fetchDaysToAddMezhZavod(context: Context): Long? {
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .build()
-        return withContext(Dispatchers.IO) {
-            val request = Request.Builder()
-                .url("http://192.168.200.250/api/get_project_setting/skladi_today_plus_value_Межзавод")
-                .build()
-            try {
-                val response: Response = client.newCall(request).execute()
-                if (response.isSuccessful) {
-                    response.body?.string()?.let { responseData ->
-                        val adapter = moshi.adapter(ApiResponseDateValue::class.java)
-                        val apiResponse = adapter.fromJson(responseData)
-                        return@let apiResponse?.value?.toLongOrNull()
-                    }
-                } else {
-                    Log.e("ApiError", "Ошибка в ответе сервера: ${response.code}")
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "Ошибка при получении данных: ${response.code}", Toast.LENGTH_LONG).show()
-                    }
-                }
-            } catch (e: SocketTimeoutException) {
-                Log.e("ApiError", "Timeout error during request: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show()
-                }
-            } catch (e: Exception) {
-                Log.e("ApiError", "Ошибка при получении значения: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Не удалось получить данные: ${e.message}", Toast.LENGTH_LONG).show()
-                }
-            }
-            null
-        }
-    }
-    suspend fun fetchDaysToAddOKR(context: Context): Long? {
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .build()
-        return withContext(Dispatchers.IO) {
-            val request = Request.Builder()
-                .url("http://192.168.200.250/api/get_project_setting/skladi_today_plus_value_ОКР")
-                .build()
-            try {
-                val response: Response = client.newCall(request).execute()
-                if (response.isSuccessful) {
-                    response.body?.string()?.let { responseData ->
-                        val adapter = moshi.adapter(ApiResponseDateValue::class.java)
-                        val apiResponse = adapter.fromJson(responseData)
-                        return@let apiResponse?.value?.toLongOrNull()
-                    }
-                } else {
-                    Log.e("ApiError", "Ошибка в ответе сервера: ${response.code}")
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "Ошибка при получении данных: ${response.code}", Toast.LENGTH_LONG).show()
-                    }
-                }
-            } catch (e: SocketTimeoutException) {
-                Log.e("ApiError", "Timeout error during request: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show()
-                }
-            } catch (e: Exception) {
-                Log.e("ApiError", "Ошибка при получении значения: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Не удалось получить данные: ${e.message}", Toast.LENGTH_LONG).show()
-                }
-            }
-            null
-        }
-    }
-    suspend fun fetchMobileVersion(context: Context): String? {
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .build()
-        return withContext(Dispatchers.IO) {
-            val request = Request.Builder()
-                .url("http://192.168.200.250/api/get_version")
-                .build()
-            try {
-                val response: Response = client.newCall(request).execute()
-                if (response.isSuccessful) {
-                    val responseData = response.body?.string()
-                    Log.d("ApiResponse", "Response data: $responseData")
-                    if (responseData != null) {
-                        val jsonObject = JSONObject(responseData)
-                        Log.d("ApiResponse", "Parsed JSON: $jsonObject")
-                        if (jsonObject.has("version")) {
-                            val version = jsonObject.getInt("version")
-                            Log.d("ApiResponse", "Извлечённая версия: $version")
-                            return@withContext version.toString()
-                        } else {
-                            Log.e("ApiError", "Ключ 'version' отсутствует в ответе")
-                        }
-                    } else {
-                        Log.e("ApiError", "Response body is null")
-                    }
-                } else {
-                    Log.e("ApiError", "Ошибка в ответе сервера: ${response.code}")
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "Ошибка при получении данных: ${response.code}", Toast.LENGTH_LONG).show()
-                    }
-                }
-            } catch (e: SocketTimeoutException) {
-                Log.e("ApiError", "Timeout error during request: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show()
-                }
-            } catch (e: Exception) {
-                Log.e("ApiError", "Ошибка при получении значения: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Не удалось получить данные: ${e.message}", Toast.LENGTH_LONG).show()
-                }
-            }
-            null
-        }
-    }
-    suspend fun getOperationsForPrp(context: Context, prpValue: String): List<OperationWithDemand> {
-        val apiUrl = "http://192.168.200.250/api/get_task?title=${Uri.encode(prpValue)}"
-        Log.d("APIManager", "Fetching operations from API: $apiUrl")
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
-            .build()
-        val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-        val adapter = moshi.adapter(OperationWithDemand::class.java)
-        return withContext(Dispatchers.IO) {
-            val operations = mutableListOf<OperationWithDemand>()
-            val uniqueOperations = mutableSetOf<String>()
-            try {
-                val request = Request.Builder()
-                    .url(apiUrl)
+                val req = Request.Builder()
+                    .url(url)
+                    .post(body)
+                    .addHeader("X-Auth-Token", authToken)
+                    .addHeader("X-Apig-AppCode", authTokenAPI)
                     .build()
-                val response: Response = client.newCall(request).execute()
-                if (response.isSuccessful) {
-                    response.body?.string()?.let { responseData ->
-                        val jsonArray = JSONArray(responseData)
-                        for (i in 0 until jsonArray.length()) {
-                            val jsonObject = jsonArray.getJSONObject(i)
-                            val operation = jsonObject.getString("Операция")
-                            if (uniqueOperations.add(operation)) {
-                                val operationWithDemand = OperationWithDemand(
-                                    operation = operation,
-                                    operation2 = jsonObject.getString("Operation"),
-                                    demand = jsonObject.getString("Спрос"),
-                                    uchastok = jsonObject.getString("Участок"),
-                                    podrazd_mdm_code = jsonObject.optString("Подразделение_mdm_code"),
-                                    next_podrazd_mdm_code = jsonObject.optString("next_Подразделение_mdm_code"),
-                                    zahodNomer = jsonObject.getString("ЗаходНомер"),
-                                    status = jsonObject.getString("status")
-                                )
-                                operations.add(operationWithDemand)
+
+                Log.d("DatabaseManager", "POST $url")
+
+                client.newCall(req).execute().use { resp ->
+                    when {
+                        resp.isSuccessful -> {
+                            Log.d("DatabaseManager", "ПрП успешно проинвентаризирована")
+                            withContext(Dispatchers.Main) {
+                                showToast(context, "ПрП успешно проинвентаризирована сотрудником $userId", 5000)
+                            }
+                            return@withContext true
+                        }
+                        resp.code == 429 && i < urls.lastIndex -> {
+                            Log.w("DatabaseManager", "429 на $url — пробуем резервный…")
+                        }
+                        resp.code == 400 -> {
+                            withContext(Dispatchers.Main) {
+                                showToast(context, "Данная ПрП проинвентаризирована", 5000)
+                            }
+                            return@withContext false
+                        }
+                        else -> {
+                            Log.e("DatabaseManager", "Ошибка добавления: ${resp.code} ${resp.message}")
+                            if (i == urls.lastIndex) {
+                                withContext(Dispatchers.Main) {
+                                    showToast(context, "Ошибка при добавлении записи: ${resp.code}", 5000)
+                                }
+                                return@withContext false
+                            } else {
+
                             }
                         }
                     }
-                } else {
-                    Log.e("ApiError", "Ошибка в ответе сервера: ${response.code}")
+                }
+            } catch (e: ServiceModeException) {
+                // сервисный режим
+                return@withContext false
+            } catch (e: SocketTimeoutException) {
+                Log.e("DatabaseManager", "Таймаут: ${e.message}")
+                if (i == urls.lastIndex) {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "Ошибка при получении данных: ${response.code}", Toast.LENGTH_LONG).show()
+                        showToast(context, "Попробуйте позже. Сервер не отвечает.", 5000)
+                    }
+                    return@withContext false
+                }
+            } catch (e: Exception) {
+                Log.e("DatabaseManager", "Исключение: ${e.message}", e)
+                if (i == urls.lastIndex) {
+                    withContext(Dispatchers.Main) {
+                        showToast(context, "Ошибка при добавлении записи.", 5000)
+                    }
+                    return@withContext false
+                }
+            }
+        }
+
+        false
+    }
+
+    // Универсальный геттер "дней" из /api/get_project_setting
+    private suspend fun fetchProjectSettingDays(context: Context, key: String): Long? = withContext(Dispatchers.IO) {
+        val app = context.applicationContext as App
+        val client = app.okHttpClient.newBuilder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .sslSocketFactory(getUnsafeSSLSocketFactory(), getUnsafeTrustManager())
+            .hostnameVerifier { _, _ -> true }
+            .build()
+
+        val urls = listOf(
+            "https://09f2befcf01d4dd39cbe7e54717e28af.apicapis.ru-moscow-1.hc.sbercloud.ru/api/get_project_setting",
+            "https://api.gkmmz.ru/api/get_project_setting"
+        )
+
+        val formBody = FormBody.Builder()
+            .add("key", key)
+            .build()
+
+        var result: Long? = null
+
+        for ((i, url) in urls.withIndex()) {
+            try {
+                val req = Request.Builder()
+                    .url(url)
+                    .post(formBody)
+                    .addHeader("X-Apig-AppCode", authTokenAPI)
+                    .addHeader("X-Auth-Token", authToken)
+                    .build()
+
+                android.util.Log.d("ApiDebug", "POST $url (key=$key)")
+
+                client.newCall(req).execute().use { resp ->
+                    when {
+                        resp.isSuccessful -> {
+                            val body = resp.body?.string().orEmpty()
+                            android.util.Log.d("ApiDebug", "Ответ сервера ($key): $body")
+
+                            // Если вдруг пришёл массив — считаем это некорректным форматом
+                            if (body.trim().startsWith("[")) {
+                                android.util.Log.e("ApiError", "Ожидался объект, получен массив (key=$key)")
+                            } else {
+                                try {
+                                    val json = JSONObject(body)
+                                    val valueStr = json.optString("value", "")
+                                    result = valueStr.toLongOrNull()
+                                    if (result == null && valueStr.isNotEmpty()) {
+                                        android.util.Log.e("ApiError", "Не удалось преобразовать 'value' в Long: '$valueStr' (key=$key)")
+                                    } else {
+
+                                    }
+                                } catch (e: JSONException) {
+                                    android.util.Log.e("ApiError", "Ошибка парсинга JSON (key=$key): ${e.message}", e)
+                                }
+                            }
+                        }
+                        resp.code == 429 && i < urls.lastIndex -> {
+                            android.util.Log.w("ApiWarn", "429 на $url (key=$key) — пробуем резервный…")
+                        }
+                        else -> {
+                            android.util.Log.e("ApiError", "HTTP ${resp.code} на $url (key=$key)")
+                            if (i == urls.lastIndex) {
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(context, "Ошибка при получении данных: ${resp.code}", Toast.LENGTH_LONG).show()
+                                }
+                            } else {
+
+                            }
+                        }
                     }
                 }
+
+                if (result != null) break
+            } catch (e: ServiceModeException) {
+                // сервисный режим — экран уже показан, просто выходим
+                break
             } catch (e: SocketTimeoutException) {
-                Log.e("APIManager", "Timeout error during request: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show()
+                android.util.Log.e("ApiError", "Таймаут запроса (key=$key): ${e.message}")
+                if (i == urls.lastIndex) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show()
+                    }
                 }
             } catch (e: Exception) {
-                Log.e("APIManager", "Error fetching data from API: ${e.message}", e)
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Не удалось получить данные: ${e.message}", Toast.LENGTH_LONG).show()
+                android.util.Log.e("ApiError", "Ошибка запроса (key=$key): ${e.message}", e)
+                if (i == urls.lastIndex) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Не удалось получить данные: ${e.message}", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
-            Log.d("APIManager", "Returning operations: $operations")
-            operations
         }
+
+        result
     }
-    private var database2: Database? = null
-    suspend fun connect2(context: Context) {
-        if (database2 != null) {
-            Log.w("DatabaseManager", "Already connected to the database")
-            showToast(context, "Уже подключен к базе данных", 5000)
-            return
-        }
+
+    /** Обёртки под конкретные ключи **/
+    suspend fun fetchDaysToAddSeria(context: Context): Long? =
+        fetchProjectSettingDays(context, key = "skladi_today_plus_value_Серия")
+
+    suspend fun fetchDaysToAddPosleProdazhnoeObsluzhivanie(context: Context): Long? =
+        fetchProjectSettingDays(context, key = "skladi_today_plus_value_Послепродажное обслуживание")
+
+    suspend fun fetchDaysToAddMezhZavod(context: Context): Long? =
+        fetchProjectSettingDays(context, key = "skladi_today_plus_value_Межзавод")
+
+    suspend fun fetchDaysToAddOKR(context: Context): Long? =
+        fetchProjectSettingDays(context, key = "skladi_today_plus_value_ОКР")
+
+
+    suspend fun getOperationsForPrp(context: Context, prpValue: String): List<OperationWithDemand> =
         withContext(Dispatchers.IO) {
-            try {
-                database2 = Database.connect(
-                    url = "jdbc:mysql://192.168.200.250:3306/project?useSSL=false",
-                    user = "root",
-                    password = "bitrix"
-                )
-                Log.d("DatabaseManager", "Database connection successful")
-                showToast(context, "Успешное подключение к базе данных", 5000)
-            } catch (e: Exception) {
-                Log.e("DatabaseManager", "Failed to connect to database: ${e.message}", e)
-                showToast(context, "Не удалось подключиться к базе данных", 5000)
-                database2 = null
+            val app = context.applicationContext as App
+            val client = app.okHttpClient.newBuilder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .sslSocketFactory(getUnsafeSSLSocketFactory(), getUnsafeTrustManager())
+                .hostnameVerifier { _, _ -> true }
+                .build()
+
+            val urls = listOf(
+                "https://09f2befcf01d4dd39cbe7e54717e28af.apicapis.ru-moscow-1.hc.sbercloud.ru/api/get_task?title=${Uri.encode(prpValue)}",
+                "https://api.gkmmz.ru/api/get_task?title=${Uri.encode(prpValue)}"
+            )
+
+            for (i in urls.indices) {
+                val url = urls[i]
+                try {
+                    val req = Request.Builder()
+                        .url(url)
+                        .addHeader("X-Apig-AppCode", authTokenAPI)
+                        .addHeader("X-Auth-Token", authToken)
+                        .build()
+
+                    val resp = client.newCall(req).execute()
+                    try {
+                        if (resp.isSuccessful) {
+                            val body = resp.body?.string().orEmpty()
+                            val arr = JSONArray(body)
+                            val ops = mutableListOf<OperationWithDemand>()
+                            val seen = HashSet<String>()
+                            for (idx in 0 until arr.length()) {
+                                val o = arr.getJSONObject(idx)
+                                val operation = o.optString("Операция")
+                                if (operation.isEmpty() || !seen.add(operation)) continue
+                                ops.add(
+                                    OperationWithDemand(
+                                        operation = operation,
+                                        operation2 = o.optString("Operation"),
+                                        demand = o.optString("Спрос"),
+                                        uchastok = o.optString("Участок"),
+                                        podrazd_mdm_code = o.optString("Подразделение_mdm_code"),
+                                        next_podrazd_mdm_code = o.optString("next_Подразделение_mdm_code"),
+                                        zahodNomer = o.optString("ЗаходНомер"),
+                                        status = o.optString("status"),
+                                        nextUchastok = o.optString("next_uchastok", ""),
+                                        needProsk = o.optString("НужноОтнестиНаПроск") == "1"
+                                    )
+                                )
+                            }
+                            return@withContext ops
+                        }
+
+                        if (resp.code == 429 && i < urls.lastIndex) {
+                            android.util.Log.w("APIManager", "429 on $url, trying fallback…")
+                            continue
+                        } else if (i == urls.lastIndex) {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(context, "Ошибка: ${resp.code}", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    } finally {
+                        resp.close()
+                    }
+                } catch (e: ServiceModeException) {
+                    // экран сервисного режима уже показан — выходим
+                    break
+                } catch (e: SocketTimeoutException) {
+                    android.util.Log.e("APIManager", "Timeout on $url: ${e.message}")
+                    if (i == urls.lastIndex) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    android.util.Log.e("APIManager", "Request error: ${e.message}", e)
+                    if (i == urls.lastIndex) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "Не удалось получить данные", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
             }
+            emptyList()
         }
-    }
-    fun isConnected2(): Boolean {
-        return database2 != null
-    }
-    suspend fun getDeliveryLogisticsByDemand(prp: String, operation: String, type: String, context: Context): List<LogisticsDeliveryItem> {
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
+
+
+    //    private var database2: Database? = null
+//    suspend fun connect2(context: Context) {
+//        if (database2 != null) {
+//            Log.w("DatabaseManager", "Already connected to the database")
+//            showToast(context, "Уже подключен к базе данных", 5000)
+//            return
+//        }
+//        withContext(Dispatchers.IO) {
+//            try {
+//                database2 = Database.connect(
+//                    url = "jdbc:mysql://192.168.200.250:3306/project?useSSL=false",
+//                    user = "root",
+//                    password = "bitrix"
+//                )
+//                Log.d("DatabaseManager", "Database connection successful")
+//                showToast(context, "Успешное подключение к базе данных", 5000)
+//            } catch (e: Exception) {
+//                Log.e("DatabaseManager", "Failed to connect to database: ${e.message}", e)
+//                showToast(context, "Не удалось подключиться к базе данных", 5000)
+//                database2 = null
+//            }
+//        }
+//    }
+//    fun isConnected2(): Boolean {
+//        return database2 != null
+//    }
+    suspend fun getDeliveryLogisticsByDemand(
+        prp: String,
+        operation: String,
+        type: String,
+        context: Context
+    ): List<LogisticsDeliveryItem> = withContext(Dispatchers.IO) {
+        val app = context.applicationContext as App
+        val client = app.okHttpClient.newBuilder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .sslSocketFactory(getUnsafeSSLSocketFactory(), getUnsafeTrustManager())
+            .hostnameVerifier { _, _ -> true }
             .build()
-        val url = "http://192.168.200.250/api/get_delivery_by_object"
+
+        val urls = listOf(
+            "https://09f2befcf01d4dd39cbe7e54717e28af.apicapis.ru-moscow-1.hc.sbercloud.ru/api/get_delivery_by_object_prp",
+            "https://api.gkmmz.ru/api/get_delivery_by_object_prp"
+        )
+
         val formBody = FormBody.Builder()
             .add("object_name", prp)
             .add("operation", operation)
             .add("type", type)
             .build()
-        val request = Request.Builder()
-            .url(url)
-            .post(formBody)
-            .build()
-        return withContext(Dispatchers.IO) {
+
+        for (i in urls.indices) {
+            val url = urls[i]
             try {
-                val response = client.newCall(request).execute()
-                if (!response.isSuccessful) throw IOException("Unexpected code $response")
-                val responseBody = response.body?.string() ?: throw IOException("Empty response body")
-                val gson = Gson()
-                val listType = object : TypeToken<List<LogisticsDeliveryItem>>() {}.type
-                return@withContext gson.fromJson(responseBody, listType)
-            } catch (e: SocketTimeoutException) {
-                Log.e("ApiError", "Timeout error during request: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show()
+                val req = Request.Builder()
+                    .url(url)
+                    .post(formBody)
+                    .addHeader("X-Apig-AppCode", authTokenAPI)
+                    .addHeader("X-Auth-Token", authToken)
+                    .build()
+
+                val resp = client.newCall(req).execute()
+                try {
+                    if (resp.isSuccessful) {
+                        val body = resp.body?.string().orEmpty()
+                        val listType = object : TypeToken<List<LogisticsDeliveryItem>>() {}.type
+                        return@withContext Gson().fromJson<List<LogisticsDeliveryItem>>(body, listType) ?: emptyList()
+                    }
+
+                    if (resp.code == 429 && i < urls.lastIndex) {
+                        android.util.Log.w("APIManager", "429 on $url, trying fallback…")
+                        continue
+                    } else if (i == urls.lastIndex) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "Ошибка: ${resp.code}", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                } finally {
+                    resp.close()
                 }
-                emptyList()
+            } catch (e: ServiceModeException) {
+                break
             } catch (e: Exception) {
-                Log.e("ApiError", "Ошибка при получении данных: ${e.message}", e)
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Не удалось получить данные: ${e.message}", Toast.LENGTH_LONG).show()
+                android.util.Log.e("APIManager", "Request error: ${e.message}", e)
+                if (i == urls.lastIndex) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Не удалось получить данные", Toast.LENGTH_LONG).show()
+                    }
                 }
-                emptyList()
             }
         }
+        emptyList()
     }
-    suspend fun getDeliveryLogisticsByDemandDoc(doc: String, type: String, context: Context): List<LogisticsDeliveryItem> {
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
+    suspend fun getDeliveryLogisticsByDemandDoc(
+        doc: String,
+        type: String,
+        context: Context
+    ): List<LogisticsDeliveryItem> = withContext(Dispatchers.IO) {
+        val app = context.applicationContext as App
+        val client = app.okHttpClient.newBuilder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .sslSocketFactory(getUnsafeSSLSocketFactory(), getUnsafeTrustManager())
+            .hostnameVerifier { _, _ -> true }
             .build()
-        val url = "http://192.168.200.250/api/get_delivery_by_object"
+
+        val urls = listOf(
+            "https://09f2befcf01d4dd39cbe7e54717e28af.apicapis.ru-moscow-1.hc.sbercloud.ru/api/get_delivery_by_object_doc",
+            "https://api.gkmmz.ru/api/get_delivery_by_object_doc"
+        )
+
         val formBody = FormBody.Builder()
             .add("object_id", doc)
             .add("type", type)
             .build()
-        val request = Request.Builder()
-            .url(url)
-            .post(formBody)
-            .build()
-        return withContext(Dispatchers.IO) {
+
+        for (i in urls.indices) {
+            val url = urls[i]
             try {
-                val response = client.newCall(request).execute()
-                if (!response.isSuccessful) throw IOException("Unexpected code $response")
-                val responseBody = response.body?.string() ?: throw IOException("Empty response body")
-                val gson = Gson()
-                val listType = object : TypeToken<List<LogisticsDeliveryItem>>() {}.type
-                return@withContext gson.fromJson(responseBody, listType)
-            } catch (e: SocketTimeoutException) {
-                Log.e("ApiError", "Timeout error during request: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show()
-                }
-                emptyList()
-            } catch (e: Exception) {
-                Log.e("ApiError", "Ошибка при получении данных: ${e.message}", e)
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Не удалось получить данные: ${e.message}", Toast.LENGTH_LONG).show()
-                }
-                emptyList()
-            }
-        }
-    }
-    suspend fun getAllSotrudnikiInfo(context: Context): List<SotrudnikiInfo> {
-        val apiUrl = "http://192.168.200.250/api/get_all_sotrudniki"
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .build()
-        return withContext(Dispatchers.IO) {
-            val sotrudniki = mutableListOf<SotrudnikiInfo>()
-            val request = Request.Builder()
-                .url(apiUrl)
-                .build()
-            try {
-                val response: Response = client.newCall(request).execute()
-                if (response.isSuccessful) {
-                    response.body?.string()?.let { responseBody ->
-                        val jsonData = JSONObject(responseBody)
-                        for (key in jsonData.keys()) {
-                            val sotrudnikiData = jsonData.getJSONObject(key)
-                            val mdmcode = sotrudnikiData.getString("mdmcode")
-                            val fio = sotrudnikiData.getString("Рабочий")
-                            sotrudniki.add(SotrudnikiInfo(mdmcode, fio))
+                val req = Request.Builder()
+                    .url(url)
+                    .post(formBody)
+                    .addHeader("X-Apig-AppCode", authTokenAPI)
+                    .addHeader("X-Auth-Token", authToken)
+                    .build()
+
+                val resp = client.newCall(req).execute()
+                try {
+                    if (resp.isSuccessful) {
+                        val body = resp.body?.string().orEmpty()
+                        val listType = object : TypeToken<List<LogisticsDeliveryItem>>() {}.type
+                        return@withContext Gson().fromJson<List<LogisticsDeliveryItem>>(body, listType) ?: emptyList()
+                    }
+
+                    if (resp.code == 429 && i < urls.lastIndex) {
+                        android.util.Log.w("APIManager", "429 on $url, trying fallback…")
+                        continue
+                    } else if (i == urls.lastIndex) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "Ошибка: ${resp.code}", Toast.LENGTH_LONG).show()
                         }
                     }
-                } else {
-                    Log.e("ApiError", "Ошибка при получении данных: ${response.code}")
+                } finally {
+                    resp.close()
+                }
+            } catch (e: ServiceModeException) {
+                break
+            } catch (e: Exception) {
+                android.util.Log.e("APIManager", "Request error: ${e.message}", e)
+                if (i == urls.lastIndex) {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "Ошибка при получении данных: ${response.code}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, "Не удалось получить данные", Toast.LENGTH_LONG).show()
                     }
                 }
-            } catch (e: SocketTimeoutException) {
-                Log.e("ApiError", "Timeout error during request: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show()
-                }
-            } catch (e: Exception) {
-                Log.e("ApiError", "Ошибка при получении данных: ${e.message}", e)
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Не удалось получить данные: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+        emptyList()
+    }
+
+    suspend fun getAllSotrudnikiInfo(context: Context): List<SotrudnikiInfo> =
+        withContext(Dispatchers.IO) {
+            val app = context.applicationContext as App
+            val client = app.okHttpClient.newBuilder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .sslSocketFactory(getUnsafeSSLSocketFactory(), getUnsafeTrustManager())
+                .hostnameVerifier { _, _ -> true }
+                .build()
+
+            val urls = listOf(
+                "https://api.gkmmz.ru/api/get_all_sotrudniki",
+                "https://09f2befcf01d4dd39cbe7e54717e28af.apicapis.ru-moscow-1.hc.sbercloud.ru/api/get_all_sotrudniki"
+            )
+
+            for (i in urls.indices) {
+                val url = urls[i]
+                try {
+                    val req = Request.Builder()
+                        .url(url)
+                        .addHeader("X-Apig-AppCode", authTokenAPI)
+                        .addHeader("X-Auth-Token", authToken)
+                        .build()
+
+                    val resp = client.newCall(req).execute()
+                    try {
+                        if (resp.isSuccessful) {
+                            val body = resp.body?.string().orEmpty()
+                            val json = JSONObject(body)
+                            val list = mutableListOf<SotrudnikiInfo>()
+                            val keys = json.keys()
+                            while (keys.hasNext()) {
+                                val key = keys.next()
+                                val o = json.getJSONObject(key)
+                                val mdm = o.optString("mdmcode")
+                                val fio = o.optString("Рабочий")
+                                val phone = o.optString("МобильныйТелефон", "")
+                                list.add(SotrudnikiInfo(mdm, fio, phone))
+                            }
+                            return@withContext list
+                        }
+
+                        if (resp.code == 429 && i < urls.lastIndex) {
+                            Log.w("APIManager", "429 on $url, trying fallback…")
+                            continue
+                        } else if (i == urls.lastIndex) {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(context, "Ошибка: ${resp.code}", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    } finally {
+                        resp.close()
+                    }
+                } catch (e: ServiceModeException) {
+                    // сервисный режим — экран уже показан, возвращаем пусто
+                    break
+                } catch (e: SocketTimeoutException) {
+                    Log.e("APIManager", "Timeout on $url: ${e.message}")
+                    if (i == urls.lastIndex) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e("APIManager", "Request error: ${e.message}", e)
+                    if (i == urls.lastIndex) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "Не удалось получить данные", Toast.LENGTH_LONG).show()
+                        }
+                    }
                 }
             }
-            sotrudniki
+            emptyList()
         }
-    }
+
     suspend fun getFilteredSotrudnikiInfo(context: Context, fio: String): List<SotrudnikiInfo> {
         val sotrudniki = getAllSotrudnikiInfo(context)
         val filteredSotrudniki = sotrudniki.filter { it.fio.contains(fio, ignoreCase = true) }
@@ -1015,101 +1371,132 @@ object DatabaseManager {
         }
         return filteredSotrudniki
     }
-    suspend fun getAllWarehousesInfo(context: Context): List<WarehouseInfo> {
-        val apiUrl = "http://192.168.200.250/api/get_all_skladi"
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .build()
-        return withContext(Dispatchers.IO) {
-            val warehouses = mutableListOf<WarehouseInfo>()
-            val request = Request.Builder()
-                .url(apiUrl)
+    suspend fun getAllWarehousesInfo(context: Context): List<WarehouseInfo> =
+        withContext(Dispatchers.IO) {
+            val app = context.applicationContext as App
+            val client = app.okHttpClient.newBuilder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .sslSocketFactory(getUnsafeSSLSocketFactory(), getUnsafeTrustManager())
+                .hostnameVerifier { _, _ -> true }
                 .build()
-            try {
-                val response: Response = client.newCall(request).execute()
-                if (response.isSuccessful) {
-                    response.body?.string()?.let { responseBody ->
-                        val jsonData = JSONObject(responseBody)
-                        for (key in jsonData.keys()) {
-                            val warehouseData = jsonData.getJSONObject(key)
-                            val id = warehouseData.getString("id")
-                            val name = warehouseData.getString("Наименование")
-                            val shelf = warehouseData.optString("Полка", null)
-                            val rack = warehouseData.optString("Стеллаж", null)
-                            val address = warehouseData.optString("Адрес", null)
-                            val coordinates = warehouseData.optString("Координаты", null)
-                            val purpose = warehouseData.optString("Назначение", null)
-                            val description = warehouseData.optString("Описание", null)
-                            val responsibleMDMCode = warehouseData.optString("ОтветственныйMDMкод", null)
-                            val responsibleName = warehouseData.optString("ОтветственныйФИО", null)
-                            val responsiblePosition = warehouseData.optString("ОтветственныйДолжность", null)
-                            val plannerMDMCode = warehouseData.optString("ПлановикMDMкод", null)
-                            val plannerName = warehouseData.optString("ПлановикФИО", null)
-                            val plannerPosition = warehouseData.optString("ПлановикДолжность", null)
-                            val subdivisionMDMCode = warehouseData.optString("ПодразделениеMDMкод", null)
-                            val subdivision = warehouseData.optString("Подразделение", null)
-                            val mdmKey = warehouseData.optString("mdm_key", null)
-                            val isActive = warehouseData.optString("is_active", null)
-                            val displayName = "$name $rack $shelf"
-                            warehouses.add(WarehouseInfo(
-                                id,
-                                name,
-                                displayName,
-                                shelf,
-                                rack,
-                                address,
-                                coordinates,
-                                purpose,
-                                description,
-                                responsibleMDMCode,
-                                responsibleName,
-                                responsiblePosition,
-                                plannerMDMCode,
-                                plannerName,
-                                plannerPosition,
-                                subdivisionMDMCode,
-                                subdivision,
-                                mdmKey,
-                                isActive
-                            ))
+
+            val urls = listOf(
+                "https://09f2befcf01d4dd39cbe7e54717e28af.apicapis.ru-moscow-1.hc.sbercloud.ru/api/get_all_skladi",
+                "https://api.gkmmz.ru/api/get_all_skladi"
+            )
+
+            for (i in urls.indices) {
+                val url = urls[i]
+                try {
+                    val req = Request.Builder()
+                        .url(url)
+                        .addHeader("X-Apig-AppCode", authTokenAPI)
+                        .addHeader("X-Auth-Token", authToken)
+                        .build()
+
+                    val resp = client.newCall(req).execute()
+                    try {
+                        if (resp.isSuccessful) {
+                            val body = resp.body?.string().orEmpty()
+                            val json = JSONObject(body)
+                            val list = mutableListOf<WarehouseInfo>()
+                            val keys = json.keys()
+                            while (keys.hasNext()) {
+                                val key = keys.next()
+                                val o = json.getJSONObject(key)
+                                val id = o.optString("id")
+                                val name = o.optString("Наименование")
+                                val shelf = o.optString("Полка", null)
+                                val rack = o.optString("Стеллаж", null)
+                                val address = o.optString("Адрес", null)
+                                val coordinates = o.optString("Координаты", null)
+                                val purpose = o.optString("Назначение", null)
+                                val description = o.optString("Описание", null)
+                                val responsibleMDMCode = o.optString("ОтветственныйMDMкод", null)
+                                val responsibleName = o.optString("ОтветственныйФИО", null)
+                                val responsiblePosition = o.optString("ОтветственныйДолжность", null)
+                                val plannerMDMCode = o.optString("ПлановикMDMкод", null)
+                                val plannerName = o.optString("ПлановикФИО", null)
+                                val plannerPosition = o.optString("ПлановикДолжность", null)
+                                val subdivisionMDMCode = o.optString("ПодразделениеMDMкод", null)
+                                val subdivision = o.optString("Подразделение", null)
+                                val mdmKey = o.optString("mdm_key", null)
+                                val isActive = o.optString("is_active", null)
+                                val displayName = "$name $rack $shelf"
+                                list.add(
+                                    WarehouseInfo(
+                                        id,
+                                        name,
+                                        displayName,
+                                        shelf,
+                                        rack,
+                                        address,
+                                        coordinates,
+                                        purpose,
+                                        description,
+                                        responsibleMDMCode,
+                                        responsibleName,
+                                        responsiblePosition,
+                                        plannerMDMCode,
+                                        plannerName,
+                                        plannerPosition,
+                                        subdivisionMDMCode,
+                                        subdivision,
+                                        mdmKey,
+                                        isActive
+                                    )
+                                )
+                            }
+                            return@withContext list
+                        }
+
+                        if (resp.code == 429 && i < urls.lastIndex) {
+                            Log.w("APIManager", "429 on $url, trying fallback…")
+                            continue
+                        } else if (i == urls.lastIndex) {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(context, "Ошибка: ${resp.code}", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    } finally {
+                        resp.close()
+                    }
+                } catch (e: ServiceModeException) {
+                    break
+                } catch (e: SocketTimeoutException) {
+                    Log.e("APIManager", "Timeout on $url: ${e.message}")
+                    if (i == urls.lastIndex) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show()
                         }
                     }
-                } else {
-                    Log.e("ApiError", "Ошибка при получении данных: ${response.code}")
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "Ошибка при получении данных: ${response.code}", Toast.LENGTH_LONG).show()
+                } catch (e: Exception) {
+                    Log.e("APIManager", "Request error: ${e.message}", e)
+                    if (i == urls.lastIndex) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "Не удалось получить данные", Toast.LENGTH_LONG).show()
+                        }
                     }
-                    return@withContext emptyList()
                 }
-            } catch (e: SocketTimeoutException) {
-                Log.e("ApiError", "Timeout error during request: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show()
-                }
-                return@withContext emptyList()
-            } catch (e: Exception) {
-                Log.e("ApiError", "Ошибка при получении данных: ${e.message}", e)
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Не удалось получить данные: ${e.message}", Toast.LENGTH_LONG).show()
-                }
-                return@withContext emptyList()
             }
-            warehouses
+            emptyList()
         }
-    }
+
     suspend fun getFilteredWarehousesInfo(context: Context): List<WarehouseInfo> {
         val warehouses = getAllWarehousesInfo(context)
         val uniqueWarehouses = mutableListOf<WarehouseInfo>()
         var isProskAdded = false
         for (warehouse in warehouses) {
-            if (warehouse.name == "ПРОСК полуфабрикатов" && warehouse.id == "812") {
-                if (!isProskAdded) {
+            if (warehouse.isActive == "1") { // Проверка активности склада
+                if (warehouse.name == "ПРОСК полуфабрикатов" && warehouse.id == "812") {
+                    if (!isProskAdded) {
+                        uniqueWarehouses.add(warehouse)
+                        isProskAdded = true
+                    }
+                } else if (warehouse.name != "ПРОСК полуфабрикатов") {
                     uniqueWarehouses.add(warehouse)
-                    isProskAdded = true
                 }
-            } else if (warehouse.name != "ПРОСК полуфабрикатов") {
-                uniqueWarehouses.add(warehouse)
             }
         }
         uniqueWarehouses.forEach { warehouse ->
@@ -1117,80 +1504,106 @@ object DatabaseManager {
         }
         return uniqueWarehouses
     }
-    suspend fun fetchInfoPrp(context: Context, prp: String): String? {
-        val apiUrl = "http://192.168.200.250/api/get_skladi_inv_data"
-        Log.d("ApiManager", "Fetching data for ПрП: $prp")
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
-            .build()
-        return withContext(Dispatchers.IO) {
-            val formBody = FormBody.Builder()
+    suspend fun fetchInfoPrp(context: Context, prp: String): String? =
+        withContext(Dispatchers.IO) {
+            val app = context.applicationContext as App
+            val client = app.okHttpClient.newBuilder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .sslSocketFactory(getUnsafeSSLSocketFactory(), getUnsafeTrustManager())
+                .hostnameVerifier { _, _ -> true }
+                .build()
+
+            val urls = listOf(
+                "https://09f2befcf01d4dd39cbe7e54717e28af.apicapis.ru-moscow-1.hc.sbercloud.ru/api/get_skladi_inv_data",
+                "https://api.gkmmz.ru/api/get_skladi_inv_data"
+            )
+
+            val form = FormBody.Builder()
                 .add("prp", prp)
                 .build()
-            val request = Request.Builder()
-                .url(apiUrl)
-                .post(formBody)
-                .build()
-            try {
-                client.newCall(request).execute().use { response ->
-                    if (!response.isSuccessful) {
-                        Log.e("ApiManager", "Unexpected code $response")
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(context, "Ошибка при получении данных для ПрП = $prp", Toast.LENGTH_LONG).show()
-                        }
-                        return@withContext null
-                    }
-                    val jsonResponse = response.body?.string()
-                    if (jsonResponse != null) {
-                        val jsonArray = JSONArray(jsonResponse)
-                        if (jsonArray.length() > 0) {
-                            val dataObject = jsonArray.getJSONObject(0)
-                            val userFio = dataObject.optString("user_fio", "Неизвестно")
-                            val naimenovanie = dataObject.optString("Наименование", "Неизвестно")
-                            val formattedDate = dataObject.optString("formatted_date", "Неизвестно")
-                            val resultString = "$userFio, $naimenovanie, $formattedDate"
-                            Log.d("ApiManager", "Found data: $resultString for ПрП = $prp")
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(context, "Найдены данные: $resultString для ПрП = $prp", Toast.LENGTH_LONG).show()
+
+            for (i in urls.indices) {
+                val url = urls[i]
+                try {
+                    val req = Request.Builder()
+                        .url(url)
+                        .post(form)
+                        .addHeader("X-Apig-AppCode", authTokenAPI)
+                        .addHeader("X-Auth-Token", authToken)
+                        .build()
+
+                    val resp = client.newCall(req).execute()
+                    try {
+                        if (resp.isSuccessful) {
+                            val body = resp.body?.string().orEmpty()
+                            val arr = JSONArray(body)
+                            if (arr.length() > 0) {
+                                val o = arr.getJSONObject(0)
+                                val userFio = o.optString("user_fio", "Неизвестно")
+                                val naimenovanie = o.optString("Наименование", "Неизвестно")
+                                val formattedDate = o.optString("formatted_date", "Неизвестно")
+                                val result = "Сотрудник, проводивший инвентаризацию:\n$userFio\n" +
+                                        "Место инвентаризации:\n$naimenovanie\n" +
+                                        "Дата инвентаризации:\n$formattedDate"
+
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        "Найдены данные: $result для ПрП = $prp",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                                return@withContext result
+                            } else {
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        "Не найдены данные для ПрП = $prp",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                                return@withContext null
                             }
-                            return@withContext resultString
-                        } else {
-                            Log.d("ApiManager", "No data found for ПрП = $prp")
+                        }
+
+                        if (resp.code == 429 && i < urls.lastIndex) {
+                            Log.w("ApiManager", "429 on $url, trying fallback…")
+                            continue
+                        } else if (i == urls.lastIndex) {
                             withContext(Dispatchers.Main) {
-                                Toast.makeText(context, "Не найдены данные для ПрП = $prp", Toast.LENGTH_LONG).show()
+                                Toast.makeText(
+                                    context,
+                                    "Ошибка при получении данных: ${resp.code}",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             }
-                            return@withContext null
                         }
-                    } else {
-                        Log.e("ApiManager", "Response body is null")
+                    } finally {
+                        resp.close()
+                    }
+                } catch (e: ServiceModeException) {
+                    // сервисный режим — выходим
+                    break
+                } catch (e: SocketTimeoutException) {
+                    Log.e("ApiManager", "Timeout on $url: ${e.message}")
+                    if (i == urls.lastIndex) {
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(context, "Ошибка при получении данных для ПрП = $prp", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show()
                         }
-                        return@withContext null
+                    }
+                } catch (e: Exception) {
+                    Log.e("ApiManager", "Request error: ${e.message}", e)
+                    if (i == urls.lastIndex) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "Не удалось получить данные", Toast.LENGTH_LONG).show()
+                        }
                     }
                 }
-            } catch (e: SocketTimeoutException) {
-                Log.e("ApiManager", "Timeout error during request: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Попробуйте позже. Сервер не отвечает.", Toast.LENGTH_LONG).show()
-                }
-                return@withContext null
-            } catch (e: IOException) {
-                Log.e("ApiManager", "Exception occurred: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Ошибка сети или сервера", Toast.LENGTH_LONG).show()
-                }
-                return@withContext null
-            } catch (e: Exception) {
-                Log.e("ApiManager", "Unexpected error: ${e.message}", e)
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Не удалось получить данные: ${e.message}", Toast.LENGTH_LONG).show()
-                }
-                return@withContext null
             }
+            null
         }
-    }
+
 }
 data class OperationWithDemand(
     val operation: String,
@@ -1200,7 +1613,9 @@ data class OperationWithDemand(
     val podrazd_mdm_code: String,
     val next_podrazd_mdm_code: String,
     val zahodNomer: String,
-    val status: String
+    val status: String,
+    val nextUchastok: String,
+    val needProsk: Boolean = false
 ) {
     override fun equals(other: Any?) = other is OperationWithDemand && this.operation == other.operation
     override fun hashCode() = operation.hashCode()
@@ -1237,7 +1652,8 @@ data class WarehouseInfo(
 }
 data class SotrudnikiInfo(
     val mdmcode: String,
-    val fio: String
+    val fio: String,
+    val phone: String = "" // Добавляем поле для телефона
 )
 @Serializable
 data class ApiResponseDateValue(val value: String)
@@ -1250,7 +1666,8 @@ data class SearchDataRaspredeleniyaAndSegmentAndPrimaryDemandId(
 data class SearchDataRaspredeleniyaAndSegment(
     val dateDistribution: String?,
     val segment: String?,
-    val demand: String?
+    val demand: String?,
+    val status: String?
 )
 data class UserInfo(
     val id: Int,
@@ -1270,4 +1687,55 @@ data class UserInfoRoles(
     val roleCheck: String,
     val isDis: String,
     val roles: List<String>
+)
+object Auth {
+    const val authToken: String = "MIIEmQYJKoZIhvcNAQcCoIIEijCCBIYCAQExDTALBglghkgBZQMEAgEwggLGBgkqhkiG9w0BBwGgggK3BIICs3sidG9rZW4iOnsiZXhwaXJlc19hdCI6IjIwMjUtMDMtMTFUMTE6NDc6MzIuMDQxMDAwWiIsIm1ldGhvZHMiOlsicGFzc3dvcmQiXSwiY2F0YWxvZyI6W10sInJvbGVzIjpbeyJuYW1lIjoiYXBpZ19hZG0iLCJpZCI6IjAifSx7Im5hbWUiOiI4NiwxMjAiLCJpZCI6IjgifSx7Im5hbWUiOiJvcF9maW5lX2dyYWluZWQiLCJpZCI6IjcifV0sInByb2plY3QiOnsiZG9tYWluIjp7Inhkb21haW5fdHlwZSI6IlNCQyIsIm5hbWUiOiJva2Ita3Jpc3RhbGwiLCJpZCI6ImE5NDZmN2VlMDUwNjQ3NmM4MmY5NjU0NzNhZWI5ZmQzIiwieGRvbWFpbl9pZCI6ImJiZmIxODcwLTE5ZGItNDk2My04ZjgzLTdkYjlkMGUwMWY0NSJ9LCJuYW1lIjoicnUtbW9zY293LTEiLCJpZCI6IjdiMGJlYWY5NDEzMDRjN2JiMGVjNWIwNGE0ZDBmZjFhIn0sImlzc3VlZF9hdCI6IjIwMjUtMDMtMTBUMTE6NDc6MzIuMDQxMDAwWiIsInVzZXIiOnsiZG9tYWluIjp7Inhkb21haW5fdHlwZSI6IlNCQyIsIm5hbWUiOiJva2Ita3Jpc3RhbGwiLCJpZCI6ImE5NDZmN2VlMDUwNjQ3NmM4MmY5NjU0NzNhZWI5ZmQzIiwieGRvbWFpbl9pZCI6ImJiZmIxODcwLTE5ZGItNDk2My04ZjgzLTdkYjlkMGUwMWY0NSJ9LCJuYW1lIjoibi5nYWxraW4iLCJwYXNzd29yZF9leHBpcmVzX2F0IjoiIiwiaWQiOiI4MTQ1ZmRiZWExMmE0NDQ0YjExYThiMzljNTExNGZlMiJ9fX0xggGmMIIBogIBATB9MHAxCzAJBgNVBAYTAlJVMQ8wDQYDVQQIDAZNb3Njb3cxDzANBgNVBAcMBk1vc2NvdzEbMBkGA1UECgwSU2JlckNsb3VkIENvLiwgTHRkMRIwEAYDVQQLDAlTYmVyQ2xvdWQxDjAMBgNVBAMMBXRva2VuAgkAuceJxDu+SXkwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBALSxTwaBTIdTJAC63-Kq3Ipk-VcljqbSP0BeoRG65zVH2lX1G3IWrkByg4VhKO12nFFEcQTv5Lu2ojQmloal1vkEAuMSbXcEupzMg0EwZd5rxAuuR56LWOYBmAN7TO6-FqRAmnkQbMx6hOBt1aVnb12uYmNcXRVgtBpqziPbekEG8zmKiW-l7+DB-o368VR8Ltb-Ojz4grSG5mHKSQLLY9OLwHz3Vn88oYC4PYoDYWCgz2yY2O32Y7lv3ut51fQ93u-AZXSeUVUa65PdflOL1Y84IDvMrcZ21cqHclQZbjWQ7HuYSBGYClIVux+eEQdf5tRztqL7AWTp-OnhJpiEm-A="
+    const val authTokenAPI: String = "67f7f5f5e2484c0d94bdc6121d13b0fb1c500ea7965b4b2280dc162966fc2e19"
+}
+data class DevicesUsers(
+    val mdm_code: String,
+    val device_token: String,
+    val is_active: Int,
+    val created_at: String
+)
+// data класс для хранения данных о пользователе во внутреннем хранилище мобильного приложения
+data class UserData(
+    val username: String,
+    val userId: Int,
+    val roleCheck: String,
+    val mdmCode: String,
+    val fio: String,
+    val deviceInfo: String,
+    val rolesString: String,
+    val device_token: String,
+    val isAuthorized: Boolean
+)
+
+data class StoredNotification(
+    val id: String,
+    val title: String,
+    val message: String,
+    val logisticsId: String?,
+    val receivedDate: Date = Date(),
+    var isRead: Boolean = false
+)
+
+data class ApiResponse(
+    val draw: Int,          // Номер запроса
+    val recordsTotal: Int,  // Всего записей
+    val recordsFiltered: Int, // Количество записей после фильтрации
+    val data: List<LogisticsItem>
+)
+
+data class ApiDetailResponse(
+    val success: Boolean?,
+    val message: String?,
+    val data: LogisticsItem?
+)
+
+data class ApiResponseSegment(
+    val id: String,
+    val param: String,
+    val value: String,
+    val updated_at: String
 )

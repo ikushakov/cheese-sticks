@@ -3,6 +3,7 @@ package com.example.semimanufactures
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -13,6 +14,9 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.semimanufactures.Auth.authToken
+import com.example.semimanufactures.Auth.authTokenAPI
+import com.example.semimanufactures.service_mode.ServiceModeException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,9 +24,15 @@ import kotlinx.coroutines.withContext
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
-
+import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLContext
+import javax.net.ssl.SSLSocketFactory
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
+import java.security.cert.X509Certificate
 class GettingTelegramUsersActivity : AppCompatActivity() {
     private lateinit var autoCompleteTextViewSearch: AutoCompleteTextView
     private lateinit var buttonSendAuthCode: Button
@@ -83,69 +93,175 @@ class GettingTelegramUsersActivity : AppCompatActivity() {
             Toast.makeText(this, "Появится позже\uD83D\uDE01)))", Toast.LENGTH_LONG).show()
         }
     }
-    private suspend fun fetchUsers() {
-        val url = "http://192.168.200.250/api/get_users_with_tg"
-        withContext(Dispatchers.IO) {
-            val request = Request.Builder().url(url).build()
-            try {
-                val response = client.newCall(request).execute()
-                if (response.isSuccessful) {
-                    response.body?.string()?.let { responseData ->
-                        val jsonResponse = JSONObject(responseData)
-                        for (key in jsonResponse.keys()) {
-                            val user = jsonResponse.getJSONObject(key)
-                            val fio = user.getString("fio")
-                            val username = user.getString("username")
-                            userNames.add(fio)
-                            userMap[fio] = username
-                        }
-                    }
-                } else {
-                    throw IOException("Ошибка загрузки пользователей")
-                }
-            } catch (e: IOException) {
-                e.printStackTrace()
+    // Загрузка списка пользователей (Telegram)
+    private suspend fun fetchUsers() = withContext(Dispatchers.IO) {
+        val client = (application as App).okHttpClient.newBuilder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .build()
+
+        val primaryUrl  = "https://09f2befcf01d4dd39cbe7e54717e28af.apicapis.ru-moscow-1.hc.sbercloud.ru/api/get_users_with_tg"
+        val fallbackUrl = "https://api.gkmmz.ru/api/get_users_with_tg"
+
+        val baseReq = Request.Builder()
+            .addHeader("X-Apig-AppCode", authTokenAPI)
+            .addHeader("X-Auth-Token", authToken)
+
+        fun exec(url: String): Response? = try {
+            val req = baseReq.url(url).build()
+            client.newCall(req).execute()
+        } catch (e: IOException) {
+            Log.w("FetchUsers", "IO error: ${e.message}")
+            null
+        }
+
+        try {
+            var resp = exec(primaryUrl)
+            if (resp == null || resp.code == 429) {
+                resp?.close()
+                Log.w("FetchUsers", "fallback → $fallbackUrl (reason: ${if (resp == null) "IO error" else "429"})")
+                resp = exec(fallbackUrl)
             }
+            if (resp == null) {
+                Log.e("FetchUsers", "Не удалось загрузить данные пользователей (оба URL)")
+                return@withContext
+            }
+
+            resp.use { r ->
+                if (!r.isSuccessful) {
+                    Log.e("FetchUsers", "Ошибка ответа: ${r.code}")
+                    return@withContext
+                }
+                val body = r.body?.string().orEmpty()
+                val json = JSONObject(body)
+
+                val newNames = mutableListOf<String>()
+                val newMap = mutableMapOf<String, String>()
+                val it = json.keys()
+                while (it.hasNext()) {
+                    val key = it.next()
+                    val user = json.getJSONObject(key)
+                    val fio = user.getString("fio")
+                    val username = user.getString("username")
+                    newNames.add(fio)
+                    newMap[fio] = username
+                }
+
+                withContext(Dispatchers.Main) {
+                    // Поведение как в исходнике — добавляем к существующим
+                    userNames.addAll(newNames)
+                    userMap.putAll(newMap)
+                }
+            }
+        } catch (e: ServiceModeException) {
+            // экран техработ показан интерсептором
+            Log.w("FetchUsers", "ServiceMode active; fetchUsers skipped (until=${e.until})")
+        } catch (t: Throwable) {
+            Log.e("FetchUsers", "Unexpected error", t)
         }
     }
+
+
+    private fun getUnsafeSSLSocketFactory(): SSLSocketFactory {
+        val trustAllCerts = arrayOf<TrustManager>(getUnsafeTrustManager())
+        val sslContext = SSLContext.getInstance("SSL")
+        sslContext.init(null, trustAllCerts, java.security.SecureRandom())
+        return sslContext.socketFactory
+    }
+
+    private fun getUnsafeTrustManager(): X509TrustManager {
+        return object : X509TrustManager {
+            override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
+            override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
+            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+        }
+    }
+
+    // Отправка кода авторизации
     private fun sendAuthCode() {
         val selectedFio = autoCompleteTextViewSearch.text.toString()
-        val username = userMap[selectedFio]
-        if (username != null) {
-            CoroutineScope(Dispatchers.IO).launch {
-                val url = "http://192.168.200.250/api/send_auth_code"
-                val formBody = FormBody.Builder()
-                    .add("login", username)
-                    .build()
-                val request = Request.Builder()
-                    .url(url)
-                    .post(formBody)
-                    .build()
-                try {
-                    val response = client.newCall(request).execute()
-                    if (response.isSuccessful) {
-                        response.body?.string()?.let { responseData ->
-                            val jsonResponse = JSONObject(responseData)
-                            if (jsonResponse.getString("result") == "Код отправлен вам в телеграм") {
-                                withContext(Dispatchers.Main) {
-                                    Toast.makeText(this@GettingTelegramUsersActivity, "Код отправлен вам в телеграм", Toast.LENGTH_LONG).show()
-                                    startActivity(Intent(this@GettingTelegramUsersActivity, TgAuthorizationActivity::class.java).apply {
-                                        putExtra("username", username)
-                                    })
-                                }
-                            }
+        val currentUsername = userMap[selectedFio]
+        if (currentUsername == null) {
+            Toast.makeText(this, "Пользователь не найден", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val client = (application as App).okHttpClient.newBuilder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .build()
+
+            val primaryUrl  = "https://09f2befcf01d4dd39cbe7e54717e28af.apicapis.ru-moscow-1.hc.sbercloud.ru/api/send_auth_code"
+            val fallbackUrl = "https://api.gkmmz.ru/api/send_auth_code"
+
+            val formBody = FormBody.Builder()
+                .add("login", currentUsername)
+                .build()
+
+            val baseReq = Request.Builder()
+                .post(formBody)
+                .addHeader("X-Apig-AppCode", authTokenAPI)
+                .addHeader("X-Auth-Token", authToken)
+
+            fun exec(url: String): Response? = try {
+                val req = baseReq.url(url).build()
+                client.newCall(req).execute()
+            } catch (e: IOException) {
+                Log.w("SendAuthCode", "IO error: ${e.message}")
+                null
+            }
+
+            try {
+                var resp = exec(primaryUrl)
+                if (resp == null || resp.code == 429) {
+                    resp?.close()
+                    Log.w("SendAuthCode", "fallback → $fallbackUrl (reason: ${if (resp == null) "IO error" else "429"})")
+                    resp = exec(fallbackUrl)
+                }
+                if (resp == null) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(this@GettingTelegramUsersActivity, "Не удалось отправить код авторизации", Toast.LENGTH_LONG).show()
+                    }
+                    return@launch
+                }
+
+                resp.use { r ->
+                    if (!r.isSuccessful) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(this@GettingTelegramUsersActivity, "Ошибка сервера: ${r.code}", Toast.LENGTH_LONG).show()
+                        }
+                        return@launch
+                    }
+
+                    val body = r.body?.string().orEmpty()
+                    val json = JSONObject(body)
+                    if (json.optString("result") == "Код отправлен вам в телеграм") {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(this@GettingTelegramUsersActivity, "Код отправлен вам в телеграм", Toast.LENGTH_LONG).show()
+                            startActivity(Intent(this@GettingTelegramUsersActivity, TgAuthorizationActivity::class.java).apply {
+                                putExtra("username", currentUsername)
+                            })
                         }
                     } else {
-                        throw IOException("Ошибка отправки кода")
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(this@GettingTelegramUsersActivity, "Не удалось отправить код", Toast.LENGTH_LONG).show()
+                        }
                     }
-                } catch (e: IOException) {
-                    e.printStackTrace()
+                }
+            } catch (e: ServiceModeException) {
+                // экран техработ показан интерсептором
+            } catch (t: Throwable) {
+                Log.e("SendAuthCode", "Unexpected error", t)
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@GettingTelegramUsersActivity, "Ошибка: ${t.message}", Toast.LENGTH_LONG).show()
                 }
             }
-        } else {
-            Toast.makeText(this, "Пользователь не найден", Toast.LENGTH_SHORT).show()
         }
     }
+
     @SuppressLint("ResourceType")
     private fun showPopupMenu(view: View) {
         val popupView = layoutInflater.inflate(R.layout.info_popup_menu, null)

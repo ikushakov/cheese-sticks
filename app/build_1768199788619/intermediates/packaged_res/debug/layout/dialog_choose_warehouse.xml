@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@drawable/back_white"
+    android:padding="12dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_regular"
+            android:textStyle="bold"
+            android:layout_weight="1"
+            android:paddingHorizontal="8dp"
+            android:text="Выбор склада"
+            android:textSize="16sp"
+            android:textColor="#001D64" />
+
+        <ImageView
+            android:id="@+id/btn_close"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            app:tint="@color/dark_blue"/>
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/et_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Поиск"
+        android:drawablePadding="8dp"
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="8dp"
+        android:textColor="@color/dark_blue"
+        android:layout_marginTop="8dp"
+        android:background="@null" />
+
+    <ListView
+        android:id="@+id/list_view"
+        android:layout_width="match_parent"
+        android:layout_height="320dp"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="0.5dp"
+        android:textColor="@color/dark_blue"
+        android:layout_marginTop="8dp"/>
+</LinearLayout>

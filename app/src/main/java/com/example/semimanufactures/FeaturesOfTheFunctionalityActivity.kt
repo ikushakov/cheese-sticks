@@ -5,8 +5,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -14,23 +16,44 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.PopupWindow
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.semimanufactures.Auth.authToken
+import com.example.semimanufactures.Auth.authTokenAPI
 import com.example.semimanufactures.DatabaseManager.fetchData
-import com.example.semimanufactures.DatabaseManager.fetchMobileVersion
 import com.example.semimanufactures.DatabaseManager.findCardByIdOrPrp
+import com.example.semimanufactures.service_mode.ServiceModeException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import com.example.semimanufactures.PM84ScannerManager
+import com.google.android.material.snackbar.Snackbar
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import com.google.gson.Gson
+import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import ru.rustore.sdk.pushclient.RuStorePushClient
+import java.io.IOException
+import java.security.cert.X509Certificate
+import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLContext
+import javax.net.ssl.SSLSocketFactory
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 
 class FeaturesOfTheFunctionalityActivity : AppCompatActivity(), SupporterManager.IScanListener {
     private var tag: String = FeaturesOfTheFunctionalityActivity::class.java.simpleName
@@ -39,166 +62,154 @@ class FeaturesOfTheFunctionalityActivity : AppCompatActivity(), SupporterManager
     private val ACTION_RECEIVE_DATALENGTH = "unitech.scanservice.datalength"
     private val ACTION_RECEIVE_DATATYPE = "unitech.scanservice.datatype"
     private val CLOSE_SCANSERVICE = "unitech.scanservice.close"
+    private val REQUEST_CAMERA_PERMISSION = 1001
     private val text_result_scan: TextView by lazy { findViewById(R.id.text_result_scan) }
-    //private val button_search: ImageButton by lazy { findViewById(R.id.button_search) }
     private val button_scan: ImageButton by lazy { findViewById(R.id.button_scan) }
     private lateinit var recyclerView: RecyclerView
     private lateinit var cardAdapter: CardAdapter
     private var cardItemList: MutableList<CardItem> = mutableListOf()
     private lateinit var data_user_info: ImageView
-    private var userId: Int = 0
-    private var username: String = ""
-    private var roleCheck: String = ""
-    private var mdmCode: String = ""
-    private var fio: String = ""
     private lateinit var progressBar: ProgressBar
-//    private lateinit var go_to_authorization: ImageView
     private lateinit var go_to_add: ImageView
     private lateinit var go_to_issue: ImageView
     private var supporterManager: SupporterManager? = null
     private lateinit var go_to_send_notification: ImageView
     private lateinit var go_to_logistic: ImageView
-    private var deviceInfo: String = ""
-    private lateinit var main_layout: LinearLayout
-    //
+    private lateinit var root_layout: LinearLayout
     private val rolesList: MutableList<String> = mutableListOf()
-    //
     private var pm84ScannerManager: PM84ScannerManager? = null
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private var currentUsername: String? = null
+    private var currentUserId: Int? = null
+    private var currentRoleCheck: String? = null
+    private var currentMdmCode: String? = null
+    private var currentFio: String? = null
+    private var currentDeviceInfo: String? = null
+    private var currentRolesString: String? = null
+    private var currentDeviceToken: String? = null
+    private var currentIsAuthorized:  Boolean = false
+    private val viewModel: UpdateViewModel by viewModels()
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //
-        val sharedPreferences = getSharedPreferences ("myPrefs" , MODE_PRIVATE)
-        val username = sharedPreferences.getString ("username", "") ?: ""
-        val userId = sharedPreferences.getInt   ("userId", 0 ) ?: 0
-        val mdmCode = sharedPreferences.getString ("mdmCode", "") ?: ""
-        val fio =  sharedPreferences.getString ("fio", "") ?: ""
-        val roleCheck = sharedPreferences.getString( "roleCheck","") ?: ""
-        val deviceInfo = sharedPreferences.getString("deviceInfo", "") ?: ""
-        val rolesString = sharedPreferences.getString("rolesString", "") ?: ""
-        val isAuthorized = sharedPreferences.getBoolean("isAuthorized", false)
-        if (!isAuthorized) {
-            val intent = Intent(this@FeaturesOfTheFunctionalityActivity, MainActivity::class.java)
-            startActivity(intent)
+        val userData = readUserData()
+        userData?.let {
+            currentUsername = it.username
+            currentUserId = it.userId
+            currentRoleCheck = it.roleCheck
+            currentMdmCode = it.mdmCode
+            currentFio = it.fio
+            currentDeviceInfo = it.deviceInfo
+            currentRolesString = it.rolesString
+            currentDeviceToken = it.device_token
+            currentIsAuthorized = it.isAuthorized
+            Log.d("UserData", "Логин: ${it.username}")
+            Log.d("UserData", "User ID: ${it.userId}")
+            Log.d("UserData", "Роль: ${it.roleCheck}")
+            Log.d("UserData", "MdmdCode: ${it.mdmCode}")
+            Log.d("UserData", "ФИО: ${it.fio}")
+            Log.d("UserData", "Название устройства: ${it.deviceInfo}")
+            Log.d("UserData", "Список ролей: ${it.rolesString}")
+            Log.d("UserData", "Токен устройства: ${it.device_token}")
+            Log.d("isAuthorized", "Авторизован? ${it.isAuthorized}")
+        } ?: run {
+            //Toast.makeText(this, "Ошибка загрузки данных", Toast.LENGTH_SHORT).show()
+        }
+
+        if (!currentIsAuthorized) {
+            startActivity(Intent(this, MainActivity::class.java))
             finish()
             return
         }
-        //
+
         setContentView(R.layout.activity_new_features_of_the_functionality)
         supportActionBar?.hide()
+        // для обновления мобильной версии через Rustore
+        viewModel.init(this)
+        lifecycleScope.launch {
+            viewModel.events
+                .flowWithLifecycle(lifecycle)
+                .collect { event ->
+                    when (event) {
+                        Event.UpdateCompleted -> popupSnackBarForCompleteUpdate()
+                    }
+                }
+        }
+        // для обновления мобильной версии через Rustore
         progressBar = findViewById(R.id.progressBar)
         data_user_info = findViewById(R.id.data_user_info)
-//        go_to_authorization = findViewById(R.id.go_to_authorization)
         go_to_add = findViewById(R.id.go_to_add)
         go_to_issue = findViewById(R.id.go_to_issue)
-//        go_to_authorization.setOnClickListener {
-//            startActivity(Intent(this, MainActivity::class.java))
-//        }
+
         go_to_issue.setOnClickListener {
             Toast.makeText(this, "Вы находитесь в окне выдачи и поиска", Toast.LENGTH_LONG).show()
         }
-//        val intent = intent
-//        username = intent.getStringExtra("username") ?: ""
-//        roleCheck = intent.getStringExtra("roleCheck") ?: ""
-//        userId = intent.getIntExtra("userId", 0)
-//        mdmCode = intent.getStringExtra("mdmCode") ?: ""
-//        fio = intent.getStringExtra("fio") ?: ""
-//        deviceInfo = intent.getStringExtra("deviceInfo") ?: ""
-        //
-        if (rolesString != null) {
-            rolesList.addAll(rolesString.split(",").map { it.trim() })
+        val currentDateTime = getCurrentDateTime()
+        Log.d("Время сейчас", "${currentDateTime}")
+
+        if (currentRolesString?.isNotEmpty() == true) {
+            rolesList.addAll(currentRolesString!!.split(",").map { it.trim() })
         }
-        rolesList.forEach { role ->
-            Log.d("Список ролей", "Роль: $role")
-        }
-        //
-        if (deviceInfo == "EA630") {
-            registerScannerReceiver()
-            recyclerView = findViewById(R.id.recycler_view)
-            recyclerView.layoutManager = LinearLayoutManager(this)
-            cardAdapter = CardAdapter(cardItemList, this, 7)
-            recyclerView.adapter = cardAdapter
-            Log.d(tag, "$deviceInfo for EA630")
-        } else if (deviceInfo == "PM84") {
-            recyclerView = findViewById(R.id.recycler_view)
-            recyclerView.layoutManager = LinearLayoutManager(this)
-            cardAdapter = CardAdapter(cardItemList, this, 7)
-            recyclerView.adapter = cardAdapter
-            pm84ScannerManager = PM84ScannerManager.getInstance(applicationContext)
-            pm84ScannerManager?.registerScannerReceiver()
-            pm84ScannerManager?.setOnScanResultListener(object : PM84ScannerManager.OnScanResultListener {
-                override fun onScanResultReceived(result: String) {
-                    val skladiDataId = result.trim().takeIf { it.isNotBlank() }
-                    val prp = result.trim().takeIf { it.isNotBlank() }
-                    searchCard(skladiDataId, prp)
+
+        when (currentDeviceInfo) {
+            "L2H-N" -> {
+                supporterManager = SupporterManager(this, this)
+                setupRecyclerView()
+            }
+            "EA630" -> {
+                registerScannerReceiver()
+                setupRecyclerView()
+            }
+            "PM84" -> {
+                setupRecyclerView()
+                pm84ScannerManager = PM84ScannerManager.getInstance(applicationContext)
+                pm84ScannerManager?.registerScannerReceiver()
+                pm84ScannerManager?.setOnScanResultListener(object : PM84ScannerManager.OnScanResultListener {
+                    override fun onScanResultReceived(result: String) {
+                        val skladiDataId = result.trim().takeIf { it.isNotBlank() }
+                        val prp = result.trim().takeIf { it.isNotBlank() }
+                        searchCard(skladiDataId, prp)
+                    }
+                })
+                button_scan.setOnClickListener {
+                    if (checkCameraPermission()) {
+                        pm84ScannerManager?.startScanning(text_result_scan)
+                    }
                 }
-            })
-            button_scan.setOnClickListener {
-                pm84ScannerManager?.startScanning(text_result_scan)
+            }
+            else -> {
+                setupRecyclerView()
             }
         }
-        else {
-            supporterManager = SupporterManager(this, this)
-            recyclerView = findViewById(R.id.recycler_view)
-            recyclerView.layoutManager = LinearLayoutManager(this)
-            cardAdapter = CardAdapter(cardItemList, this, 7)
-            recyclerView.adapter = cardAdapter
-            Log.d(tag, "$deviceInfo for Sunmi")
-        }
+
         lifecycleScope.launch {
             progressBar.visibility = View.VISIBLE
-            DatabaseManager.connect(this@FeaturesOfTheFunctionalityActivity)
-            if (!DatabaseManager.isConnected()) {
-                Log.e(tag, "Database connection is not initialized")
-                return@launch
-            }
             fetchDataFromDatabase()
         }
         data_user_info.setOnClickListener {
-            val intent = Intent(this@FeaturesOfTheFunctionalityActivity, SettingsActivity::class.java).apply {
-                putExtra("userId", userId)
-                putExtra("username", username)
-                putExtra("roleCheck", roleCheck)
-                putExtra("mdmCode", mdmCode)
-                putExtra("fio", fio)
-                putExtra("deviceInfo", deviceInfo)
-                //
-                putExtra("rolesString", rolesString)
-                //
-            }
+            val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
         }
+
         go_to_send_notification = findViewById(R.id.go_to_send_notification)
-        go_to_send_notification.setOnClickListener { showPopupMenuNotification(it) }
+        go_to_send_notification.setOnClickListener {
+            val intent = Intent(this@FeaturesOfTheFunctionalityActivity, NotificationActivity::class.java)
+            startActivity(intent)
+        }
+
         go_to_logistic = findViewById(R.id.go_to_logistic)
         go_to_logistic.setOnClickListener {
-            val intent = Intent(this@FeaturesOfTheFunctionalityActivity, LogisticActivity::class.java).apply {
-                putExtra("userId", userId)
-                putExtra("username", username)
-                putExtra("roleCheck", roleCheck)
-                putExtra("mdmCode", mdmCode)
-                putExtra("fio", fio)
-                putExtra("deviceInfo", deviceInfo)
-                putExtra("rolesString", rolesString)
-            }
+            val intent = Intent(this, LogisticActivity::class.java)
             startActivity(intent)
         }
+
         go_to_add.setOnClickListener {
-            val intent = Intent(this@FeaturesOfTheFunctionalityActivity, AddActivity::class.java).apply {
-                putExtra("userId", userId)
-                putExtra("username", username)
-                putExtra("roleCheck", roleCheck)
-                putExtra("mdmCode", mdmCode)
-                putExtra("fio", fio)
-                putExtra("deviceInfo", deviceInfo)
-                putExtra("rolesString", rolesString)
-            }
+            val intent = Intent(this, AddActivity::class.java)
             startActivity(intent)
         }
+
         text_result_scan.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val inputText = s.toString().trim()
                 if (inputText.isEmpty()) {
@@ -207,28 +218,274 @@ class FeaturesOfTheFunctionalityActivity : AppCompatActivity(), SupporterManager
                     searchCard(null, inputText)
                 }
             }
-
             override fun afterTextChanged(s: Editable?) {}
         })
-        main_layout = findViewById(R.id.main_layout)
-        CoroutineScope(Dispatchers.Main).launch {
-            Log.d("MainActivity", "Запуск получения версии...")
-            val versionMobile = fetchMobileVersion(this@FeaturesOfTheFunctionalityActivity)
-            Log.d("MainActivity", "Версия получена: $versionMobile")
-            if (versionMobile == null) {
-                Log.e("MainActivity", "Не удалось получить версию")
-                //disableUI()
-            } else {
-                Log.d("MainActivity", "Версия приложения: $versionMobile")
-                if (versionMobile.toInt() != myGlobalVariable) {
-                    Log.e("MainActivity", "Версии не совпадают. Доступ к функционалу отключен.")
-                    disableUI()
-                    main_layout.setOnClickListener {
-                        Toast.makeText(this@FeaturesOfTheFunctionalityActivity, "Версия приложения устарела. Пожалуйста, обновите приложение.", Toast.LENGTH_LONG).show()
+        // для обновления мобильной версии через Rustore
+        root_layout = findViewById(R.id.root_layout)
+        // для обновления мобильной версии через Rustore
+        getDeviceToken()
+    }
+    private fun getUnsafeSSLSocketFactory(): SSLSocketFactory {
+        val trustAllCerts = arrayOf<TrustManager>(getUnsafeTrustManager())
+        val sslContext = SSLContext.getInstance("SSL")
+        sslContext.init(null, trustAllCerts, java.security.SecureRandom())
+        return sslContext.socketFactory
+    }
+
+    private fun getUnsafeTrustManager(): X509TrustManager {
+        return object : X509TrustManager {
+            override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
+            override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
+            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+        }
+    }
+    // UPDATE
+    private suspend fun updateUserDevice(mdmCode: String, deviceToken: String): Boolean =
+        withContext(Dispatchers.IO) {
+            val client = (application as App).okHttpClient.newBuilder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .build()
+
+            val primaryUrl  = "https://09f2befcf01d4dd39cbe7e54717e28af.apicapis.ru-moscow-1.hc.sbercloud.ru/api/update_user_device"
+            val fallbackUrl = "https://api.gkmmz.ru/api/update_user_device"
+
+            val currentDateTime = getCurrentDateTime()
+            Log.d("MainActivity", "updateUserDevice at $currentDateTime, token=$deviceToken")
+
+            val body = MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("mdm_code", mdmCode)
+                .addFormDataPart("device_token", deviceToken)
+                .addFormDataPart("data[is_active]", "1")           // как в вашем коде
+                .addFormDataPart("data[created_at]", currentDateTime)
+                .build()
+
+            val base = Request.Builder()
+                .post(body)
+                .addHeader("X-Apig-AppCode", authTokenAPI)
+                .addHeader("X-Auth-Token", authToken)
+
+            fun build(url: String) = base.url(url).build()
+
+            try {
+                var resp: Response? = null
+                var netErr: IOException? = null
+
+                // primary
+                try {
+                    val req = build(primaryUrl)
+                    Log.d("MainActivity", "→ POST $primaryUrl")
+                    resp = client.newCall(req).execute()
+                } catch (e: IOException) {
+                    netErr = e
+                    Log.w("MainActivity", "primary failed: ${e.message}")
+                }
+
+                // fallback по 429 ИЛИ по сетевой ошибке primary
+                if (resp == null || resp.code == 429) {
+                    resp?.close()
+                    try {
+                        val fbReq = build(fallbackUrl)
+                        Log.w("MainActivity", "fallback → $fallbackUrl (reason: ${if (netErr != null) "IO error" else "429"})")
+                        resp = client.newCall(fbReq).execute()
+                    } catch (e: IOException) {
+                        Log.e("MainActivity", "fallback failed: ${e.message}", e)
+                        return@withContext false
                     }
                 }
+
+                resp.use { r ->
+                    val ok = r.isSuccessful
+                    if (ok) Log.d("MainActivity", "User device updated successfully")
+                    else Log.e("MainActivity", "Failed to update user device: ${r.code}")
+                    ok
+                }
+            } catch (e: ServiceModeException) {
+                Log.w("MainActivity", "Service mode active; skip update (until=${e.until})")
+                false
+            } catch (t: Throwable) {
+                Log.e("MainActivity", "Error updating user device", t)
+                false
             }
         }
+
+    // ADD
+    private suspend fun addUserDevice(mdmCode: String, deviceToken: String): Boolean =
+        withContext(Dispatchers.IO) {
+            val client = (application as App).okHttpClient.newBuilder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .build()
+
+            val primaryUrl  = "https://09f2befcf01d4dd39cbe7e54717e28af.apicapis.ru-moscow-1.hc.sbercloud.ru/api/add_user_device"
+            val fallbackUrl = "https://api.gkmmz.ru/api/add_user_device"
+
+            val currentDateTime = getCurrentDateTime()
+
+            val body = MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("mdm_code", mdmCode)
+                .addFormDataPart("device_token", deviceToken)
+                .addFormDataPart("is_active", "1")                  // у add_* без data[...]
+                .addFormDataPart("created_at", currentDateTime)
+                .build()
+
+            val base = Request.Builder()
+                .post(body)
+                .addHeader("X-Apig-AppCode", authTokenAPI)
+                .addHeader("X-Auth-Token", authToken)
+
+            fun build(url: String) = base.url(url).build()
+
+            try {
+                var resp: Response? = null
+                var netErr: IOException? = null
+
+                // primary
+                try {
+                    val req = build(primaryUrl)
+                    Log.d("MainActivity", "→ POST $primaryUrl")
+                    resp = client.newCall(req).execute()
+                } catch (e: IOException) {
+                    netErr = e
+                    Log.w("MainActivity", "primary failed: ${e.message}")
+                }
+
+                // fallback по 429 ИЛИ по сетевой ошибке primary
+                if (resp == null || resp.code == 429) {
+                    resp?.close()
+                    try {
+                        val fbReq = build(fallbackUrl)
+                        Log.w("MainActivity", "fallback → $fallbackUrl (reason: ${if (netErr != null) "IO error" else "429"})")
+                        resp = client.newCall(fbReq).execute()
+                    } catch (e: IOException) {
+                        Log.e("MainActivity", "fallback failed: ${e.message}", e)
+                        return@withContext false
+                    }
+                }
+
+                resp.use { r ->
+                    val ok = r.isSuccessful
+                    if (ok) Log.d("MainActivity", "User device added successfully")
+                    else Log.e("MainActivity", "Failed to add user device: ${r.code}")
+                    ok
+                }
+            } catch (e: ServiceModeException) {
+                Log.w("MainActivity", "Service mode active; skip add (until=${e.until})")
+                false
+            } catch (t: Throwable) {
+                Log.e("MainActivity", "Error adding user device", t)
+                false
+            }
+        }
+
+    private fun getDeviceToken() {
+        RuStorePushClient.getToken()
+            .addOnSuccessListener { token ->
+                Log.d("DeviceToken", "Токен устройства получен: $token")
+                Toast.makeText(this, "Токен устройства получен", Toast.LENGTH_SHORT).show()
+
+                // Обновляем токен в данных пользователя
+                updateUserDeviceToken(token)
+            }
+            .addOnFailureListener { exception ->
+                Log.e("DeviceToken", "Ошибка получения токена устройства", exception)
+                Toast.makeText(this, "Не удалось получить токен устройства", Toast.LENGTH_SHORT).show()
+            }
+    }
+    private fun saveUserDataToFile(userData: UserData) {
+        try {
+            val json = Gson().toJson(userData)
+            openFileOutput("user_data", Context.MODE_PRIVATE).use {
+                it.write(json.toByteArray())
+            }
+        } catch (e: Exception) {
+            Log.e("DeviceToken", "Error saving user data", e)
+        }
+    }
+    private fun updateUserDeviceToken(token: String) {
+        val userData = readUserData() ?: return
+
+        // Обновляем токен в памяти
+        currentDeviceToken = token
+
+        // Обновляем токен в сохраненных данных
+        val updatedUserData = userData.copy(device_token = token)
+        saveUserDataToFile(updatedUserData)
+
+        // Отправляем токен на сервер
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val isUpdated = updateUserDevice(updatedUserData.mdmCode, token)
+                if (!isUpdated) {
+                    val isAdded = addUserDevice(updatedUserData.mdmCode, token)
+                    if (!isAdded) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                this@FeaturesOfTheFunctionalityActivity,
+                                "Не удалось отправить токен на сервер",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("DeviceToken", "Ошибка обновления токена на сервере", e)
+            }
+        }
+    }
+    // для обновления мобильной версии через Rustore
+    private fun popupSnackBarForCompleteUpdate() {
+        Snackbar.make(
+            findViewById(R.id.root_layout),
+            getString(R.string.downloading_completed),
+            Snackbar.LENGTH_INDEFINITE
+        ).apply {
+            setAction(getString(R.string.button_install)) { viewModel.completeUpdateRequested() }
+            show()
+        }
+    }
+    // для обновления мобильной версии через Rustore
+    private fun readUserData(): UserData? {
+        return try {
+            openFileInput("user_data").use {
+                val json = it.bufferedReader().use { reader -> reader.readText() }
+                Gson().fromJson(json, UserData::class.java)
+            }
+        } catch (e: Exception) {
+            Log.e("FeaturesActivity", "Error reading user data", e)
+            null
+        }
+    }
+    private fun setupRecyclerView() {
+        recyclerView = findViewById(R.id.recycler_view)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        cardAdapter = createCardAdapter()
+        recyclerView.adapter = cardAdapter
+    }
+
+    private fun createCardAdapter(): CardAdapter {
+        return CardAdapter(
+            cardItemList,
+            this,
+            7,
+            currentUsername ?: "",
+            currentUserId ?: 0,
+            currentRoleCheck ?: "",
+            currentMdmCode ?: "",
+            currentFio ?: "",
+            currentDeviceInfo ?: "",
+            currentRolesString ?: "",
+            currentDeviceToken ?: "",
+            currentIsAuthorized
+        )
+    }
+    private fun getCurrentDateTime(): String {
+        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        return formatter.format(Date())
     }
     override fun onScannerResultChange(result: String?) {
         Log.d(tag, "Scanner result received: $result")
@@ -252,40 +509,16 @@ class FeaturesOfTheFunctionalityActivity : AppCompatActivity(), SupporterManager
     override fun onScannerInitFail() {
         Log.e(tag, "Scanner initialization failed")
     }
-    @SuppressLint("MissingInflatedId")
-    private fun showPopupMenuNotification(view: View) {
-        val popupView = layoutInflater.inflate(R.layout.custom_menu_notification, null)
-        val popupWindow = PopupWindow(popupView, 500, 450)
-        popupView.findViewById<LinearLayout>(R.id.item_write_sms).setOnClickListener {
-            val rolesString = intent.getStringExtra("rolesString") ?: ""
-            rolesList.addAll(rolesString.split(",").map { it.trim() })
-            rolesList.forEach { role ->
-                Log.d("Список ролей", "Роль: $role")
-            }
-            val intent = Intent(this, CreateNotificationActivity::class.java).apply {
-                putExtra("userId", userId)
-                putExtra("username", username)
-                putExtra("roleCheck", roleCheck)
-                putExtra("mdmCode", mdmCode)
-                putExtra("fio", fio)
-                putExtra("deviceInfo", deviceInfo)
-                putExtra("rolesString", rolesString)
-            }
-            startActivity(intent)
-            popupWindow.dismiss()
-        }
-        popupView.findViewById<LinearLayout>(R.id.item_incoming_sms).setOnClickListener {
-            Toast.makeText(this, "Входящие нажаты", Toast.LENGTH_SHORT).show()
-            popupWindow.dismiss()
-        }
-        popupView.findViewById<LinearLayout>(R.id.item_sent_sms).setOnClickListener {
-            Toast.makeText(this, "Отправленные нажаты", Toast.LENGTH_SHORT).show()
-            popupWindow.dismiss()
-        }
-        popupWindow.isFocusable = true
-        popupWindow.showAsDropDown(view)
-    }
+
     fun handleCardClick(cardItem: CardItem) {
+        if (currentUsername == "T.Test") {
+            Toast.makeText(this, "У вас недостаточно прав для совершения данной операции", Toast.LENGTH_LONG).show()
+            return
+        }
+        if (currentUserId == 0 || currentFio.isNullOrEmpty()) {
+            Toast.makeText(this, "Вернитесь в настройки, затем попробуйте снова", Toast.LENGTH_LONG).show()
+            return
+        }
         lifecycleScope.launch {
             val prp = cardItem.prp
             Log.d(tag, "Processing card with prp: $prp")
@@ -296,13 +529,14 @@ class FeaturesOfTheFunctionalityActivity : AppCompatActivity(), SupporterManager
                 val card = cards[0]
                 try {
                     val primaryDemandId = card.primarydemand_id
-                    val fio = fio
+                    val fio = currentFio
                     val dateDistribution = card.dateOfDistribution
                     val demand = card.demand
-                    Log.d(tag, "Adding to skladi_data with primaryDemandId: $primaryDemandId and userId: $userId")
-                    Toast.makeText(this@FeaturesOfTheFunctionalityActivity, "Выдана ПрП с $primaryDemandId сотрудником $userId", Toast.LENGTH_LONG).show()
+                    Log.d(tag, "Adding to skladi_data with primaryDemandId: $primaryDemandId and userId: $currentUserId")
+                    Toast.makeText(this@FeaturesOfTheFunctionalityActivity, "Выдана ПрП с $primaryDemandId сотрудником $currentUserId", Toast.LENGTH_LONG).show()
                     withContext(Dispatchers.IO) {
-                        DatabaseManager.addToSkladiData(this@FeaturesOfTheFunctionalityActivity, primaryDemandId, userId, fio, dateDistribution, demand)
+                        DatabaseManager.addToSkladiData(this@FeaturesOfTheFunctionalityActivity, primaryDemandId, currentUserId ?: 0,
+                            fio ?: "", dateDistribution, demand)
                     }
                     fetchDataFromDatabase()
                 } catch (e: Exception) {
@@ -360,18 +594,31 @@ class FeaturesOfTheFunctionalityActivity : AppCompatActivity(), SupporterManager
         }
     }
     private fun registerScannerReceiver() {
-        val intentFilter = IntentFilter()
-        intentFilter.addAction(ACTION_RECEIVE_DATA)
-        intentFilter.addAction(ACTION_RECEIVE_DATABYTES)
-        intentFilter.addAction(ACTION_RECEIVE_DATALENGTH)
-        intentFilter.addAction(ACTION_RECEIVE_DATATYPE)
-        registerReceiver(mScanReceiver, intentFilter)
+        val intentFilter = IntentFilter().apply {
+            addAction(ACTION_RECEIVE_DATA)
+            addAction(ACTION_RECEIVE_DATABYTES)
+            addAction(ACTION_RECEIVE_DATALENGTH)
+            addAction(ACTION_RECEIVE_DATATYPE)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1001)
+            }
+            registerReceiver(mScanReceiver, intentFilter, RECEIVER_EXPORTED)
+        } else {
+            // Для версий ниже Android 14
+            registerReceiver(mScanReceiver, intentFilter)
+        }
     }
     private val mScanReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             Log.v(tag, "onReceive()")
             val action = intent.action
             val bundle = intent.extras ?: return
+
             when (action) {
                 ACTION_RECEIVE_DATA -> {
                     Log.v(tag, "ACTION_RECEIVE_DATA")
@@ -396,28 +643,62 @@ class FeaturesOfTheFunctionalityActivity : AppCompatActivity(), SupporterManager
     }
     override fun onDestroy() {
         super.onDestroy()
-        if (deviceInfo == "EA630") {
-            closeScanService()
-            unregisterReceiver(mScanReceiver)
-        } else if (deviceInfo == "PM84") {
-            pm84ScannerManager?.unregisterScannerReceiver()
-        }
-        else {
-            supporterManager?.recycle()
+        try {
+            when (currentDeviceInfo) {
+                "EA630" -> {
+                    closeScanService()
+                    unregisterReceiver(mScanReceiver)
+                }
+                "PM84" -> {
+                    pm84ScannerManager?.unregisterScannerReceiver()
+                }
+                "L2H-N" -> {
+                    supporterManager?.recycle()
+                }
+            }
+        } catch (e: IllegalArgumentException) {
+            Log.e(tag, "Receiver not registered or already unregistered", e)
+        } catch (e: Exception) {
+            Log.e(tag, "Error in onDestroy", e)
         }
         Log.v(tag, "onDestroy()")
     }
-    private fun disableUI() {
-        text_result_scan.isEnabled = false
-        //button_search.isEnabled = false
-        button_scan.isEnabled = false
-        recyclerView.isEnabled = false
-        data_user_info.isEnabled = false
-//        go_to_authorization.isEnabled = false
-        go_to_add.isEnabled = false
-        go_to_issue.isEnabled = false
-        go_to_send_notification.isEnabled = false
-        go_to_logistic.isEnabled = false
-        Toast.makeText(this, "Версия приложения устарела. Пожалуйста, обновите приложение.", Toast.LENGTH_LONG).show()
+    private fun checkCameraPermission(): Boolean {
+        return if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            true
+        } else {
+            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
+            false
+        }
+    }
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CAMERA_PERMISSION && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            pm84ScannerManager?.startScanning(text_result_scan)
+        } else {
+            Toast.makeText(this, "Разрешение на использование камеры отклонено", Toast.LENGTH_SHORT).show()
+        }
+    }
+    override fun onResume() {
+        super.onResume()
+        checkBackgroundPermission()
+    }
+    private fun checkBackgroundPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+            if (!powerManager.isIgnoringBatteryOptimizations(packageName)) {
+                showBatteryOptimizationSnackbar()
+            }
+        }
+    }
+
+    private fun showBatteryOptimizationSnackbar() {
+        Snackbar.make(
+            findViewById(android.R.id.content),
+            "Для корректной работы уведомлений отключите оптимизацию батареи",
+            Snackbar.LENGTH_INDEFINITE
+        ).setAction("Настроить") {
+            (application as? App)?.openBatteryOptimizationSettings(this)
+        }.show()
     }
 }

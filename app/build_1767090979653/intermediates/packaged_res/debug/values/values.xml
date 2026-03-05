@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="dark_blue">#001D64</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="result_error">#E53935</color>
+    <color name="result_success">#4CAF50</color>
+    <color name="semi_transparent">#03FFFFFF</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="white">#FFFFFFFF</color>
+    <string name="add_photo_text">Добавить фото</string>
+    <string name="app_name">АИС Логистика</string>
+    <string name="button_install">Установить</string>
+    <string name="create_activity_notification">Создание Уведомления</string>
+    <string name="downloading_completed">Скачивание завершено</string>
+    <string name="info_about_app">"АИС Логистика" - мобильное приложение, предназначенное для работы с полуфабрикатами (поиск, выдача, добавление на ПРОСК ПрП), а также для создания заявок на перещемение ПрП и документов.</string>
+    <string name="notifications_data_push_channel_id">data_push_channel</string>
+    <string name="notifications_data_push_channel_name">Data push channel</string>
+    <string name="notifications_notification_push_channel_id">notification_push_channel</string>
+    <string name="notifications_notification_push_channel_name">Notification push channel</string>
+    <string name="select_photo_text">Сохранить изменения</string>
+    <string name="string_dash">-</string>
+    <string name="title_activity_add_activity">Поиск и добавление</string>
+    <string name="title_activity_add_sunmi">Поиск и добавление</string>
+    <string name="title_activity_check">CheckActivity</string>
+    <string name="title_activity_checking_pr_psklad">CheckingPrPSkladActivity</string>
+    <string name="title_activity_checking_pr_psklad_sunmi">CheckingPrPSkladSunmiActivity</string>
+    <string name="title_activity_create_notification">CreateNotificationActivity</string>
+    <string name="title_activity_create_notification_sunmi">CreateNotificationSunmiActivity</string>
+    <string name="title_activity_creating_logistic">CreatingLogisticActivity</string>
+    <string name="title_activity_creating_logistic_doc">CreatingLogisticDocActivity</string>
+    <string name="title_activity_creating_logistic_other">CreatingLogisticOtherActivity</string>
+    <string name="title_activity_creating_logistic_sunmi">CreatingLogisticSunmiActivity</string>
+    <string name="title_activity_detail_logistics">Содержимое заявки</string>
+    <string name="title_activity_detail_logistics_doc">DetailLogisticsDocActivity</string>
+    <string name="title_activity_detail_logistics_doc_adapter">DetailLogisticsDocAdapter</string>
+    <string name="title_activity_detail_logistics_sunmi">DetailLogisticsSunmiActivity</string>
+    <string name="title_activity_features_of_the_functionalite_sunmi">Поиск и выдача</string>
+    <string name="title_activity_features_of_the_functionality">Поиск и выдача</string>
+    <string name="title_activity_fire">FireActivity</string>
+    <string name="title_activity_getting_telegram_users">GettingTelegramUsersActivity</string>
+    <string name="title_activity_gif">GifActivity</string>
+    <string name="title_activity_inventarisation_firsov">InventarisationFirsovActivity</string>
+    <string name="title_activity_logistic">LogisticActivity</string>
+    <string name="title_activity_logistic_sunmi">LogisticSunmiActivity</string>
+    <string name="title_activity_main">Авторизация</string>
+    <string name="title_activity_map">MapActivity</string>
+    <string name="title_activity_new_logistic">NewLogisticActivity</string>
+    <string name="title_activity_new_logistic_doc">NewLogisticDocActivity</string>
+    <string name="title_activity_new_logistic_sunmi">NewLogisticSunmiActivity</string>
+    <string name="title_activity_notification">NotificationActivity</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="title_activity_tg_authorization">TgAuthorizationActivity</string>
+    <string name="title_activity_web_map">WebMapActivity</string>
+    <style name="AppAlertDialogTheme" parent="ThemeOverlay.AppCompat.Dialog.Alert">
+        <item name="colorAccent">#001D64</item>
+    </style>
+    <style name="AppDatePickerDialogTheme" parent="ThemeOverlay.AppCompat.Dialog">
+        <item name="colorAccent">#001D64</item>
+    </style>
+    <style name="AppDatePickerStyle" parent="@android:style/Widget.Material.DatePicker">
+        <item name="android:headerBackground">#001D64</item>
+    </style>
+    <style name="AppTimePickerDialogTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorPrimary">#001D64</item>
+        <item name="colorAccent">#001D64</item>
+    </style>
+    <style name="CustomButtonStyleAdd" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:drawablePadding">8dp</item>
+        <item name="android:textColorHint">@color/white</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">serif-bold</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:translationZ">4dp</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:shadowColor">#C4C4C4</item>
+        <item name="android:shadowDy">4</item>
+        <item name="android:shadowRadius">4</item>
+    </style>
+    <style name="CustomButtonStyleAuthorization">
+        <item name="android:background">@drawable/button_background</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="CustomButtonStyleBack" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:translationZ">4dp</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:shadowColor">#C4C4C4</item>
+        <item name="android:shadowDy">4</item>
+        <item name="android:shadowRadius">4</item>
+    </style>
+    <style name="CustomButtonStyleIssue" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:drawablePadding">8dp</item>
+        <item name="android:textColorHint">@color/white</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">serif-bold</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:translationZ">4dp</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:shadowColor">#C4C4C4</item>
+        <item name="android:shadowDy">4</item>
+        <item name="android:shadowRadius">4</item>
+    </style>
+    <style name="CustomButtonStyleSearch" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:drawablePadding">8dp</item>
+        <item name="android:textColorHint">@color/white</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">serif-bold</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:elevation">4dp</item>
+        <item name="android:translationZ">4dp</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:shadowColor">#C4C4C4</item>
+        <item name="android:shadowDy">4</item>
+        <item name="android:shadowRadius">4</item>
+    </style>
+    <style name="CustomDialogStatusesStyle" parent="Theme.AppCompat.Dialog">
+        <item name="android:popupBackground">@drawable/dialog_statuses_background</item>
+        <item name="android:popupElevation">8dp</item>
+    </style>
+    <style name="CustomEditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:textColor">#C4C4C4</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColorHint">#C4C4C4</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+    <style name="CustomMenuItemTextAppearance" parent="@style/TextAppearance.AppCompat">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+    <style name="CustomPopupMenu" parent="Widget.AppCompat.PopupMenu.Overflow">
+        <item name="android:popupBackground">@drawable/card_background</item>
+        <item name="android:itemTextAppearance">@style/CustomMenuItemTextAppearance</item>
+        <item name="android:textColor"/>
+        <item name="android:popupElevation">8dp</item>
+    </style>
+    <style name="CustomPopupMenuNotification" parent="Widget.AppCompat.PopupMenu.Overflow">
+        <item name="android:background">@drawable/button_background</item>
+        <item name="android:itemTextAppearance">@style/CustomMenuItemTextAppearance</item>
+        <item name="android:popupElevation">8dp</item>
+    </style>
+    <style name="CustomPopupMenuSettings" parent="android:Widget.PopupMenu">
+        <item name="android:popupBackground">@drawable/button_background</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:popupElevation">8dp</item>
+    </style>
+    <style name="NewCustomButtonNoInIssue">
+        <item name="android:background">@drawable/new_button_no_in_issue</item>
+        <item name="android:textColor">#006AF0</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="NewCustomButtonNoYesInIssue">
+        <item name="android:background">@drawable/rounded_white_yes_no</item>
+        <item name="android:textColor">#006AF0</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="NewCustomButtonStyleAuthorization">
+        <item name="android:background">@drawable/new_button_background_authorization</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="NewCustomButtonStyleExit">
+        <item name="android:background">@drawable/new_button_exit</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:fontFamily">@font/inter_medium</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="TheInterBoldText" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/inter_bold</item>
+    </style>
+    <style name="TheInterMediumText" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/inter_medium</item>
+    </style>
+    <style name="TheInterRegularText" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/inter_regular</item>
+    </style>
+    <style name="TheInterSemiBoldText" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/inter_semibold</item>
+    </style>
+    <style name="TheMediumBoldText" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+    <style name="TheMostBoldText" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">serif-bold</item>
+    </style>
+    <style name="Theme.Semimanufactures" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">#4671D5</item>
+    </style>
+</resources>

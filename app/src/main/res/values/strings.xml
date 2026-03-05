@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">АИС Внутренняя логистика</string>
+    <string name="app_name">АИС Логистика</string>
     <string name="title_activity_features_of_the_functionality">Поиск и выдача</string>
     <string name="title_activity_main">Авторизация</string>
     <string name="title_activity_add_activity">Поиск и добавление</string>
@@ -27,10 +27,20 @@
     <string name="title_activity_detail_logistics_doc_adapter">DetailLogisticsDocAdapter</string>
     <string name="add_photo_text">Добавить фото</string>
     <string name="select_photo_text">Сохранить изменения</string>
-    <string name="info_about_app">"АИС Внутренняя логистика" - мобильное приложение, предназначенное для работы с полуфабрикатами (поиск, выдача, добавление на ПРОСК ПрП), а также для создания заявок на перещемение ПрП и документов.</string>
+    <string name="info_about_app">"АИС Логистика" - мобильное приложение, предназначенное для работы с полуфабрикатами (поиск, выдача, добавление на ПРОСК ПрП), а также для создания заявок на перещемение ПрП и документов.</string>
     <string name="title_activity_settings">SettingsActivity</string>
     <string name="title_activity_gif">GifActivity</string>
     <string name="string_dash">-</string>
     <string name="title_activity_getting_telegram_users">GettingTelegramUsersActivity</string>
     <string name="title_activity_tg_authorization">TgAuthorizationActivity</string>
+    <string name="notifications_data_push_channel_id">data_push_channel</string>
+    <string name="notifications_data_push_channel_name">Data push channel</string>
+    <string name="notifications_notification_push_channel_id">notification_push_channel</string>
+    <string name="notifications_notification_push_channel_name">Notification push channel</string>
+    <string name="downloading_completed">Скачивание завершено</string>
+    <string name="button_install">Установить</string>
+    <string name="title_activity_notification">NotificationActivity</string>
+    <string name="title_activity_creating_logistic_other">CreatingLogisticOtherActivity</string>
+    <string name="title_activity_map">MapActivity</string>
+    <string name="title_activity_web_map">WebMapActivity</string>
 </resources>

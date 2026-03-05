@@ -24,4 +24,18 @@ class StatusAdapter(
         imageView.setImageResource(icons[position])
         return view
     }
+    private val statusUpdateLocks = mutableMapOf<Int, Boolean>()
+    fun onStatusUpdateStarted(itemId: Int, holder: DetailLogisticsAdapter.DetailLogisticsViewHolder) {
+        statusUpdateLocks[itemId] = true
+        holder.statusProgress.visibility = View.VISIBLE
+        holder.status.isEnabled = false
+        holder.status.alpha = 0.5f
+    }
+
+    fun onStatusUpdateComplete(itemId: Int, holder: DetailLogisticsAdapter.DetailLogisticsViewHolder) {
+        statusUpdateLocks.remove(itemId)
+        holder.statusProgress.visibility = View.GONE
+        holder.status.isEnabled = true
+        holder.status.alpha = 1.0f
+    }
 }

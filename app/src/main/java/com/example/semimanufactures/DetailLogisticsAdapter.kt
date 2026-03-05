@@ -1,60 +1,83 @@
 package com.example.semimanufactures
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.Dialog
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.graphics.Rect
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.InputType
+import android.text.Spannable
 import android.text.SpannableString
+import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.semimanufactures.Auth.authToken
+import com.example.semimanufactures.Auth.authTokenAPI
+import com.example.semimanufactures.DatabaseManager.getAllSotrudnikiInfo
+import com.example.semimanufactures.service_mode.ServiceModeException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
+import okhttp3.FormBody
 import okhttp3.Request
-import okhttp3.RequestBody
+import okhttp3.Response
 import java.io.File
+import java.io.IOException
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 class DetailLogisticsAdapter(private val items: MutableList<LogisticsItem>,
-                             private val mdmCode: String,
-                             private val userId: String,
-                             private val username: String,
-                             private val roleCheck: String,
-                             private val deviceInfo: String,
-                             private val fio: String,
+                             private var currentUsername: String,
+                             private var currentUserId: Int,
+                             private var currentRoleCheck: String,
+                             private var currentMdmCode: String,
+                             private var currentFio: String,
+                             private var currentDeviceInfo: String,
+                             private var currentRolesString: String,
+                             private var currentDeviceToken: String,
+                             private var currentIsAuthorized:  Boolean,
                              private val onStatusClick: (LogisticsItem) -> Unit) : RecyclerView.Adapter<DetailLogisticsAdapter.DetailLogisticsViewHolder>() {
+    val statusLoadingStates = mutableMapOf<String, Boolean>()
     class DetailLogisticsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val id: TextView = itemView.findViewById(R.id.id)
         val send_from_title: TextView = itemView.findViewById(R.id.send_from_title)
         val send_to_title: TextView = itemView.findViewById(R.id.send_to_title)
         val type: TextView = itemView.findViewById(R.id.type)
-        val comment: TextView = itemView.findViewById(R.id.comment)
+        val comment: EditText = itemView.findViewById(R.id.comment)
         val send_comment: TextView = itemView.findViewById(R.id.send_comment)
         val receive_comment: TextView = itemView.findViewById(R.id.receive_comment)
         val sender_phone: TextView = itemView.findViewById(R.id.sender_phone)
@@ -69,13 +92,11 @@ class DetailLogisticsAdapter(private val items: MutableList<LogisticsItem>,
         val demand: TextView = itemView.findViewById(R.id.object_logistic)
         val docsRecyclerView: RecyclerView = itemView.findViewById(R.id.docs_recycler_view)
         val take_photo_button: Button = itemView.findViewById(R.id.take_photo_button)
-        val save_photo_logistic: Button = itemView.findViewById(R.id.save_photo_logistic)
         val planned_date: TextView = itemView.findViewById(R.id.planned_date)
         val loader_gruzchik: ImageView = itemView.findViewById(R.id.loader_gruzchik)
         val loader_pogruzchik: ImageView = itemView.findViewById(R.id.loader_pogruzchik)
         val layout_address_sklada_otkuda: LinearLayout = itemView.findViewById(R.id.layout_address_sklada_otkuda)
         val layout_address_sklada_kuda: LinearLayout = itemView.findViewById(R.id.layout_address_sklada_kuda)
-        val layout_comment: LinearLayout = itemView.findViewById(R.id.layout_comment)
         val layout_responsible_otkuda: LinearLayout = itemView.findViewById(R.id.layout_responsible_otkuda)
         val layout_responsible_kuda: LinearLayout = itemView.findViewById(R.id.layout_responsible_kuda)
         val layout_comment_sender: LinearLayout = itemView.findViewById(R.id.layout_comment_sender)
@@ -89,6 +110,11 @@ class DetailLogisticsAdapter(private val items: MutableList<LogisticsItem>,
         var runnable: Runnable? = null
         val layout_kuda: LinearLayout = itemView.findViewById(R.id.layout_kuda)
         val layout_otkuda: LinearLayout = itemView.findViewById(R.id.layout_otkuda)
+        val icon_sender_phone: ImageView = itemView.findViewById(R.id.icon_sender_phone)
+        val icon_receiver_phone: ImageView = itemView.findViewById(R.id.icon_receiver_phone)
+        val executor: TextView = itemView.findViewById(R.id.executor)
+        val statusProgress: ProgressBar = itemView.findViewById(R.id.status_progress)
+        val openMapButton: Button = itemView.findViewById(R.id.open_map_button)
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DetailLogisticsViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_detail_logistics, parent, false)
@@ -96,38 +122,40 @@ class DetailLogisticsAdapter(private val items: MutableList<LogisticsItem>,
     }
     override fun onBindViewHolder(holder: DetailLogisticsViewHolder, position: Int) {
         val item = items[position]
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault())
-        var plannedDateMillis: Long = 0
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        var createdAtMillis: Long = 0
         try {
-            plannedDateMillis = dateFormat.parse(item.planned_date)?.time ?: 0
+            createdAtMillis = dateFormat.parse(item.created_at)?.time ?: 0
         } catch (e: ParseException) {
             Log.e("DetailLogisticsAdapter", "Ошибка при парсинге даты", e)
         }
-        val nowMillis = System.currentTimeMillis()
         holder.runnable?.let { holder.handler.removeCallbacks(it) }
-        if (plannedDateMillis > nowMillis) {
-            var timeDiffMillis = plannedDateMillis - nowMillis
+        if (createdAtMillis > 0 && item.status !in listOf("-1", "4")) {
+            val startTimeMillis = createdAtMillis
             holder.runnable = object : Runnable {
                 override fun run() {
-                    if (timeDiffMillis <= 0) {
+                    val pos = holder.bindingAdapterPosition
+                    if (pos == RecyclerView.NO_POSITION) {
                         holder.handler.removeCallbacks(this)
-                        holder.id.text = "Доставка №${item.id}\nот ${item.created_at}\n${item.creator}"
-                        holder.id.setTextColor(Color.BLACK)
                         return
                     }
-                    val formattedTime = formatTime(timeDiffMillis)
-                    val fullText = "Доставка №${item.id} $formattedTime\nот ${item.created_at}\n${item.creator}"
+                    val currentItem = items[pos]
+                    val nowMillis = System.currentTimeMillis()
+                    var elapsedMillis = nowMillis - startTimeMillis
+                    if (elapsedMillis < 0) elapsedMillis = 0
+                    val formattedTime = formatTimeAtWork(elapsedMillis)
+                    val fullText = "Доставка №${currentItem.id} $formattedTime\nот ${currentItem.created_at}\n${currentItem.creator}"
                     val spannableString = SpannableString(fullText)
-                    val timerStartIndex = fullText.indexOf(formattedTime)
-                    val timerEndIndex = timerStartIndex + formattedTime.length
-                    spannableString.setSpan(
-                        ForegroundColorSpan(Color.RED),
-                        timerStartIndex,
-                        timerEndIndex,
-                        0
-                    )
+                    val timeStart = fullText.indexOf(formattedTime)
+                    if (timeStart >= 0) {
+                        spannableString.setSpan(
+                            ForegroundColorSpan(Color.RED),
+                            timeStart,
+                            timeStart + formattedTime.length,
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+                    }
                     holder.id.text = spannableString
-                    timeDiffMillis -= 1000
                     holder.handler.postDelayed(this, 1000)
                 }
             }
@@ -148,8 +176,14 @@ class DetailLogisticsAdapter(private val items: MutableList<LogisticsItem>,
         } else {
             holder.layout_otkuda.visibility = View.VISIBLE
         }
-        holder.type.text = item.type
-        holder.comment.text = item.comment
+        holder.type.text = when (item.type) {
+            "prp" -> "ПрП"
+            "stanok" -> "Оборудование"
+            "other" -> "Прочее"
+            "doc" -> "Документ"
+            else -> "Неизвестный тип"
+        }
+        holder.comment.setText(item.comment)
         holder.send_comment.text = item.send_comment
         holder.receive_comment.text = item.receive_comment
         holder.sender_phone.text = item.sender_phone
@@ -160,39 +194,55 @@ class DetailLogisticsAdapter(private val items: MutableList<LogisticsItem>,
         holder.sklad_from_address.text = item.sklad_from_address
         holder.sklad_to_resp_name.text = item.sklad_to_resp_name
         holder.sklad_from_resp_name.text = item.sklad_from_resp_name
-        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault())
+        holder.executor.text = item.executor_name
+        val inputFormat1 = SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault())
+        val inputFormat2 = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
         val outputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+
         try {
-            val date: Date? = inputFormat.parse(item.planned_date)
-            val formattedDate: String = outputFormat.format(date)
+            val date: Date? = try {
+                inputFormat1.parse(item.planned_date)
+            } catch (e: ParseException) {
+                inputFormat2.parse(item.planned_date)
+            }
+            val formattedDate: String = outputFormat.format(date ?: Date())
             holder.planned_date.text = formattedDate
         } catch (e: Exception) {
             e.printStackTrace()
+            holder.planned_date.text = item.planned_date
         }
-        if (item.sklad_from_address?.isEmpty() ?: true || item.sklad_from_address == "null") {
+        Log.d("!!!", "роль пользователя: $currentRoleCheck")
+        if (item.sklad_from_address?.isEmpty() ?: true || item.sklad_from_address == "null" || currentRoleCheck == "65") {
             holder.layout_address_sklada_otkuda.visibility = View.GONE
+            Log.d("!!!", "роль пользователя: $currentRoleCheck")
         } else {
             holder.layout_address_sklada_otkuda.visibility = View.VISIBLE
+            Log.d("!!!", "роль пользователя: $currentRoleCheck")
         }
-        if (item.sklad_to_address?.isEmpty() ?: true || item.sklad_to_address == "null") {
+        if (item.sklad_to_address?.isEmpty() ?: true || item.sklad_to_address == "null" || currentRoleCheck == "65") {
             holder.layout_address_sklada_kuda.visibility = View.GONE
         } else {
             holder.layout_address_sklada_kuda.visibility = View.VISIBLE
         }
-        if (item.comment?.isEmpty() ?: true || item.comment == "null") {
-            holder.layout_comment.visibility = View.GONE
-        } else {
-            holder.layout_comment.visibility = View.VISIBLE
-        }
-        if (item.sklad_from_resp_name?.isEmpty() ?: true || item.sklad_from_resp_name == "null") {
+        if (item.sklad_from_resp_name?.isEmpty() ?: true || item.sklad_from_resp_name == "null" || currentRoleCheck == "65") {
             holder.layout_responsible_otkuda.visibility = View.GONE
         } else {
             holder.layout_responsible_otkuda.visibility = View.VISIBLE
         }
-        if (item.sklad_to_resp_name?.isEmpty() ?: true || item.sklad_to_resp_name == "null") {
+        if (item.sklad_to_resp_name?.isEmpty() ?: true || item.sklad_to_resp_name == "null" || currentRoleCheck == "65") {
             holder.layout_responsible_kuda.visibility = View.GONE
         } else {
             holder.layout_responsible_kuda.visibility = View.VISIBLE
+        }
+        if (item.sender_phone?.isEmpty() ?: true || item.sender_phone == "null" || item.sender_phone == "+7") {
+            holder.layout_phone_sender.visibility = View.GONE
+        } else {
+            holder.layout_phone_sender.visibility = View.VISIBLE
+        }
+        if (item.receiver_phone?.isEmpty() ?: true || item.receiver_phone == "null" || item.receiver_phone == "+7") {
+            holder.layout_phone_receiver.visibility = View.GONE
+        } else {
+            holder.layout_phone_receiver.visibility = View.VISIBLE
         }
         if (item.send_comment?.isEmpty() ?: true || item.send_comment == "null"|| item.send_comment == "Значение") {
             holder.layout_comment_sender.visibility = View.GONE
@@ -208,16 +258,6 @@ class DetailLogisticsAdapter(private val items: MutableList<LogisticsItem>,
             holder.layout_gruzchik_pogruzchik.visibility = View.GONE
         } else {
             holder.layout_gruzchik_pogruzchik.visibility = View.VISIBLE
-        }
-        if (item.sender_phone?.isEmpty() ?: true || item.sender_phone == "null" || item.sender_phone == "+7") {
-            holder.layout_phone_sender.visibility = View.GONE
-        } else {
-            holder.layout_phone_sender.visibility = View.VISIBLE
-        }
-        if (item.receiver_phone?.isEmpty() ?: true || item.receiver_phone == "null" || item.receiver_phone == "+7") {
-            holder.layout_phone_receiver.visibility = View.GONE
-        } else {
-            holder.layout_phone_receiver.visibility = View.VISIBLE
         }
         if (item.sender_name?.isEmpty() ?: true || item.sender_name == "null") {
             holder.layout_sender.visibility = View.GONE
@@ -240,14 +280,20 @@ class DetailLogisticsAdapter(private val items: MutableList<LogisticsItem>,
             holder.loader_pogruzchik.setImageResource(R.drawable.remember_me_svg)
         }
         holder.status.text = item.status
-        if (item.getObjects().isNotEmpty()) {
-            var logisticsObject = item.getObjects()[0]
-            var demandText = logisticsObject.demand ?: ""
-            var operationText = logisticsObject.operation ?: ""
-            var zahodText = logisticsObject.zahod ?: ""
-            val document = logisticsObject.docNumber ?: ""
-            holder.demand.text = "$demandText $operationText $zahodText $document"
-        }
+//        if (item.getObjects().isNotEmpty()) {
+//            val logisticsObject = item.getObjects()[0]
+//            val demandText = logisticsObject.demand ?: ""
+//            val operationText = logisticsObject.operation ?: ""
+//            val zahodText = logisticsObject.zahod ?: ""
+//            val document = logisticsObject.docNumber ?: ""
+//            val stanokText = logisticsObject.stanok ?: ""
+//            holder.demand.text = item.object_name ?: "Нет информации об объекте"
+//        }
+
+        val objectName = item.dnObjectNames ?: item.object_name ?: "Нет информации об объекте"
+        holder.demand.text = objectName
+
+
         holder.status.text = when (item.status) {
             "1" -> "Принята"
             "-1" -> "Аннулирована"
@@ -256,9 +302,26 @@ class DetailLogisticsAdapter(private val items: MutableList<LogisticsItem>,
             "4" -> "Выполнена"
             else -> "Неизвестно"
         }
-        holder.status.setOnClickListener {
-            onStatusClick(item)
+        if (currentUsername == "T.Test") {
+            Toast.makeText(holder.itemView.context, "У вас недостаточно прав для совершения данной операции", Toast.LENGTH_LONG).show()
         }
+        else {
+            val isLoading = statusLoadingStates[item.id] ?: false
+
+            holder.statusProgress.visibility = if (isLoading) View.VISIBLE else View.GONE
+            holder.status.isEnabled = !isLoading
+            holder.status.alpha = if (isLoading) 0.5f else 1.0f
+
+            holder.status.setOnClickListener {
+                if (!isLoading) {
+                    statusLoadingStates[item.id] = true
+                    notifyItemChanged(position)
+
+                    onStatusClick(item)
+                }
+            }
+        }
+
         val textColor = Color.WHITE
         when (item.status) {
             0.toString() -> {
@@ -301,19 +364,33 @@ class DetailLogisticsAdapter(private val items: MutableList<LogisticsItem>,
             val context = holder.itemView.context
             val intent = Intent(context, DetailLogisticsActivity::class.java)
             intent.putExtra("logistics_id", item.id)
-            intent.putExtra("mdmCode", mdmCode)
-            intent.putExtra("userId", userId)
-            intent.putExtra("username", username)
-            intent.putExtra("roleCheck", roleCheck)
-            intent.putExtra("deviceInfo", deviceInfo)
-            intent.putExtra("fio", fio)
+            intent.putExtra("mdmCode", currentMdmCode)
+            intent.putExtra("userId", currentUserId)
+            intent.putExtra("username", currentUsername)
+            intent.putExtra("roleCheck", currentRoleCheck)
+            intent.putExtra("deviceInfo", currentDeviceInfo)
+            intent.putExtra("fio", currentFio)
             intent.putExtra("type", item.type)
-            val rolesString = (context as DetailLogisticsActivity).rolesList.joinToString(separator = ",") { it }
-            intent.putExtra("rolesString", rolesString)
+            intent.putExtra("device_token", currentDeviceToken)
+            intent.putExtra("rolesString", currentRolesString)
+            intent.putExtra("isAuthorized", currentIsAuthorized)
             context.startActivity(intent)
         }
-        if (item.docs != null && item.docs!!.isNotEmpty()) {
-            val docsAdapter = DocsAdapter(item.docs!!.values.toList())
+
+        // ИСПРАВЛЕННЫЙ КОД ДЛЯ docsRecyclerView:
+        // Получаем только документы с фото (с использованием нового метода getPhotoDocs())
+        val photoDocs = item.getPhotoDocs()
+        if (photoDocs.isNotEmpty()) {
+            // Получаем токены из Auth класса
+            val authTokenAPI = Auth.authTokenAPI
+            val authToken = Auth.authToken
+
+            // Передаем токены в DocsAdapter
+            val docsAdapter = DocsAdapter(
+                docs = photoDocs,
+                authTokenAPI = authTokenAPI,
+                authToken = authToken
+            )
             holder.docsRecyclerView.adapter = docsAdapter
             holder.docsRecyclerView.layoutManager = LinearLayoutManager(holder.itemView.context, LinearLayoutManager.HORIZONTAL, false)
             holder.docsRecyclerView.addItemDecoration(HorizontalSpaceItemDecoration(1))
@@ -321,68 +398,241 @@ class DetailLogisticsAdapter(private val items: MutableList<LogisticsItem>,
         } else {
             holder.docsRecyclerView.visibility = View.GONE
         }
-        holder.take_photo_button.setOnClickListener {
-            val dialogView = LayoutInflater.from(holder.itemView.context).inflate(R.layout.dialog_custom, null)
-            val builder = AlertDialog.Builder(holder.itemView.context)
-            builder.setView(dialogView)
-            val buttonCamera = dialogView.findViewById<Button>(R.id.button_camera)
-            val buttonGallery = dialogView.findViewById<Button>(R.id.button_gallery)
-            val alertDialog = builder.create()
-            buttonCamera.setOnClickListener {
-                openCamera(holder.itemView.context, item.id)
-                alertDialog.dismiss()
-            }
-            buttonGallery.setOnClickListener {
-                openGallery(holder.itemView.context, item.id)
-                alertDialog.dismiss()
-            }
-            alertDialog.show()
+
+        // Или если еще не добавили метод getPhotoDocs(), используйте фильтрацию:
+        /*
+        val photoDocs = item.docs?.filter {
+            !it.md5Name.isNullOrBlank() || !it.fileUrl.isNullOrBlank()
+        } ?: emptyList()
+
+        if (photoDocs.isNotEmpty()) {
+            val docsAdapter = DocsAdapter(photoDocs)
+            holder.docsRecyclerView.adapter = docsAdapter
+            holder.docsRecyclerView.layoutManager = LinearLayoutManager(holder.itemView.context, LinearLayoutManager.HORIZONTAL, false)
+            holder.docsRecyclerView.addItemDecoration(HorizontalSpaceItemDecoration(1))
+            holder.docsRecyclerView.visibility = View.VISIBLE
+        } else {
+            holder.docsRecyclerView.visibility = View.GONE
         }
-        holder.save_photo_logistic.setOnClickListener {
-            val uris = ArrayList<Uri>()
-            uploadPhotosToServer(uris, item.id, holder.itemView.context)
+        */
+
+        if (currentUsername == "T.Test") {
+            Toast.makeText(holder.itemView.context, "У вас недостаточно прав для совершения данной операции", Toast.LENGTH_LONG).show()
+        }
+        else {
+            holder.comment.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    item.comment = s.toString().trim()
+                }
+                override fun afterTextChanged(s: Editable?) {
+                    holder.itemView.setOnFocusChangeListener { v, hasFocus ->
+                        if (!hasFocus && s.toString().trim() != item.comment) {
+                            showSaveDialog(holder.itemView.context, item.id, s.toString().trim())
+                        }
+                    }
+                }
+            })
+            holder.comment.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_NORMAL
+            holder.comment.imeOptions = EditorInfo.IME_ACTION_DONE
+            holder.comment.setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    val commentText = holder.comment.text.toString().trim()
+                    val logisticsId = item.id
+                    if (currentUsername == "T.Test") {
+                        Toast.makeText(holder.itemView.context, "У вас недостаточно прав для совершения данной операции", Toast.LENGTH_LONG).show()
+                    } else {
+                        updateLogisticComment(logisticsId, commentText, holder.itemView.context)
+                    }
+                    val imm = holder.itemView.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(holder.comment.windowToken, 0)
+                    return@setOnEditorActionListener true
+                }
+                false
+            }
+        }
+        holder.executor.setOnClickListener {
+            if (currentUsername == "T.Test" ||
+                !(currentRoleCheck == "2" || currentRoleCheck == "64" ||
+                        currentRolesString.contains("2") || currentRolesString.contains("64"))) {
+                Toast.makeText(holder.itemView.context,
+                    "У вас недостаточно прав для изменения исполнителя",
+                    Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+            showExecutorSelectionDialog(holder.itemView.context, item.id)
+        }
+        holder.take_photo_button.setOnClickListener {
+            if (currentUsername == "T.Test") {
+                Toast.makeText(holder.itemView.context, "У вас недостаточно прав для совершения данной операции", Toast.LENGTH_LONG).show()
+            }
+            else {
+                val dialogView = LayoutInflater.from(holder.itemView.context).inflate(R.layout.dialog_custom, null)
+                val builder = AlertDialog.Builder(holder.itemView.context)
+                builder.setView(dialogView)
+                val buttonCamera = dialogView.findViewById<Button>(R.id.button_camera)
+                val buttonGallery = dialogView.findViewById<Button>(R.id.button_gallery)
+                val alertDialog = builder.create()
+                buttonCamera.setOnClickListener {
+                    openCamera(holder.itemView.context, item.id)
+                    alertDialog.dismiss()
+                }
+                buttonGallery.setOnClickListener {
+                    openGallery(holder.itemView.context, item.id)
+                    alertDialog.dismiss()
+                }
+                alertDialog.show()
+            }
+        }
+        holder.icon_sender_phone.setOnClickListener {
+            item.sender_phone?.let { phoneNumber ->
+                makePhoneCall(holder.itemView.context, phoneNumber)
+            }
+        }
+
+        holder.icon_receiver_phone.setOnClickListener {
+            item.receiver_phone?.let { phoneNumber ->
+                makePhoneCall(holder.itemView.context, phoneNumber)
+            }
+        }
+
+        holder.openMapButton.setOnClickListener {
+            if (currentUsername == "T.Test" || !(currentRoleCheck == "2" || currentRolesString.contains("2"))) {
+                Toast.makeText(holder.itemView.context,
+                    "У вас недостаточно прав", Toast.LENGTH_LONG).show()
+            } else {
+                // Открываем карту внутри приложения
+                WebMapActivity.start(holder.itemView.context)
+            }
+        }
+    }
+
+    fun resetLoadingState(itemId: String) {
+        statusLoadingStates.remove(itemId)
+        val position = items.indexOfFirst { it.id == itemId }
+        if (position != -1) {
+            notifyItemChanged(position)
+        }
+    }
+    private fun makePhoneCall(context: Context, phoneNumber: String) {
+        val intent = Intent(Intent.ACTION_CALL).apply {
+            data = Uri.parse("tel:$phoneNumber")
+        }
+        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+            context.startActivity(intent)
+        } else {
+            ActivityCompat.requestPermissions(context as Activity, arrayOf(android.Manifest.permission.CALL_PHONE), REQUEST_CALL_PHONE)
+        }
+    }
+    @SuppressLint("MissingInflatedId")
+    private fun showSaveDialog(context: Context, logisticsId: String, commentText: String) {
+        if (currentUsername == "T.Test") {
+            Toast.makeText(context, "У вас недостаточно прав для совершения данной операции", Toast.LENGTH_LONG).show()
+        }
+        else {
+            val builder = AlertDialog.Builder(context)
+            val customLayout = LayoutInflater.from(context).inflate(R.layout.update_comment_dialog, null)
+            val titleTextView: TextView = customLayout.findViewById(R.id.title)
+            titleTextView.text = "Сохранение изменений"
+            val messageTextView: TextView = customLayout.findViewById(R.id.message)
+            messageTextView.text = "Вы хотите сохранить изменения для поля Примечание?"
+            val yesButton: Button = customLayout.findViewById(R.id.yes_button)
+            yesButton.setOnClickListener {
+                updateLogisticComment(logisticsId, commentText, context)
+                (context as Dialog).dismiss()
+            }
+            val noButton: Button = customLayout.findViewById(R.id.no_button)
+            noButton.setOnClickListener {
+                (context as Dialog).dismiss()
+            }
+            builder.setView(customLayout)
+            builder.setCancelable(false)
+            val alertDialog = builder.create()
+            alertDialog.show()
         }
     }
     override fun onViewDetachedFromWindow(holder: DetailLogisticsViewHolder) {
         super.onViewDetachedFromWindow(holder)
         holder.runnable?.let { holder.handler.removeCallbacks(it) }
     }
-    private fun formatTime(millis: Long): String {
-        val hours = millis / (1000 * 60 * 60)
-        val minutes = (millis % (1000 * 60 * 60)) / (1000 * 60)
-        val seconds = (millis % (1000 * 60)) / 1000
-
-        return String.format("%02d:%02d:%02d", hours, minutes, seconds)
-    }
     private fun openCamera(context: Context, logisticsId: String) {
-        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            (context as Activity).requestPermissions(arrayOf(android.Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
-        } else {
-            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            if (intent.resolveActivity(context.packageManager) != null) {
-                val photoFile: File? = createImageFile(context)
-                photoFile?.also {
-                    savePhotoFile(it, logisticsId)
-                    val photoURI: Uri = FileProvider.getUriForFile(
-                        context,
-                        "${context.packageName}.provider",
-                        it
-                    )
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                    (context as Activity).startActivityForResult(intent, REQUEST_CAMERA)
-                }
-            }
+        if (!isCameraAvailable(context)) {
+            Toast.makeText(context, "Устройство не имеет камеры", Toast.LENGTH_SHORT).show()
+            return
         }
+        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(context as Activity,
+                arrayOf(android.Manifest.permission.CAMERA),
+                REQUEST_CAMERA_PERMISSION)
+            return
+        }
+
+        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (cameraIntent.resolveActivity(context.packageManager) == null) {
+            Toast.makeText(context, "Камера не доступна", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val photoFile = try {
+            createImageFile(context)
+        } catch (e: IOException) {
+            Toast.makeText(context, "Ошибка создания файла", Toast.LENGTH_SHORT).show()
+            null
+        }
+
+        photoFile?.also {
+            val photoURI = FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.provider",
+                it
+            )
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+            (context as Activity).startActivityForResult(cameraIntent, REQUEST_CAMERA)
+            savePhotoFile(it, logisticsId)
+        }
+    }
+    private fun isCameraAvailable(context: Context): Boolean {
+        return context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
     }
     private fun openGallery(context: Context, logisticsId: String) {
-        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            (context as Activity).requestPermissions(arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), MY_READ_EXTERNAL_REQUEST)
+        if (checkGalleryPermission(context)) {
+            startGalleryIntent(context, logisticsId)
         } else {
-            val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-            intent.type = "image/*"
-            (context as Activity).startActivityForResult(intent, REQUEST_GALLERY)
-            saveLogisticsId(logisticsId)
+            requestGalleryPermission(context)
         }
+    }
+
+    private fun checkGalleryPermission(context: Context): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED
+        } else {
+            ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+        }
+    }
+
+    private fun requestGalleryPermission(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.requestPermissions(
+                context as Activity,
+                arrayOf(android.Manifest.permission.READ_MEDIA_IMAGES),
+                REQUEST_CODE_GALLERY_PERMISSION
+            )
+        } else {
+            ActivityCompat.requestPermissions(
+                context as Activity,
+                arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
+                REQUEST_CODE_GALLERY_PERMISSION
+            )
+        }
+    }
+    fun notifyGalleryPermissionGranted(context: Context, logisticsId: String) {
+        openGallery(context, logisticsId)
+    }
+    private fun startGalleryIntent(context: Context, logisticsId: String) {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        intent.type = "image/*"
+        (context as Activity).startActivityForResult(intent, REQUEST_GALLERY)
+        saveLogisticsId(logisticsId)
     }
     private fun createImageFile(context: Context): File? {
         val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
@@ -403,41 +653,193 @@ class DetailLogisticsAdapter(private val items: MutableList<LogisticsItem>,
     private fun saveLogisticsId(logisticsId: String) {
         currentLogisticsId = logisticsId
     }
-    private fun uploadPhotosToServer(uris: List<Uri>, logisticsId: String, context: Context) {
+    private fun formatTimeAtWork(timeMillis: Long): String {
+        val seconds = (timeMillis / 1000) % 60
+        val minutes = (timeMillis / (1000 * 60)) % 60
+        val hours = (timeMillis / (1000 * 60 * 60))
+
+        return when {
+            hours > 0 -> String.format("%02d:%02d:%02d", hours, minutes, seconds)
+            minutes > 0 -> String.format("%02d:%02d", minutes, seconds)
+            else -> String.format("%02d", seconds)
+        }
+    }
+    private fun updateLogisticComment(logisticsId: String, comment: String, context: Context) {
         if (logisticsId.isEmpty()) return
+
         CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val client = OkHttpClient()
-                val files = ArrayList<MultipartBody.Part>()
-                for (uri in uris) {
-                    val file = File(uri.path)
-                    val requestBody = RequestBody.create("image/*".toMediaType(), file)
-                    val part = MultipartBody.Part.createFormData("files[]", file.name, requestBody)
-                    files.add(part)
-                }
-                val createdById = RequestBody.create("text/plain".toMediaType(), mdmCode)
-                val builder = MultipartBody.Builder()
-                    .setType(MultipartBody.FORM)
-                for (part in files) {
-                    builder.addPart(part)
-                }
-                builder.addFormDataPart("created_by", mdmCode)
-                val request = Request.Builder()
-                    .url("http://192.168.200.250/api/upload_logistic_files/$logisticsId")
-                    .post(builder.build())
+            val client = (context.applicationContext as App).okHttpClient.newBuilder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .build()
+
+            val primaryUrl  = "https://api.gkmmz.ru/api/update_logistic_comment/$logisticsId"
+            val fallbackUrl = "https://09f2befcf01d4dd39cbe7e54717e28af.apicapis.ru-moscow-1.hc.sbercloud.ru/api/update_logistic_comment/$logisticsId"
+
+            fun buildBody() = FormBody.Builder()
+                .add("comment", comment)
+                .add("mdm_code", currentMdmCode ?: "")
+                .add("version_name", version_name)
+                .build()
+
+            fun exec(url: String): Response? = try {
+                val req = Request.Builder()
+                    .url(url)
+                    .post(buildBody())
+                    .addHeader("X-Apig-AppCode", authTokenAPI)
+                    .addHeader("X-Auth-Token",  authToken)
                     .build()
-                val response = client.newCall(request).execute()
-                if (response.isSuccessful) {
-                    showToast(context, "Фото успешно загружены", 7000)
-                    Log.d("Upload", "Фото успешно загружены")
-                } else {
-                    showToast(context, "Ошибка загрузки фотографий", 7000)
-                    Log.e("Upload", "Ошибка загрузки фотографий")
+                client.newCall(req).execute()
+            } catch (e: IOException) {
+                Log.e("UpdateComment", "IO error $url: ${e.message}")
+                null
+            }
+
+            try {
+                var resp = exec(primaryUrl)
+                if (resp == null || resp.code == 429) {
+                    resp?.close()
+                    Log.w("UpdateComment", "fallback → $fallbackUrl")
+                    resp = exec(fallbackUrl)
                 }
-            } catch (e: Exception) {
-                Log.e("Upload", "Ошибка загрузки фотографий", e)
+                if (resp == null) {
+                    withContext(Dispatchers.Main) { showToast(context, "Сервер недоступен", 5000) }
+                    return@launch
+                }
+
+                resp.use { r ->
+                    if (r.isSuccessful) {
+                        withContext(Dispatchers.Main) { showToast(context, "Комментарий успешно обновлён", 5000) }
+                    } else {
+                        withContext(Dispatchers.Main) { showToast(context, "Ошибка обновления: ${r.code}", 5000) }
+                        Log.e("UpdateComment", "HTTP ${r.code} - ${r.message}")
+                    }
+                }
+            } catch (_: ServiceModeException) {
+            } catch (t: Throwable) {
+                Log.e("UpdateComment", "Unexpected", t)
+                withContext(Dispatchers.Main) { showToast(context, "Произошла ошибка", 5000) }
             }
         }
+    }
+    private fun updateLogisticExecutor(logisticsId: String, executorMdmCode: String, context: Context) {
+        if (logisticsId.isEmpty()) return
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val client = (context.applicationContext as App).okHttpClient.newBuilder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .build()
+
+            val primaryUrl  = "https://api.gkmmz.ru/api/update_logistic_executor/$logisticsId"
+            val fallbackUrl = "https://09f2befcf01d4dd39cbe7e54717e28af.apicapis.ru-moscow-1.hc.sbercloud.ru/api/update_logistic_executor/$logisticsId"
+
+            fun buildBody() = FormBody.Builder()
+                .add("executor", executorMdmCode)
+                .add("mdm_code", currentMdmCode ?: "")
+                .add("version_name", version_name)
+                .build()
+
+            fun exec(url: String): Response? = try {
+                val req = Request.Builder()
+                    .url(url)
+                    .post(buildBody())
+                    .addHeader("X-Apig-AppCode", authTokenAPI)
+                    .addHeader("X-Auth-Token",  authToken)
+                    .build()
+                client.newCall(req).execute()
+            } catch (e: IOException) {
+                Log.e("UpdateExecutor", "IO error $url: ${e.message}")
+                null
+            }
+
+            try {
+                var resp = exec(primaryUrl)
+                if (resp == null || resp.code == 429) {
+                    resp?.close()
+                    Log.w("UpdateExecutor", "fallback → $fallbackUrl")
+                    resp = exec(fallbackUrl)
+                }
+                if (resp == null) {
+                    withContext(Dispatchers.Main) { showToast(context, "Сервер недоступен", 5000) }
+                    return@launch
+                }
+
+                resp.use { r ->
+                    if (r.isSuccessful) {
+                        withContext(Dispatchers.Main) { showToast(context, "Исполнитель успешно обновлён", 5000) }
+                    } else {
+                        withContext(Dispatchers.Main) { showToast(context, "Ошибка обновления: ${r.code}", 5000) }
+                        Log.e("UpdateExecutor", "HTTP ${r.code} - ${r.message}")
+                    }
+                }
+            } catch (_: ServiceModeException) {
+            } catch (t: Throwable) {
+                Log.e("UpdateExecutor", "Unexpected", t)
+                withContext(Dispatchers.Main) { showToast(context, "Произошла ошибка", 5000) }
+            }
+        }
+    }
+    private fun showExecutorSelectionDialog(context: Context, logisticsId: String) {
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_executor_selection, null)
+        val dialog = AlertDialog.Builder(context)
+            .setView(dialogView)
+            .setTitle("Выберите исполнителя")
+            .setNegativeButton("Отмена", null)
+            .create()
+
+        val recyclerView = dialogView.findViewById<RecyclerView>(R.id.recyclerView)
+        val progressBar = dialogView.findViewById<ProgressBar>(R.id.progressBar)
+
+        val requiredExecutors = listOf(
+            "Домнин Анатолий Александрович",
+            "Ильичев Александр Сергеевич",
+            "Кузнецов Роман Алексеевич",
+            "Маган Андрей Михайлович",
+            "Метелкин Андрей Иванович",
+            "Попов Роман Дмитриевич",
+            "Потапов Иван Артемович",
+            "Соломенный Сергей Александрович",
+            "Усманов Ростислав Сергеевич"
+        )
+
+        val adapter = ExecutorAdapter(emptyList()) { selectedExecutor ->
+            updateLogisticExecutor(logisticsId, selectedExecutor.mdmcode, context)
+            dialog.dismiss()
+        }
+
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.adapter = adapter
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val allEmployees = getAllSotrudnikiInfo(context)
+
+                val filteredExecutors = allEmployees.filter { employee ->
+                    requiredExecutors.any { it == employee.fio }
+                }
+
+                withContext(Dispatchers.Main) {
+                    adapter.updateData(filteredExecutors)
+                    progressBar.visibility = View.GONE
+
+                    if (filteredExecutors.isEmpty()) {
+                        Toast.makeText(context, "Исполнители не найдены", Toast.LENGTH_SHORT).show()
+                        dialog.dismiss()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    progressBar.visibility = View.GONE
+                    Toast.makeText(context, "Ошибка загрузки: ${e.message}", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+                }
+            }
+        }
+
+        dialog.show()
     }
     suspend fun showToast(context: Context, message: String, duration: Long) {
         withContext(Dispatchers.Main) {
@@ -454,7 +856,22 @@ class DetailLogisticsAdapter(private val items: MutableList<LogisticsItem>,
         var currentPhotoFile: File? = null
         var currentLogisticsId: String? = null
     }
-    private val MY_READ_EXTERNAL_REQUEST = 1
     private val REQUEST_CAMERA_PERMISSION = 2
     override fun getItemCount() = items.size
+    private val REQUEST_CODE_GALLERY_PERMISSION = 1003
+    private val REQUEST_CALL_PHONE = 1004
+}
+
+class HorizontalSpaceItemDecoration(private val spaceSize: Int) : RecyclerView.ItemDecoration() {
+    override fun getItemOffsets(
+        outRect: Rect,
+        view: View,
+        parent: RecyclerView,
+        state: RecyclerView.State
+    ) {
+        super.getItemOffsets(outRect, view, parent, state)
+        if (parent.getChildAdapterPosition(view) != parent.adapter?.itemCount?.minus(1)) {
+            outRect.right = spaceSize
+        }
+    }
 }

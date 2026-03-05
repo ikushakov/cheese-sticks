@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="350dp"
+    android:layout_height="150dp"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/new_card_background_features"
+    android:layout_gravity="center"
+    android:gravity="center">
+
+    <ImageView
+        android:id="@+id/warning_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/error_warning"
+        android:layout_gravity="center_horizontal"/>
+
+    <TextView
+        android:id="@+id/warning_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#1F2024"
+        android:gravity="center_horizontal"
+        android:layout_gravity="center_horizontal"/>
+
+    <Button
+        android:id="@+id/ok_button"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Ок"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="center_horizontal"
+        android:textColor="@color/white"
+        style="@style/NewCustomButtonStyleAuthorization"/>
+
+</LinearLayout>

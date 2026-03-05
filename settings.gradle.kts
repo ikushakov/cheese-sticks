@@ -16,6 +16,22 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url = uri("https://artifactory-external.vkpartner.ru/artifactory/maven")
+        }
+        // Maptiler SDK repository - попробуем разные варианты
+        maven {
+            url = uri("https://repo.maptiler.com/maven")
+        }
+        maven {
+            url = uri("https://maven.maptiler.com/releases")
+        }
+        maven {
+            url = uri("https://repo.maptiler.com/releases")
+        }
+        maven {
+            url = uri("https://jitpack.io")
+        }
     }
 }
 

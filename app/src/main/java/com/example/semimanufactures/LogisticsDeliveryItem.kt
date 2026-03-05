@@ -29,5 +29,6 @@ data class LogisticsDeliveryItem(
     val is_decline_at: String?,
     val is_accepted_by: String?,
     val is_accepted_at: String?,
-    val not_full_part: String?
+    val not_full_part: String?,
+    var executor: String
 )

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/write_sms"
+        android:icon="@drawable/edit"
+        android:title="Написать" />
+    <item
+        android:id="@+id/incoming_sms"
+        android:icon="@drawable/email"
+        android:title="Входящие" />
+    <item
+        android:id="@+id/sent_sms"
+        android:icon="@drawable/arrow_circle_left"
+        android:title="Отправленные" />
+</menu>

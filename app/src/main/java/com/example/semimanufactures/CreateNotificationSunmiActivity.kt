@@ -3,6 +3,7 @@ package com.example.semimanufactures
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -11,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import com.google.gson.Gson
 
 class CreateNotificationSunmiActivity : ComponentActivity() {
     private lateinit var recipient: EditText
@@ -22,20 +24,50 @@ class CreateNotificationSunmiActivity : ComponentActivity() {
     private lateinit var go_to_users_settings: ImageView
     private lateinit var go_to_send_notification: ImageView
     private lateinit var go_to_logistic: ImageView
-    private var userId: Int = 0
-    private var username: String = ""
-    private var roleCheck: String = ""
-    private var mdmCode: String = ""
-    private var userFio: String = ""
+    //
+    private var currentUsername: String? = null
+    private var currentUserId: Int? = null
+    private var currentRoleCheck: String? = null
+    private var currentMdmCode: String? = null
+    private var currentFio: String? = null
+    private var currentDeviceInfo: String? = null
+    private var currentRolesString: String? = null
+    private var currentDeviceToken: String? = null
+    private var currentIsAuthorized:  Boolean = false
+    //
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val userData = readUserData()
+        userData?.let {
+            currentUsername = it.username
+            currentUserId = it.userId
+            currentRoleCheck = it.roleCheck
+            currentMdmCode = it.mdmCode
+            currentFio = it.fio
+            currentDeviceInfo = it.deviceInfo
+            currentRolesString = it.rolesString
+            currentDeviceToken = it.device_token
+            currentIsAuthorized = it.isAuthorized
+            Log.d("UserData", "Логин: ${it.username}")
+            Log.d("UserData", "User ID: ${it.userId}")
+            Log.d("UserData", "Роль: ${it.roleCheck}")
+            Log.d("UserData", "MdmdCode: ${it.mdmCode}")
+            Log.d("UserData", "ФИО: ${it.fio}")
+            Log.d("UserData", "Название устройства: ${it.deviceInfo}")
+            Log.d("UserData", "Список ролей: ${it.rolesString}")
+            Log.d("UserData", "Токен устройства: ${it.device_token}")
+            Log.d("isAuthorized", "Авторизован? ${it.isAuthorized}")
+        } ?: run {
+            Toast.makeText(this, "Ошибка загрузки данных", Toast.LENGTH_SHORT).show()
+        }
+
+        if (!currentIsAuthorized) {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+            return
+        }
         setContentView(R.layout.activity_create_notification_sunmi)
-        userId = intent.getIntExtra("userId", 0)
-        username = intent.getStringExtra("username") ?: ""
-        roleCheck = intent.getStringExtra("roleCheck") ?: ""
-        mdmCode = intent.getStringExtra("mdmCode") ?: ""
-        userFio = intent.getStringExtra("fio") ?: ""
         recipient = findViewById(R.id.recipient)
         description = findViewById(R.id.description)
         button_submit = findViewById(R.id.button_submit)
@@ -68,10 +100,21 @@ class CreateNotificationSunmiActivity : ComponentActivity() {
             startActivity(intent)
         }
     }
+    private fun readUserData(): UserData? {
+        return try {
+            openFileInput("user_data").use {
+                val json = it.bufferedReader().use { reader -> reader.readText() }
+                Gson().fromJson(json, UserData::class.java)
+            }
+        } catch (e: Exception) {
+            Log.e("FeaturesActivity", "Error reading user data", e)
+            null
+        }
+    }
     @SuppressLint("MissingInflatedId")
     private fun showPopupMenuNotification(view: View) {
         val popupView = layoutInflater.inflate(R.layout.custom_menu_notification, null)
-        val popupWindow = PopupWindow(popupView, 500, 500)
+        val popupWindow = PopupWindow(popupView, 550, 500)
         popupView.findViewById<LinearLayout>(R.id.item_write_sms).setOnClickListener {
             Toast.makeText(this, "Написать нажаты", Toast.LENGTH_SHORT).show()
             popupWindow.dismiss()

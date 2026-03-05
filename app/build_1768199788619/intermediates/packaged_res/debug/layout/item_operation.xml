@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="12dp">
+
+    <ImageView
+        android:id="@+id/iv_status_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="8dp"
+        android:contentDescription="@null"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/texts_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_main"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TheInterRegularText"
+            android:textColor="#1F2024"
+            android:textSize="16sp"
+            android:singleLine="true"
+            android:ellipsize="end"/>
+
+        <TextView
+            android:id="@+id/tv_sub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/TheInterRegularText"
+            android:textColor="#8B8B8B"
+            android:textSize="14sp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:paddingTop="2dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="#D9D9D9"/>
+    </LinearLayout>
+
+</LinearLayout>

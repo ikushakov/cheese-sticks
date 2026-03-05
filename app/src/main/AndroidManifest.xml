@@ -1,45 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.USB_PERMISSION" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission
+        android:name="android.permission.READ_MEDIA_IMAGES"
+        tools:ignore="SelectedPhotoAccess" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission
+        android:name="android.permission.RECEIVE_BOOT_COMPLETED"
+        tools:ignore="SelectedPhotoAccess" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.BROADCAST_STICKY" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" /> <!-- <uses-permission android:name="android.permission.BROADCAST_STICKY" /> -->
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
     <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.flash"
+        android:required="false" />
+    <uses-feature
         android:name="android.hardware.nfc.peer_to_peer"
         android:required="true" />
-    <uses-permission android:name="android.permission.NFC" />
+
     <uses-feature
         android:name="android.hardware.nfc"
         android:required="true" />
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
+        android:enableOnBackInvokedCallback="true"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/png_512"
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_security_config"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@drawable/png_512"
+        android:hardwareAccelerated="true"
         android:supportsRtl="true"
-        android:enableOnBackInvokedCallback="true"
         android:theme="@style/Theme.Semimanufactures"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".WebMapActivity"
+            android:exported="false"
+            android:label="Карта"
+            android:hardwareAccelerated="true"
+            android:usesCleartextTraffic="true"
+            android:theme="@style/Theme.Semimanufactures" />
+        <activity
+            android:name=".CreatingLogisticOtherActivity"
+            android:exported="false"
+            android:label="@string/title_activity_creating_logistic_other"
+            android:theme="@style/Theme.Semimanufactures" />
+        <activity
+            android:name=".NotificationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_notification"
+            android:theme="@style/Theme.Semimanufactures" />
         <activity
             android:name=".TgAuthorizationActivity"
             android:exported="false"
@@ -59,16 +103,21 @@
             android:name=".SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"
-            android:theme="@style/Theme.Semimanufactures" />
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.provider"
+            android:theme="@style/Theme.Semimanufactures" /> <!-- <provider -->
+        <!-- android:name="androidx.core.content.FileProvider" -->
+        <!-- android:authorities="${applicationId}.provider" -->
+        <!-- android:exported="false" -->
+        <!-- android:grantUriPermissions="true"> -->
+        <!-- <meta-data -->
+        <!-- android:name="android.support.FILE_PROVIDER_PATHS" -->
+        <!-- android:resource="@xml/file_paths" /> -->
+        <!-- </provider> -->
+        <activity
+            android:name=".service_mode.ServiceModeActivity"
+            android:excludeFromRecents="true"
             android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.Semimanufactures" />
         <activity
             android:name=".NewLogisticDocActivity"
             android:exported="false"
@@ -79,6 +128,34 @@
             android:exported="false"
             android:label="@string/title_activity_creating_logistic_doc"
             android:theme="@style/Theme.Semimanufactures" />
+
+        <receiver
+            android:name=".PM84ScannerManager$ScanResultReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="unitech.scanservice.data" />
+                <action android:name="unitech.scanservice.databyte" />
+                <action android:name="unitech.scanservice.datalength" />
+                <action android:name="unitech.scanservice.datatype" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <service
+            android:name=".NotificationStorageService"
+            android:enabled="true"
+            android:exported="false" />
+
         <activity
             android:name=".InventarisationFirsovActivity"
             android:exported="false"
@@ -96,8 +173,9 @@
             android:theme="@style/Theme.Semimanufactures"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
-                <action android:name="android.nfc.action.TAG_DISCOVERED"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.nfc.action.TAG_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
@@ -128,7 +206,7 @@
             android:exported="true"
             android:label="@string/title_activity_logistic"
             android:theme="@style/Theme.Semimanufactures"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".CreateNotificationSunmiActivity"
             android:exported="false"
@@ -152,6 +230,15 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
+        <service
+            android:name=".PushListenerService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="ru.rustore.sdk.pushclient.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
         <activity
             android:name=".FeaturesOfTheFunctionalityActivity"
             android:exported="true"
@@ -162,6 +249,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -170,14 +258,21 @@
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Semimanufactures">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
 
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-<!--            <meta-data-->
-<!--                android:name="android.app.lib_name"-->
-<!--                android:value="" />-->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
+            <!-- <meta-data -->
+            <!-- android:name="android.app.lib_name" -->
+            <!-- android:value="" /> -->
         </activity>
+
+        <meta-data
+            android:name="ru.rustore.sdk.pushclient.metadata.PROJECT_ID"
+            android:value="tj1814XJcpfo399RIfMCrEADi0WZ3dR5" />
     </application>
+
 </manifest>

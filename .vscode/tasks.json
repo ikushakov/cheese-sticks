@@ -1,0 +1,173 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Android: Установить и Запустить приложение",
+            "type": "shell",
+            "command": "${workspaceFolder}/gradlew.bat",
+            "args": [
+                ":app:installAndRun"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "focus": false,
+                "clear": true,
+                "echo": true
+            },
+            "problemMatcher": [],
+            "windows": {
+                "command": "cmd",
+                "args": [
+                    "/c",
+                    "\"${workspaceFolder}\\gradlew.bat\" --stop && \"${workspaceFolder}\\gradlew.bat\" --no-daemon :app:installAndRun"
+                ]
+            }
+        },
+        {
+            "label": "Android: Установить приложение",
+            "type": "shell",
+            "command": "${workspaceFolder}/gradlew.bat",
+            "args": [
+                ":app:installApp"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "focus": false,
+                "clear": true,
+                "echo": true
+            },
+            "problemMatcher": [],
+            "windows": {
+                "command": "${workspaceFolder}\\gradlew.bat",
+                "args": [
+                    ":app:installApp"
+                ]
+            }
+        },
+        {
+            "label": "Android: Запустить приложение",
+            "type": "shell",
+            "command": "${workspaceFolder}/gradlew.bat",
+            "args": [
+                ":app:runApp"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "focus": false,
+                "clear": true,
+                "echo": true
+            },
+            "problemMatcher": [],
+            "windows": {
+                "command": "${workspaceFolder}\\gradlew.bat",
+                "args": [
+                    ":app:runApp"
+                ]
+            }
+        },
+        {
+            "label": "Android: Собрать Debug APK",
+            "type": "shell",
+            "command": "${workspaceFolder}/gradlew.bat",
+            "args": [
+                ":app:assembleDebug"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "focus": false,
+                "clear": true,
+                "echo": true
+            },
+            "problemMatcher": [],
+            "windows": {
+                "command": "${workspaceFolder}\\gradlew.bat",
+                "args": [
+                    ":app:assembleDebug"
+                ]
+            }
+        },
+        {
+            "label": "Android: Очистить проект",
+            "type": "shell",
+            "command": "${workspaceFolder}/gradlew.bat",
+            "args": [
+                "clean"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "focus": false,
+                "clear": true,
+                "echo": true
+            },
+            "problemMatcher": [],
+            "windows": {
+                "command": "${workspaceFolder}\\gradlew.bat",
+                "args": [
+                    "clean"
+                ]
+            }
+        }
+        {
+            "label": "Android: Логи (Logcat)",
+            "type": "shell",
+            "command": "C:\\Users\\n.galkin\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb",
+            "args": [
+                "logcat",
+                "-v",
+                "time",
+                "*:E",
+                "App:V",
+                "WebMapActivity:V",
+                "MapRepository:V",
+                "MapApiClient:V",
+                "System.out:I"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": false
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "focus": false,
+                "clear": true,
+                "echo": true
+            },
+            "problemMatcher": [],
+            "isBackground": true,
+            "windows": {
+                "command": "cmd",
+                "args": [
+                    "/c",
+                    "\"C:\\Users\\n.galkin\\AppData\\Local\\Android\\Sdk\\platform-tools\\adb\" logcat -v time *:E App:V WebMapActivity:V MapRepository:V MapApiClient:V System.out:I"
+                ]
+            }
+        }
+    ]
+}
+
